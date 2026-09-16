@@ -186,7 +186,7 @@
     .info-item .icon { font-size: 1rem; }
     .info-item strong { color: var(--text-main); font-weight: 600; }
 
-    /* Columna Derecha: Gráfico */
+    /* Columna Derecha: Gráfico con Iconos */
     .chart-col {
       position: relative;
       display: flex;
@@ -196,7 +196,43 @@
 
     .chart-box {
       width: 100%;
-      max-width: 280px;
+      max-width: 300px;
+      position: relative;
+    }
+
+    /* Grid de Estadísticas con Iconos */
+    .stats-badges-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    .stat-badge-item {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 8px 4px;
+      text-align: center;
+    }
+
+    .stat-badge-icon {
+      font-size: 1.2rem;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .stat-badge-name {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .stat-badge-val {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--accent-blue);
     }
 
     /* Sección Inferior: Keywords / Tags */
@@ -261,63 +297,63 @@
     <!-- CUESTIONARIO -->
     <form id="quizForm">
 
-      <!-- P1: Físico vs Mente -->
+      <!-- P1 -->
       <div class="step-card" id="step-1">
         <h2 class="title">Pregunta 1 de 6</h2>
         <p class="subtitle">¿En qué inviertes más energía en tu día a día?</p>
-        <div class="opcion-btn" onclick="selectOption(this, 'fisico')">Actividad física, deporte o movimiento constante.</div>
-        <div class="opcion-btn" onclick="selectOption(this, 'mente')">Lectura, estrategia, lógica o resolución de problemas.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'fisico')">🏃‍♂️ Actividad física, deporte o movimiento constante.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'mente')">🧠 Lectura, estrategia, lógica o resolución de problemas.</div>
         <button type="button" class="btn-action" onclick="nextStep(2)">Siguiente →</button>
       </div>
 
-      <!-- P2: Respuesta vs Expresión -->
+      <!-- P2 -->
       <div class="step-card" id="step-2">
         <h2 class="title">Pregunta 2 de 6</h2>
         <p class="subtitle">Ante un cambio imprevisto de planes...</p>
-        <div class="opcion-btn" onclick="selectOption(this, 'respuesta')">Reacciono rápido y me adapto sin pensarlo mucho.</div>
-        <div class="opcion-btn" onclick="selectOption(this, 'expresion')">Comunico lo que siento y busco expresar alternativas.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'respuesta')">⚡ Reacciono rápido y me adapto sin pensarlo mucho.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'expresion')">🗣️ Comunico lo que siento y busco expresar alternativas.</div>
         <button type="button" class="btn-action" onclick="nextStep(3)">Siguiente →</button>
       </div>
 
-      <!-- P3: Trabajo en Equipo vs Comunicación -->
+      <!-- P3 -->
       <div class="step-card" id="step-3">
         <h2 class="title">Pregunta 3 de 6</h2>
         <p class="subtitle">En un grupo de trabajo o amigos, te gusta más...</p>
-        <div class="opcion-btn" onclick="selectOption(this, 'equipo')">Colaborar activamente y apoyar en la organización.</div>
-        <div class="opcion-btn" onclick="selectOption(this, 'comunicacion')">Facilitar el diálogo y conectar con las personas.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'equipo')">🤝 Colaborar activamente y apoyar en la organización.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'comunicacion')">💬 Facilitar el diálogo y conectar con las personas.</div>
         <button type="button" class="btn-action" onclick="nextStep(4)">Siguiente →</button>
       </div>
 
-      <!-- P4: Mente vs Respuesta -->
+      <!-- P4 -->
       <div class="step-card" id="step-4">
         <h2 class="title">Pregunta 4 de 6</h2>
         <p class="subtitle">¿Cómo abordas un reto difícil?</p>
-        <div class="opcion-btn" onclick="selectOption(this, 'mente')">Investigo a fondo y planifico cada paso.</div>
-        <div class="opcion-btn" onclick="selectOption(this, 'respuesta')">Paso a la acción directa y voy ajustando sobre la marcha.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'mente')">🧠 Investigo a fondo y planifico cada paso.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'respuesta')">⚡ Paso a la acción directa y voy ajustando sobre la marcha.</div>
         <button type="button" class="btn-action" onclick="nextStep(5)">Siguiente →</button>
       </div>
 
-      <!-- P5: Expresión vs Físico -->
+      <!-- P5 -->
       <div class="step-card" id="step-5">
         <h2 class="title">Pregunta 5 de 6</h2>
         <p class="subtitle">¿Qué talento te representa mejor?</p>
-        <div class="opcion-btn" onclick="selectOption(this, 'expresion')">Facilidad para las artes, escritura o oratoria.</div>
-        <div class="opcion-btn" onclick="selectOption(this, 'fisico')">Resistencia, energía física y dinamismo.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'expresion')">🗣️ Facilidad para las artes, escritura u oratoria.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'fisico')">🏃‍♂️ Resistencia, energía física y dinamismo.</div>
         <button type="button" class="btn-action" onclick="nextStep(6)">Siguiente →</button>
       </div>
 
-      <!-- P6: Equipo vs Comunicación -->
+      <!-- P6 -->
       <div class="step-card" id="step-6">
         <h2 class="title">Pregunta 6 de 6</h2>
         <p class="subtitle">Tu mayor cualidad social es...</p>
-        <div class="opcion-btn" onclick="selectOption(this, 'equipo')">La lealtad y el espíritu de cooperación.</div>
-        <div class="opcion-btn" onclick="selectOption(this, 'comunicacion')">La empatía y la capacidad de escucha.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'equipo')">🤝 La lealtad y el espíritu de cooperación.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'comunicacion')">💬 La empatía y la capacidad de escucha.</div>
         <button type="button" class="btn-action" onclick="generarResultado()">Ver Mi Ficha ✧</button>
       </div>
 
     </form>
 
-    <!-- FICHA FINAL ESTILO IMAGEN (RESULTADOS) -->
+    <!-- FICHA FINAL CON ICONOS -->
     <div id="resultado-screen">
       
       <div class="profile-grid">
@@ -345,6 +381,11 @@
         </div>
       </div>
 
+      <!-- Badges con Iconos de Stats -->
+      <div class="stats-badges-grid" id="stats-badges">
+        <!-- Se rellena con JS -->
+      </div>
+
       <!-- Sección Inferior: Keywords / Tags -->
       <div class="keywords-section">
         <div class="keywords-title">Mis Palabras Clave</div>
@@ -357,7 +398,7 @@
         </div>
       </div>
 
-      <button class="btn-action" onclick="reiniciar()" style="margin-top: 24px; background: #e2e8f0; color: #475569; box-shadow: none;">Repetir Test ↺</button>
+      <button class="btn-action" onclick="reiniciar()" style="margin-top: 20px; background: #e2e8f0; color: #475569; box-shadow: none;">Repetir Test ↺</button>
     </div>
 
   </div>
@@ -366,6 +407,15 @@
     let currentStep = 0;
     let chartInstance = null;
     let selectedValues = {};
+
+    const iconsMap = {
+      Físico: '🏃‍♂️',
+      Mente: '🧠',
+      Expresión: '🗣️',
+      Comunicación: '💬',
+      Equipo: '🤝',
+      Respuesta: '⚡'
+    };
 
     function iniciarPreguntas() {
       document.getElementById('step-0').classList.remove('active');
@@ -396,7 +446,6 @@
         return;
       }
 
-      // Base de cálculo (sobre 24 puntos al estilo de la imagen)
       let stats = {
         Físico: 10,
         Mente: 10,
@@ -415,27 +464,38 @@
         if (val === 'expresion') stats.Expresión += 7;
       });
 
-      // Insertar datos personales
       document.getElementById('res-nombre').innerText = document.getElementById('input-nombre').value || 'Usuario';
       document.getElementById('res-ubicacion').innerText = document.getElementById('input-ubicacion').value || 'Sin especificar';
       document.getElementById('res-lema').innerText = document.getElementById('input-lema').value || '-';
 
-      // Ocultar formulario, mostrar resultado
+      // Rellenar las tarjetas de iconos con puntaje
+      const badgesContainer = document.getElementById('stats-badges');
+      badgesContainer.innerHTML = '';
+      Object.keys(stats).forEach(key => {
+        badgesContainer.innerHTML += `
+          <div class="stat-badge-item">
+            <span class="stat-badge-icon">${iconsMap[key]}</span>
+            <div class="stat-badge-name">${key}</div>
+            <div class="stat-badge-val">${stats[key]}/24</div>
+          </div>
+        `;
+      });
+
       document.getElementById(`step-${currentStep}`).classList.remove('active');
       document.getElementById('resultado-screen').style.display = 'block';
 
-      // Render de Chart.js idéntico a la imagen (Azul claro pastel con puntos)
+      // Render de Chart.js con iconos en las etiquetas
       const ctx = document.getElementById('radarChart').getContext('2d');
       chartInstance = new Chart(ctx, {
         type: 'radar',
         data: {
           labels: [
-            `Físico\n${stats.Físico}/24`,
-            `Mente\n${stats.Mente}/24`,
-            `Expresión\n${stats.Expresión}/24`,
-            `Comunicación\n${stats.Comunicación}/24`,
-            `Equipo\n${stats.Equipo}/24`,
-            `Respuesta\n${stats.Respuesta}/24`
+            `${iconsMap.Físico} Físico`,
+            `${iconsMap.Mente} Mente`,
+            `${iconsMap.Expresión} Expresión`,
+            `${iconsMap.Comunicación} Comunicación`,
+            `${iconsMap.Equipo} Equipo`,
+            `${iconsMap.Respuesta} Respuesta`
           ],
           datasets: [{
             data: [stats.Físico, stats.Mente, stats.Expresión, stats.Comunicación, stats.Equipo, stats.Respuesta],
@@ -456,7 +516,7 @@
               grid: { color: '#f1f5f9' },
               pointLabels: {
                 color: '#475569',
-                font: { family: 'Plus Jakarta Sans', size: 10, weight: '600' }
+                font: { family: 'Plus Jakarta Sans', size: 10, weight: '700' }
               },
               ticks: { display: false },
               suggestedMin: 0,
