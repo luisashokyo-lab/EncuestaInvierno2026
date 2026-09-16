@@ -126,7 +126,7 @@
   <div class="main-card">
     <button class="lang-switcher" onclick="toggleLang()" id="lang-btn">中文</button>
 
-    <!-- PASO 0: INFORMACIÓN INICIAL BÁSICA -->
+   <!-- PASO 0: INFORMACIÓN INICIAL BÁSICA -->
     <div class="step-card active" id="step-0">
       <h2 class="title" data-zh="登录" data-es="Registrar">Registrar</h2>
       <p class="subtitle" data-zh="填写基本信息开始测试" data-es="Ingresa tus datos básicos para comenzar">Ingresa tus datos básicos para comenzar</p>
@@ -135,10 +135,9 @@
         <label data-zh="姓名 / 昵称" data-es="Nombre / Apodo">Nombre / Apodo</label>
         <input type="text" id="input-nombre" class="input-field" placeholder="Alex">
       </div>
-
-<!-- NUEVO CÓDIGO (Botón discreto) -->
-<button onclick="intentarReiniciar()" style="background: transparent; border: none; color: #cbd5e1; font-size: 0.75rem; width: 100%; text-align: center; margin-top: 24px; cursor: pointer;" data-zh="开发者重置 🔒" data-es="Reset (Dev) 🔒">Reset (Dev) 🔒</button>    </div>
-
+      <button type="button" class="btn-action" onclick="iniciarPreguntas()" data-zh="开始测试 →" data-es="Comenzar →">Comenzar →</button>
+    </div>
+    
     <!-- CUESTIONARIO -->
     <form id="quizForm">
       <div id="preguntas-container"></div>
@@ -175,8 +174,7 @@
         </div>
       </div>
       <!-- Botón protegido para reiniciar el test -->
-<button class="btn-action" onclick="intentarReiniciar()" style="margin-top: 16px; background: #e2e8f0; color: #475569; box-shadow: none;" data-zh="开发者重置 🔒" data-es="Reset (Dev) 🔒">Reset (Dev) 🔒</button>
-    </div>
+      <button onclick="intentarReiniciar()" style="background: transparent; border: none; color: #cbd5e1; font-size: 0.75rem; width: 100%; text-align: center; margin-top: 24px; cursor: pointer;" data-zh="开发者重置 🔒" data-es="Reset (Dev) 🔒">Reset (Dev) 🔒</button>    </div>
   </div>
 
   <script>
