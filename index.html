@@ -136,8 +136,8 @@
         <input type="text" id="input-nombre" class="input-field" placeholder="Alex">
       </div>
 
-      <button class="btn-action" onclick="iniciarPreguntas()" data-zh="开始测试 →" data-es="Comenzar Test →">Comenzar Test →</button>
-    </div>
+<!-- NUEVO CÓDIGO (Botón discreto) -->
+<button onclick="intentarReiniciar()" style="background: transparent; border: none; color: #cbd5e1; font-size: 0.75rem; width: 100%; text-align: center; margin-top: 24px; cursor: pointer;" data-zh="开发者重置 🔒" data-es="Reset (Dev) 🔒">Reset (Dev) 🔒</button>    </div>
 
     <!-- CUESTIONARIO -->
     <form id="quizForm">
@@ -572,8 +572,7 @@
   
   const password = prompt(mensaje);
   
-  // Cambia 'admin123' por la contraseña secreta que prefieras
-  if (password === 'admin123') {
+  if (password === '20012000') {
     // Si es correcta, borra los datos guardados y recarga la página
     localStorage.removeItem('userQuizStats');
     location.reload();
