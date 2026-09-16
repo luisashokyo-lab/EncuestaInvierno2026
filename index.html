@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ficha de Stats & Perfil</title>
-  <!-- Font moderna Sans-Serif -->
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- Chart.js -->
+  <title>Ficha de Stats & Perfil - 个人属性卡</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -16,14 +14,14 @@
       --text-main: #2d3748;
       --text-muted: #718096;
       --accent-blue: #4d7cfe;
-      --accent-light: rgba(77, 124, 254, 0.15);
+      --accent-light: rgba(77, 124, 254, 0.12);
       --border-color: #edf2f7;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans', 'Noto Sans SC', sans-serif;
       background-color: var(--bg-page);
       color: var(--text-main);
       padding: 20px 12px;
@@ -35,14 +33,33 @@
 
     .main-card {
       width: 100%;
-      max-width: 580px;
+      max-width: 620px;
       background: var(--card-bg);
       border-radius: 24px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      padding: 28px;
+      padding: 28px 24px;
+      position: relative;
     }
 
-    /* PANTALLA CUESTIONARIO Y PASOS */
+    .lang-switcher {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #f1f5f9;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--accent-blue);
+      transition: all 0.2s;
+    }
+
+    .lang-switcher:hover {
+      background: var(--accent-light);
+    }
+
     .step-card { display: none; }
     .step-card.active { display: block; animation: fadeIn 0.3s ease; }
 
@@ -51,329 +68,99 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    h2.title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-      text-align: center;
-    }
+    h2.title { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; text-align: center; }
+    p.subtitle { font-size: 0.875rem; color: var(--text-muted); text-align: center; margin-bottom: 24px; }
 
-    p.subtitle {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-main);
-      margin-bottom: 6px;
-    }
-
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
     .input-field {
-      width: 100%;
-      padding: 12px 16px;
-      border: 1.5px solid var(--border-color);
-      border-radius: 12px;
-      font-family: inherit;
-      font-size: 0.95rem;
-      outline: none;
-      transition: border 0.2s;
-    }
-
-    .input-field:focus {
-      border-color: var(--accent-blue);
+      width: 100%; padding: 12px 16px; border: 1.5px solid var(--border-color);
+      border-radius: 12px; font-family: inherit; font-size: 0.95rem; outline: none; background: #fff;
     }
 
     .opcion-btn {
-      background: #f8fafc;
-      border: 1.5px solid var(--border-color);
-      border-radius: 14px;
-      padding: 14px 16px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      transition: all 0.2s;
-      font-size: 0.925rem;
-      font-weight: 500;
+      background: #f8fafc; border: 1.5px solid var(--border-color); border-radius: 14px;
+      padding: 14px 16px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center;
+      transition: all 0.2s; font-size: 0.9rem; font-weight: 500; line-height: 1.4;
     }
 
-    .opcion-btn:hover {
-      border-color: #cbd5e1;
-      background: #f1f5f9;
-    }
-
-    .opcion-btn.selected {
-      border-color: var(--accent-blue);
-      background: var(--accent-light);
-      color: var(--accent-blue);
-      font-weight: 600;
-    }
+    .opcion-btn:hover { border-color: #cbd5e1; background: #f1f5f9; }
+    .opcion-btn.selected { border-color: var(--accent-blue); background: var(--accent-light); color: var(--accent-blue); font-weight: 600; }
 
     .btn-action {
-      width: 100%;
-      background: var(--accent-blue);
-      color: #fff;
-      border: none;
-      border-radius: 14px;
-      padding: 14px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 12px;
+      width: 100%; background: var(--accent-blue); color: #fff; border: none; border-radius: 14px;
+      padding: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; margin-top: 12px;
       box-shadow: 0 4px 12px rgba(77, 124, 254, 0.3);
-      transition: transform 0.1s;
     }
 
-    .btn-action:active { transform: scale(0.98); }
-
-    /* LAYOUT FICHA ESTILO ASIÁTICO / PASTELES */
     #resultado-screen { display: none; }
+    .profile-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
+    @media (max-width: 500px) { .profile-grid { grid-template-columns: 1fr; } }
 
-    .profile-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.3fr;
-      gap: 20px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 24px;
-    }
+    .info-col { display: flex; flex-direction: column; justify-content: center; }
+    .user-name-box { background: #f8fafc; padding: 8px 16px; border-radius: 20px; font-size: 1.2rem; font-weight: 800; text-align: center; margin-bottom: 16px; }
+    .info-list { display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem; }
+    .info-item { display: flex; align-items: flex-start; gap: 8px; color: var(--text-muted); }
 
-    @media (max-width: 480px) {
-      .profile-grid { grid-template-columns: 1fr; }
-    }
+    .chart-col { display: flex; justify-content: center; align-items: center; }
+    .chart-box { width: 100%; max-width: 290px; }
 
-    /* Columna Izquierda: Info Personal */
-    .info-col {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
+    .stats-badges-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
+    .stat-badge-item { background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 8px 4px; text-align: center; }
+    .stat-badge-icon { font-size: 1.1rem; display: block; }
+    .stat-badge-name { font-size: 0.7rem; font-weight: 700; color: var(--text-main); }
+    .stat-badge-val { font-size: 0.75rem; font-weight: 800; color: var(--accent-blue); }
+    .stat-badge-level { font-size: 0.65rem; background: #e0f2fe; color: #0369a1; border-radius: 10px; padding: 1px 6px; display: inline-block; margin-top: 2px; }
 
-    .user-name-box {
-      background: #f8fafc;
-      padding: 8px 16px;
-      border-radius: 20px;
-      display: inline-block;
-      font-size: 1.2rem;
-      font-weight: 800;
-      text-align: center;
-      margin-bottom: 20px;
-      color: #1e293b;
-    }
-
-    .info-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      font-size: 0.85rem;
-    }
-
-    .info-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      color: var(--text-muted);
-    }
-
-    .info-item .icon { font-size: 1rem; }
-    .info-item strong { color: var(--text-main); font-weight: 600; }
-
-    /* Columna Derecha: Gráfico con Iconos */
-    .chart-col {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .chart-box {
-      width: 100%;
-      max-width: 300px;
-      position: relative;
-    }
-
-    /* Grid de Estadísticas con Iconos */
-    .stats-badges-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 16px;
-      margin-bottom: 8px;
-    }
-
-    .stat-badge-item {
-      background: #f8fafc;
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 8px 4px;
-      text-align: center;
-    }
-
-    .stat-badge-icon {
-      font-size: 1.2rem;
-      display: block;
-      margin-bottom: 2px;
-    }
-
-    .stat-badge-name {
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .stat-badge-val {
-      font-size: 0.75rem;
-      font-weight: 800;
-      color: var(--accent-blue);
-    }
-
-    /* Sección Inferior: Keywords / Tags */
-    .keywords-section {
-      padding-top: 20px;
-    }
-
-    .keywords-title {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 12px;
-    }
-
-    .tags-flex {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .tag {
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-
+    .keywords-section { padding-top: 16px; }
+    .keywords-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; }
+    .tags-flex { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
     .tag-yellow { background: #fef3c7; color: #d97706; }
-    .tag-blue   { background: #e0f2fe; color: #0284c7; }
-    .tag-green  { background: #dcfce7; color: #15803d; }
-    .tag-red    { background: #ffe4e6; color: #e11d48; }
-    .tag-purple { background: #f3e8ff; color: #7e22ce; }
+    .tag-blue { background: #e0f2fe; color: #0284c7; }
+    .tag-green { background: #dcfce7; color: #15803d; }
   </style>
 </head>
 <body>
 
   <div class="main-card">
+    <button class="lang-switcher" onclick="toggleLang()" id="lang-btn">中文</button>
 
-    <!-- PASO 0: DATOS INICIALES -->
+    <!-- PASO 0: INFORMACIÓN INICIAL BÁSICA -->
     <div class="step-card active" id="step-0">
-      <h2 class="title">Crear tu Ficha de Perfil</h2>
-      <p class="subtitle">Ingresa tus datos para personalizar el resultado</p>
+      <h2 class="title" data-zh="创建你的属性卡" data-es="Crea tu Ficha de Perfil">Crear tu Ficha de Perfil</h2>
+      <p class="subtitle" data-zh="填写基本信息开始测试" data-es="Ingresa tus datos básicos para comenzar">Ingresa tus datos básicos para comenzar</p>
 
       <div class="form-group">
-        <label>Nombre o Apodo</label>
-        <input type="text" id="input-nombre" class="input-field" placeholder="Ej: Alex" value="Alex">
+        <label data-zh="姓名 / 昵称" data-es="Nombre / Apodo">Nombre / Apodo</label>
+        <input type="text" id="input-nombre" class="input-field" placeholder="Alex">
       </div>
 
       <div class="form-group">
-        <label>Ubicación / Ciudad</label>
-        <input type="text" id="input-ubicacion" class="input-field" placeholder="Ej: Madrid" value="Madrid">
+        <label data-zh="一句话签名" data-es="Lema Personal">Lema Personal</label>
+        <input type="text" id="input-lema" class="input-field" placeholder="用好奇的眼睛看世界" value="用好奇的眼睛看世界">
       </div>
 
-      <div class="form-group">
-        <label>Frase o Lema Personal</label>
-        <input type="text" id="input-lema" class="input-field" placeholder="Ej: Explorando el mundo con curiosidad" value="Explorando el mundo con curiosidad">
-      </div>
-
-      <button class="btn-action" onclick="iniciarPreguntas()">Comenzar Test →</button>
+      <button class="btn-action" onclick="iniciarPreguntas()" data-zh="开始测试 →" data-es="Comenzar Test →">Comenzar Test →</button>
     </div>
 
     <!-- CUESTIONARIO -->
     <form id="quizForm">
-
-      <!-- P1 -->
-      <div class="step-card" id="step-1">
-        <h2 class="title">Pregunta 1 de 6</h2>
-        <p class="subtitle">¿En qué inviertes más energía en tu día a día?</p>
-        <div class="opcion-btn" onclick="selectOption(this, 'fisico')">🏃‍♂️ Actividad física, deporte o movimiento constante.</div>
-        <div class="opcion-btn" onclick="selectOption(this, 'mente')">🧠 Lectura, estrategia, lógica o resolución de problemas.</div>
-        <button type="button" class="btn-action" onclick="nextStep(2)">Siguiente →</button>
-      </div>
-
-      <!-- P2 -->
-      <div class="step-card" id="step-2">
-        <h2 class="title">Pregunta 2 de 6</h2>
-        <p class="subtitle">Ante un cambio imprevisto de planes...</p>
-        <div class="opcion-btn" onclick="selectOption(this, 'respuesta')">⚡ Reacciono rápido y me adapto sin pensarlo mucho.</div>
-        <div class="opcion-btn" onclick="selectOption(this, 'expresion')">🗣️ Comunico lo que siento y busco expresar alternativas.</div>
-        <button type="button" class="btn-action" onclick="nextStep(3)">Siguiente →</button>
-      </div>
-
-      <!-- P3 -->
-      <div class="step-card" id="step-3">
-        <h2 class="title">Pregunta 3 de 6</h2>
-        <p class="subtitle">En un grupo de trabajo o amigos, te gusta más...</p>
-        <div class="opcion-btn" onclick="selectOption(this, 'equipo')">🤝 Colaborar activamente y apoyar en la organización.</div>
-        <div class="opcion-btn" onclick="selectOption(this, 'comunicacion')">💬 Facilitar el diálogo y conectar con las personas.</div>
-        <button type="button" class="btn-action" onclick="nextStep(4)">Siguiente →</button>
-      </div>
-
-      <!-- P4 -->
-      <div class="step-card" id="step-4">
-        <h2 class="title">Pregunta 4 de 6</h2>
-        <p class="subtitle">¿Cómo abordas un reto difícil?</p>
-        <div class="opcion-btn" onclick="selectOption(this, 'mente')">🧠 Investigo a fondo y planifico cada paso.</div>
-        <div class="opcion-btn" onclick="selectOption(this, 'respuesta')">⚡ Paso a la acción directa y voy ajustando sobre la marcha.</div>
-        <button type="button" class="btn-action" onclick="nextStep(5)">Siguiente →</button>
-      </div>
-
-      <!-- P5 -->
-      <div class="step-card" id="step-5">
-        <h2 class="title">Pregunta 5 de 6</h2>
-        <p class="subtitle">¿Qué talento te representa mejor?</p>
-        <div class="opcion-btn" onclick="selectOption(this, 'expresion')">🗣️ Facilidad para las artes, escritura u oratoria.</div>
-        <div class="opcion-btn" onclick="selectOption(this, 'fisico')">🏃‍♂️ Resistencia, energía física y dinamismo.</div>
-        <button type="button" class="btn-action" onclick="nextStep(6)">Siguiente →</button>
-      </div>
-
-      <!-- P6 -->
-      <div class="step-card" id="step-6">
-        <h2 class="title">Pregunta 6 de 6</h2>
-        <p class="subtitle">Tu mayor cualidad social es...</p>
-        <div class="opcion-btn" onclick="selectOption(this, 'equipo')">🤝 La lealtad y el espíritu de cooperación.</div>
-        <div class="opcion-btn" onclick="selectOption(this, 'comunicacion')">💬 La empatía y la capacidad de escucha.</div>
-        <button type="button" class="btn-action" onclick="generarResultado()">Ver Mi Ficha ✧</button>
-      </div>
-
+      <div id="preguntas-container"></div>
     </form>
 
-    <!-- FICHA FINAL CON ICONOS -->
+    <!-- RESULTADO -->
     <div id="resultado-screen">
-      
       <div class="profile-grid">
-        <!-- Izquierda: Datos del usuario -->
         <div class="info-col">
           <div class="user-name-box" id="res-nombre">Alex</div>
-          
           <div class="info-list">
-            <div class="info-item">
-              <span class="icon">📍</span>
-              <div><span>Ubicación</span><br><strong id="res-ubicacion">Madrid</strong></div>
-            </div>
-            <div class="info-item">
-              <span class="icon">💬</span>
-              <div><span>Lema</span><br><strong id="res-lema">Explorando el mundo</strong></div>
-            </div>
+            <div class="info-item"><span class="icon">👤</span><div><span data-zh="年龄" data-es="Edad">Edad</span>: <strong id="res-edad">22+</strong></div></div>
+            <div class="info-item"><span class="icon">📍</span><div><span data-zh="所属" data-es="Iglesia">Iglesia</span>: <strong id="res-iglesia">Norte</strong></div></div>
+            <div class="info-item"><span class="icon">🐾</span><div><span data-zh="签名" data-es="Lema">Lema</span>: <strong id="res-lema">-</strong></div></div>
           </div>
         </div>
 
-        <!-- Derecha: Hexágono de Stats -->
         <div class="chart-col">
           <div class="chart-box">
             <canvas id="radarChart"></canvas>
@@ -381,41 +168,247 @@
         </div>
       </div>
 
-      <!-- Badges con Iconos de Stats -->
-      <div class="stats-badges-grid" id="stats-badges">
-        <!-- Se rellena con JS -->
-      </div>
+      <div class="stats-badges-grid" id="stats-badges"></div>
 
-      <!-- Sección Inferior: Keywords / Tags -->
       <div class="keywords-section">
-        <div class="keywords-title">Mis Palabras Clave</div>
+        <div class="keywords-title" data-zh="我的关键词" data-es="Mis Palabras Clave">Mis Palabras Clave</div>
         <div class="tags-flex">
-          <span class="tag tag-yellow">Curioso</span>
-          <span class="tag tag-blue">Enfocado</span>
-          <span class="tag tag-green">Cálido</span>
-          <span class="tag tag-red">Confiable</span>
-          <span class="tag tag-purple">Sociable</span>
+          <span class="tag tag-yellow" data-zh="好奇" data-es="Curioso">Curioso</span>
+          <span class="tag tag-blue" data-zh="专注" data-es="Enfocado">Enfocado</span>
+          <span class="tag tag-green" data-zh="靠谱" data-es="Confiable">Confiable</span>
+          <span class="tag tag-yellow" data-zh="温暖" data-es="Cálido">Cálido</span>
+          <span class="tag tag-blue" data-zh="一起玩" data-es="Sociable">Sociable</span>
         </div>
       </div>
 
-      <button class="btn-action" onclick="reiniciar()" style="margin-top: 20px; background: #e2e8f0; color: #475569; box-shadow: none;">Repetir Test ↺</button>
+      <button class="btn-action" onclick="reiniciar()" style="margin-top: 16px; background: #e2e8f0; color: #475569; box-shadow: none;" data-zh="重新测试 ↺" data-es="Repetir Test ↺">Repetir Test ↺</button>
     </div>
-
   </div>
 
   <script>
+    let currentLang = 'es'; // 'es' o 'zh'
     let currentStep = 0;
+    let selectedAnswers = {};
+    let userInfo = { iglesia: {es: '', zh: ''}, edad: {es: '', zh: ''} };
     let chartInstance = null;
-    let selectedValues = {};
 
-    const iconsMap = {
-      Físico: '🏃‍♂️',
-      Mente: '🧠',
-      Expresión: '🗣️',
-      Comunicación: '💬',
-      Equipo: '🤝',
-      Respuesta: '⚡'
-    };
+    // BANCO DE PREGUNTAS (Q1 a Q16)
+    const questions = [
+      {
+        id: 1,
+        field: 'iglesia',
+        title: { zh: "Q1 教会:", es: "Q1 Iglesia:" },
+        options: [
+          { label: { zh: "马德里北区生命堂", es: "Iglesia Vida Norte Madrid" }, scores: null },
+          { label: { zh: "马德里南区生命堂", es: "Iglesia Vida Sur Madrid" }, scores: null },
+          { label: { zh: "瓦伦西亚生命堂", es: "Iglesia Vida Valencia" }, scores: null },
+          { label: { zh: "爱丽甘地生命堂", es: "Iglesia Vida Alicante" }, scores: null },
+          { label: { zh: "加纳利亚生命堂", es: "Iglesia Vida Canarias" }, scores: null },
+          { label: { zh: "巴塞罗那生命堂", es: "Iglesia Vida Barcelona" }, scores: null },
+          { label: { zh: "其他", es: "Otra" }, scores: null }
+        ]
+      },
+      {
+        id: 2,
+        field: 'edad',
+        title: { zh: "Q2 年龄:", es: "Q2 Edad:" },
+        options: [
+          { label: { zh: "13-15岁", es: "13-15 años" }, scores: null },
+          { label: { zh: "16-18 岁", es: "16-18 años" }, scores: null },
+          { label: { zh: "19-21岁", es: "19-21 años" }, scores: null },
+          { label: { zh: "22岁以上", es: "22+ años" }, scores: null }
+        ]
+      },
+      {
+        id: 3,
+        title: { zh: "Q3. 如果大家一起爬山2小时,你通常是?", es: "Q3. Si van a escalar una montaña por 2 horas, ¿normalmente tú..." },
+        options: [
+          { label: { zh: "A. 就这?我要冲在最前面!", es: "A. ¿Solo esto? ¡Voy a ir al frente de todos!" }, scores: { fis: 6 } },
+          { label: { zh: "B. 能跟上,但是上坡好累,好想快进到下坡", es: "B. Puedo seguir el ritmo, pero subir cuesta. ¡Quiero bajar ya!" }, scores: { fis: 4 } },
+          { label: { zh: "C. 等等,我需要休息一下再走", es: "C. Esperen, necesito descansar un momento." }, scores: { fis: 2 } },
+          { label: { zh: "D. 我想回家………………", es: "D. Me quiero ir a casa..." }, scores: { fis: 0 } }
+        ]
+      },
+      {
+        id: 4,
+        title: { zh: "Q4. 搬比较重的行李时,你通常?", es: "Q4. Al cargar equipaje pesado, ¿tú..." },
+        options: [
+          { label: { zh: "A. 这片行李都被我承包了!都放着我来!", es: "A. ¡Yo me encargo de todo esto! ¡Déjenmelo a mí!" }, scores: { fis: 6, col: 1 } },
+          { label: { zh: "B. 可以搬,哪怕会龇牙咧嘴,但是我可以!", es: "B. Puedo cargarlo, aunque haga caras, ¡yo puedo!" }, scores: { fis: 4, col: 1 } },
+          { label: { zh: "C. 叫朋友一起搬呗,人多力量大", es: "C. Llamo a amigos; la unión hace la fuerza." }, scores: { fis: 2, col: 3 } },
+          { label: { zh: "D. 我很爱护自己的腰,一般不搬重物", es: "D. Cuido mucho mi espalda, no suelo cargar peso." }, scores: { fis: 0 } }
+        ]
+      },
+      {
+        id: 5,
+        title: { zh: "Q5. 如果突然让你跑一小段路去抢东西?", es: "Q5. Si tienes que correr un tramo rápido para alcanzar algo..." },
+        options: [
+          { label: { zh: "A. 交给我吧,保证第一时间冲到!", es: "A. ¡Déjamelo a mí, seré el primero en llegar!" }, scores: { fis: 6, col: 2 } },
+          { label: { zh: "B. 让我参加的话,我就去呗;不一定抢得到,但我不会拖后腿!", es: "B. Si me toca, voy. No sé si llegue primero pero no atrasaré al equipo." }, scores: { fis: 4, col: 2 } },
+          { label: { zh: "C. 跑步不是我的强项,我可以给组员加油", es: "C. Correr no es lo mío, mejor les echo porras." }, scores: { fis: 0, col: 2 } },
+          { label: { zh: "D. 我不喜欢抢来抢去的游戏,peace", es: "D. No me gustan los juegos de prisas. Peace." }, scores: { fis: 0 } }
+        ]
+      },
+      {
+        id: 6,
+        title: { zh: "Q6. 遇到自行车、滑板、轮滑、滑雪这类需要平衡感的运动?", es: "Q6. En deportes de equilibrio (bici, skate, patines, esquí)..." },
+        options: [
+          { label: { zh: "A. 给我一点时间熟悉,我一般很快就能找到感觉!", es: "A. Dame un momento y le agarro el truco rapidísimo." }, scores: { fis: 6 } },
+          { label: { zh: "B. 刚开始会摇摇晃晃,但练一会儿基本就能上手", es: "B. Tiemblo al inicio, pero practicando lo domino." }, scores: { fis: 4 } },
+          { label: { zh: "C. 我需要多练一阵子,主要任务通常是——别摔!", es: "C. Necesito mucha práctica. Mi meta principal: ¡no caerme!" }, scores: { fis: 2 } },
+          { label: { zh: "D. 我比较喜欢双脚踏踏实实踩在地上的感觉", es: "D. Prefiero tener ambos pies bien puestos en la tierra." }, scores: { fis: 0 } }
+        ]
+      },
+      {
+        id: 7,
+        title: { zh: "Q7. 第一次见到一组十几个人并互相介绍后,你能记住多少名字?", es: "Q7. Tras conocer a 10+ personas, ¿cuántos nombres recuerdas?" },
+        options: [
+          { label: { zh: "A. 认真记的话,所有人都可以", es: "A. Si me pongo atento, recuerdo a todos." }, scores: { int: 6 } },
+          { label: { zh: "B. 哪怕我认真记,也只能记得一半左右", es: "B. Aunque me esfuerce, recuerdo como a la mitad." }, scores: { int: 3 } },
+          { label: { zh: "C. 我只记得名字特别的或者和我本来就认识的", es: "C. Solo los nombres especiales o de quienes ya conocía." }, scores: { int: 1 } },
+          { label: { zh: "D. 我不会特别去记,玩着玩着自然熟悉了", es: "D. No memorizo; jugando me voy acordando." }, scores: { int: 1, com: 3 } }
+        ]
+      },
+      {
+        id: 8,
+        title: { zh: "Q8. 玩“大家来找茬”(找不同)时,你通常?", es: "Q8. Al jugar a 'Encontrar las diferencias', tú..." },
+        options: [
+          { label: { zh: "A. 会先快速扫一遍整张图,通常很快就能发现几个不同", es: "A. Escaneo la imagen y hallo varias diferencias velozmente." }, scores: { int: 6, ada: 3 } },
+          { label: { zh: "B. 一个区域一个区域仔细对比,速度不一定快,但找到比较全", es: "B. Comparo zona por zona minuciosamente." }, scores: { int: 6 } },
+          { label: { zh: "C. 第一眼不一定能发现,但别人提示一下范围就能找到", es: "C. Si me dan una pista del área, lo encuentro rápido." }, scores: { int: 3, col: 1 } },
+          { label: { zh: "D. 经常别人找到了我还没看到", es: "D. A menudo los demás encuentran todo y yo no veo nada." }, scores: { int: 0 } }
+        ]
+      },
+      {
+        id: 9,
+        title: { zh: "Q9. 玩狼人杀、推理游戏这类需要根据线索分析的游戏时?", es: "Q9. En juegos de deducción o misterio (Lobo, etc.)..." },
+        options: [
+          { label: { zh: "A. 线索给我!我很喜欢一点点推出来,经常能发现关键点", es: "A. ¡Dame pistas! Me encanta deducir y hallo los puntos clave." }, scores: { int: 6 } },
+          { label: { zh: "B. 我能跟上大家的思路,线索多起来也能推出个大概", es: "B. Sigo la lógica del grupo y con pistas deduzco la mayoría." }, scores: { int: 4 } },
+          { label: { zh: "C. 别人分析时我觉得非常有道理,但让自己推有点困难", es: "C. Entiendo los análisis de otros, pero me cuesta deducir solo." }, scores: { int: 2 } },
+          { label: { zh: "D. 你们推吧,最后告诉我凶手是谁就行", es: "D. Deduzcan ustedes y al final me dicen quién fue." }, scores: { int: 0 } }
+        ]
+      },
+      {
+        id: 10,
+        title: { zh: "Q10. 当你听懂 complex 规则要解释给不懂的人时?", es: "Q10. Al explicar una regla compleja a alguien que no la entendió..." },
+        options: [
+          { label: { zh: "A. 用自己的话提炼规则再举例,对方很快就懂", es: "A. Resumo con mis palabras y doy ejemplos; entienden rápido." }, scores: { exp: 5, com: 5, int: 5 } },
+          { label: { zh: "B. 自己知道怎么玩,但让解释可能会越讲越复杂", es: "B. Sé jugarlo, pero al explicarlo me enredo un poco." }, scores: { exp: 3, com: 1, int: 3 } },
+          { label: { zh: "C. 直接说:等一下跟着我们玩就知道了", es: "C. Digo: 'Jugando sobre la marcha lo entenderás'." }, scores: { exp: 1, com: 1, ada: 2 } },
+          { label: { zh: "D. 我通常是那个没听懂的人,会专心听解释", es: "D. Solía ser quien no entendía, así que escucho atento." }, scores: { com: 3, col: 1 } }
+        ]
+      },
+      {
+        id: 11,
+        title: { zh: "Q11. 小组讨论时你有个好想法但其他人没理解,你?", es: "Q11. Si tienes una buena idea en grupo pero no la entienden..." },
+        options: [
+          { label: { zh: "A. 换一种说法或举例,让大家明白我想表达什么", es: "A. Explicaré de otra forma o daré ejemplos hasta aclararlo." }, scores: { exp: 6, com: 3, ada: 4 } },
+          { label: { zh: "B. 先向“懂我的朋友”解释,让他一起向大家说明白", es: "B. Se lo explico a un amigo para que me ayude a exponerlo." }, scores: { exp: 2, com: 3, col: 3, ada: 2 } },
+          { label: { zh: "C. 经常有一种“我知道想说什么但说不清楚”的感觉", es: "C. Siento 'sé lo que quiero decir pero no me sale'." }, scores: { exp: 1 } },
+          { label: { zh: "D. 解释两次还没懂的话,我可能就放弃这个想法了", es: "D. Si tras 2 intentos no entienden, descarto la idea." }, scores: { exp: 2 } }
+        ]
+      },
+      {
+        id: 12,
+        title: { zh: "Q12. 当有人发生争论,你通常?", es: "Q12. Cuando hay una discusión entre personas..." },
+        options: [
+          { label: { zh: "A. 先听听双方怎么说,主动帮他们把各自的意思讲清楚", es: "A. Escucho a ambos y les ayudo a clarificar sus puntos." }, scores: { com: 5, col: 2, ada: 1 } },
+          { label: { zh: "B. 帮亲不帮理,为自己的小组争取利益", es: "B. Apoyo a los míos para defender el interés de mi equipo." }, scores: { exp: 2, com: 2, col: 2 } },
+          { label: { zh: "C. 感觉再争下去也没结果,直接喊裁判来主持公道", es: "C. Llamo a un líder o juez para resolver la disputa." }, scores: { com: 2, ada: 3 } },
+          { label: { zh: "D. 吃瓜,已经到了谁都能理解的年纪了", es: "D. Solo observo neutral. Ya entiendo a todos." }, scores: { com: 0 } }
+        ]
+      },
+      {
+        id: 13,
+        title: { zh: "Q13. 你觉得方案更好,但全组决定用另一个方案?", es: "Q13. Si prefieres tu idea pero el grupo elige otra..." },
+        options: [
+          { label: { zh: "A. 有点可惜,但既然大家决定了就认真配合", es: "A. Una lástima, pero me sumo y colaboro al 100%." }, scores: { col: 3 } },
+          { label: { zh: "B. 争取把自己的好部分融入新方案", es: "B. Intento integrar las mejores partes de mi idea en la elegida." }, scores: { exp: 2, com: 3, col: 3, ada: 3 } },
+          { label: { zh: "C. 如果认为自己明显更好,较难全心投入不认同的方案", es: "C. Me cuesta comprometerme con una idea que no comparto." }, scores: { exp: 2 } },
+          { label: { zh: "D. 一般不太喜欢负责想方案,决定好后会积极配合", es: "D. No me gusta idear; prefiero ejecutar lo planificado." }, scores: { col: 3 } }
+        ]
+      },
+      {
+        id: 14,
+        title: { zh: "Q14. 小组已分工,但中途有人需要帮助,你会?", es: "Q14. En medio del trabajo asignado, alguien pide ayuda..." },
+        options: [
+          { label: { zh: "A. 对方只要开口,我都会先过去帮忙再做自己的", es: "A. Voy a ayudar de inmediato y luego termino lo mío." }, scores: { col: 3 } },
+          { label: { zh: "B. 如果比较紧急,会暂时放下自己的任务去帮他", es: "B. Si es urgente, ayudo primero y retomo lo mío después." }, scores: { col: 2, ada: 1 } },
+          { label: { zh: "C. 先完成自己的任务,之后如果他还需要一定帮忙", es: "C. Termino mi parte primero y luego voy si aún requiere ayuda." }, scores: { col: 2 } },
+          { label: { zh: "D. 先保证自己的部分,走不开会帮他找有余力的人", es: "D. Aseguro mi parte y le busco a alguien disponible." }, scores: { com: 3, col: 2, ada: 3 } }
+        ]
+      },
+      {
+        id: 15,
+        title: { zh: "Q15. 如果让你在大家面前即兴表演30秒?", es: "Q15. Si te piden improvisar en público por 30 segundos..." },
+        options: [
+          { label: { zh: "A. 完全没有压力甚至享受被注视的感觉", es: "A. Sin presión, ¡hasta disfruto la atención del público!" }, scores: { exp: 6 } },
+          { label: { zh: "B. 有一点紧张,但是如果能加分的话,我可以", es: "B. Algo nervioso, pero si suma puntos para el equipo, ¡voy!" }, scores: { exp: 4, col: 3 } },
+          { label: { zh: "C. 很紧张,实在没人了再让我去吧!", es: "C. Muy nervioso. ¡Déjenme como última opción!" }, scores: { exp: 2, col: 2 } },
+          { label: { zh: "D. 不可能,绝对不可能,我可以在台下鼓掌", es: "D. Imposible. Me quedo abajo aplaudiendo." }, scores: { col: 1 } }
+        ]
+      },
+      {
+        id: 16,
+        title: { zh: "Q16. 临时抽到一个完全没准备过的表演题目?", es: "Q16. Si te toca actuar un tema improvisado sin preparación..." },
+        options: [
+          { label: { zh: "A. 先演起来再说,边演边想,说不定灵感就来了", es: "A. Actúo de una vez; sobre la marcha surge la inspiración." }, scores: { ada: 6, exp: 3 } },
+          { label: { zh: "B. 给我一点时间,我一般很快能想到几个点子", es: "B. Dame un momento y se me ocurrirán varias ideas." }, scores: { ada: 6, int: 2 } },
+          { label: { zh: "C. 先和大家讨论下,有了大概方向就知道怎么做了", es: "C. Discuto la idea con el grupo y me pongo a trabajar." }, scores: { ada: 6, com: 2, col: 3 } },
+          { label: { zh: "D. 需要有人先给我具体方向,完全空白比较难开始", es: "D. Necesito una guía clara; de la nada me cuesta empezar." }, scores: { col: 2, ada: 1 } }
+        ]
+      }
+    ];
+
+    function renderQuestions() {
+      const container = document.getElementById('preguntas-container');
+      container.innerHTML = '';
+
+      questions.forEach((q, idx) => {
+        const stepNum = idx + 1;
+        let html = `
+          <div class="step-card" id="step-${stepNum}">
+            <h2 class="title" data-zh="${q.title.zh}" data-es="${q.title.es}">${q.title[currentLang]}</h2>
+            <p class="subtitle">${stepNum} / ${questions.length}</p>
+        `;
+
+        q.options.forEach((opt, oIdx) => {
+          html += `
+            <div class="opcion-btn" onclick="selectOpt(this, ${stepNum}, ${oIdx})">
+              <span data-zh="${opt.label.zh}" data-es="${opt.label.es}">${opt.label[currentLang]}</span>
+            </div>
+          `;
+        });
+
+        const btnText = stepNum === questions.length 
+          ? { zh: "生成属性卡 ✧", es: "Ver Mi Ficha ✧" } 
+          : { zh: "下一题 →", es: "Siguiente →" };
+
+        html += `
+            <button type="button" class="btn-action" onclick="nextStep(${stepNum})" data-zh="${btnText.zh}" data-es="${btnText.es}">${btnText[currentLang]}</button>
+          </div>
+        `;
+        container.innerHTML += html;
+      });
+    }
+
+    function toggleLang() {
+      currentLang = currentLang === 'es' ? 'zh' : 'es';
+      document.getElementById('lang-btn').innerText = currentLang === 'es' ? '中文' : 'Español';
+
+      document.querySelectorAll('[data-zh]').forEach(el => {
+        el.innerText = el.getAttribute(`data-${currentLang}`);
+      });
+      
+      // Actualizar el texto del resultado si ya se guardó
+      if (userInfo.iglesia[currentLang]) {
+        document.getElementById('res-iglesia').innerText = userInfo.iglesia[currentLang];
+      }
+      if (userInfo.edad[currentLang]) {
+        document.getElementById('res-edad').innerText = userInfo.edad[currentLang];
+      }
+    }
 
     function iniciarPreguntas() {
       document.getElementById('step-0').classList.remove('active');
@@ -423,82 +416,101 @@
       document.getElementById('step-1').classList.add('active');
     }
 
-    function selectOption(element, category) {
-      const parent = element.parentElement;
+    function selectOpt(elem, step, optIndex) {
+      const parent = elem.parentElement;
       parent.querySelectorAll('.opcion-btn').forEach(b => b.classList.remove('selected'));
-      element.classList.add('selected');
-      selectedValues[`p${currentStep}`] = category;
+      elem.classList.add('selected');
+      
+      const q = questions[step - 1];
+      
+      // Si la pregunta es un campo de info (Iglesia o Edad), guardamos el texto en ambos idiomas
+      if (q.field) {
+        userInfo[q.field] = q.options[optIndex].label;
+      } else {
+        selectedAnswers[step] = q.options[optIndex].scores;
+      }
     }
 
     function nextStep(step) {
-      if (!selectedValues[`p${currentStep}`]) {
-        alert("Por favor elige una opción.");
+      const q = questions[step - 1];
+      // Validación diferente si es pregunta informativa o de puntuación
+      if (q.field && !userInfo[q.field].es) {
+        alert(currentLang === 'es' ? "Por favor selecciona una opción" : "请选择一个选项");
+        return;
+      } else if (!q.field && !selectedAnswers[step]) {
+        alert(currentLang === 'es' ? "Por favor selecciona una opción" : "请选择一个选项");
         return;
       }
-      document.getElementById(`step-${currentStep}`).classList.remove('active');
-      currentStep = step;
-      document.getElementById(`step-${currentStep}`).classList.add('active');
+
+      document.getElementById(`step-${step}`).classList.remove('active');
+      if (step < questions.length) {
+        currentStep = step + 1;
+        document.getElementById(`step-${currentStep}`).classList.add('active');
+      } else {
+        generarResultado();
+      }
     }
 
     function generarResultado() {
-      if (!selectedValues[`p${currentStep}`]) {
-        alert("Por favor elige una opción.");
-        return;
-      }
+      // Sumar puntuaciones
+      let scores = { fis: 0, int: 0, exp: 0, com: 0, col: 0, ada: 0 };
 
-      let stats = {
-        Físico: 10,
-        Mente: 10,
-        Respuesta: 10,
-        Equipo: 10,
-        Comunicación: 10,
-        Expresión: 10
-      };
-
-      Object.values(selectedValues).forEach(val => {
-        if (val === 'fisico') stats.Físico += 7;
-        if (val === 'mente') stats.Mente += 7;
-        if (val === 'respuesta') stats.Respuesta += 7;
-        if (val === 'equipo') stats.Equipo += 7;
-        if (val === 'comunicacion') stats.Comunicación += 7;
-        if (val === 'expresion') stats.Expresión += 7;
+      Object.values(selectedAnswers).forEach(s => {
+        if (s.fis) scores.fis += s.fis;
+        if (s.int) scores.int += s.int;
+        if (s.exp) scores.exp += s.exp;
+        if (s.com) scores.com += s.com;
+        if (s.col) scores.col += s.col;
+        if (s.ada) scores.ada += s.ada;
       });
 
-      document.getElementById('res-nombre').innerText = document.getElementById('input-nombre').value || 'Usuario';
-      document.getElementById('res-ubicacion').innerText = document.getElementById('input-ubicacion').value || 'Sin especificar';
-      document.getElementById('res-lema').innerText = document.getElementById('input-lema').value || '-';
+      // Límite de 24 puntos
+      Object.keys(scores).forEach(k => {
+        if (scores[k] > 24) scores[k] = 24;
+      });
 
-      // Rellenar las tarjetas de iconos con puntaje
+      // Rellenar Ficha de datos personales
+      document.getElementById('res-nombre').innerText = document.getElementById('input-nombre').value || 'Alex';
+      document.getElementById('res-lema').innerText = document.getElementById('input-lema').value || '-';
+      document.getElementById('res-iglesia').innerText = userInfo.iglesia[currentLang] || '-';
+      document.getElementById('res-edad').innerText = userInfo.edad[currentLang] || '-';
+
+      const getLevel = val => Math.min(6, Math.floor(val / 4) + 1);
+
+      const statsMap = [
+        { key: 'fis', zh: '体能', es: 'Físico', icon: '🏃‍♂️', val: scores.fis },
+        { key: 'int', zh: '脑力', es: 'Intelecto', icon: '🧠', val: scores.int },
+        { key: 'exp', zh: '表达', es: 'Expresión', icon: '🗣️', val: scores.exp },
+        { key: 'com', zh: '沟通', es: 'Comunicación', icon: '💬', val: scores.com },
+        { key: 'col', zh: '协作', es: 'Colaboración', icon: '🤝', val: scores.col },
+        { key: 'ada', zh: '应变', es: 'Adaptabilidad', icon: '⚡', val: scores.ada }
+      ];
+
       const badgesContainer = document.getElementById('stats-badges');
       badgesContainer.innerHTML = '';
-      Object.keys(stats).forEach(key => {
+      statsMap.forEach(s => {
         badgesContainer.innerHTML += `
           <div class="stat-badge-item">
-            <span class="stat-badge-icon">${iconsMap[key]}</span>
-            <div class="stat-badge-name">${key}</div>
-            <div class="stat-badge-val">${stats[key]}/24</div>
+            <span class="stat-badge-icon">${s.icon}</span>
+            <div class="stat-badge-name" data-zh="${s.zh}" data-es="${s.es}">${currentLang === 'es' ? s.es : s.zh}</div>
+            <div class="stat-badge-val">${s.val}/24</div>
+            <div class="stat-badge-level" data-zh="${getLevel(s.val)}档" data-es="Nivel ${getLevel(s.val)}">${currentLang === 'es' ? 'Nivel ' + getLevel(s.val) : getLevel(s.val) + '档'}</div>
           </div>
         `;
       });
 
-      document.getElementById(`step-${currentStep}`).classList.remove('active');
       document.getElementById('resultado-screen').style.display = 'block';
 
-      // Render de Chart.js con iconos en las etiquetas
+      // Gráfico Radar
       const ctx = document.getElementById('radarChart').getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+
       chartInstance = new Chart(ctx, {
         type: 'radar',
         data: {
-          labels: [
-            `${iconsMap.Físico} Físico`,
-            `${iconsMap.Mente} Mente`,
-            `${iconsMap.Expresión} Expresión`,
-            `${iconsMap.Comunicación} Comunicación`,
-            `${iconsMap.Equipo} Equipo`,
-            `${iconsMap.Respuesta} Respuesta`
-          ],
+          labels: statsMap.map(s => `${s.icon} ${currentLang === 'es' ? s.es : s.zh}`),
           datasets: [{
-            data: [stats.Físico, stats.Mente, stats.Expresión, stats.Comunicación, stats.Equipo, stats.Respuesta],
+            data: statsMap.map(s => s.val),
             backgroundColor: 'rgba(77, 124, 254, 0.25)',
             borderColor: '#4d7cfe',
             borderWidth: 2,
@@ -514,10 +526,7 @@
             r: {
               angleLines: { color: '#e2e8f0' },
               grid: { color: '#f1f5f9' },
-              pointLabels: {
-                color: '#475569',
-                font: { family: 'Plus Jakarta Sans', size: 10, weight: '700' }
-              },
+              pointLabels: { color: '#475569', font: { family: 'Plus Jakarta Sans', size: 10, weight: '700' } },
               ticks: { display: false },
               suggestedMin: 0,
               suggestedMax: 24
@@ -530,6 +539,9 @@
     function reiniciar() {
       location.reload();
     }
+
+    // Inicializar preguntas
+    renderQuestions();
   </script>
 </body>
 </html>
