@@ -128,17 +128,12 @@
 
     <!-- PASO 0: INFORMACIÓN INICIAL BÁSICA -->
     <div class="step-card active" id="step-0">
-      <h2 class="title" data-zh="创建你的属性卡" data-es="Crea tu Ficha de Perfil">Crear tu Ficha de Perfil</h2>
+      <h2 class="title" data-zh="登录" data-es="Registrar">Registrar</h2>
       <p class="subtitle" data-zh="填写基本信息开始测试" data-es="Ingresa tus datos básicos para comenzar">Ingresa tus datos básicos para comenzar</p>
 
       <div class="form-group">
         <label data-zh="姓名 / 昵称" data-es="Nombre / Apodo">Nombre / Apodo</label>
         <input type="text" id="input-nombre" class="input-field" placeholder="Alex">
-      </div>
-
-      <div class="form-group">
-        <label data-zh="一句话签名" data-es="Lema Personal">Lema Personal</label>
-        <input type="text" id="input-lema" class="input-field" placeholder="用好奇的眼睛看世界" value="用好奇的眼睛看世界">
       </div>
 
       <button class="btn-action" onclick="iniciarPreguntas()" data-zh="开始测试 →" data-es="Comenzar Test →">Comenzar Test →</button>
@@ -156,8 +151,7 @@
           <div class="user-name-box" id="res-nombre">Alex</div>
           <div class="info-list">
             <div class="info-item"><span class="icon">👤</span><div><span data-zh="年龄" data-es="Edad">Edad</span>: <strong id="res-edad">22+</strong></div></div>
-            <div class="info-item"><span class="icon">📍</span><div><span data-zh="所属" data-es="Iglesia">Iglesia</span>: <strong id="res-iglesia">Norte</strong></div></div>
-            <div class="info-item"><span class="icon">🐾</span><div><span data-zh="签名" data-es="Lema">Lema</span>: <strong id="res-lema">-</strong></div></div>
+            <div class="info-item"><span class="icon">📍</span><div><span data-zh="教会" data-es="Iglesia">Iglesia</span>: <strong id="res-iglesia">Norte</strong></div></div>
           </div>
         </div>
 
@@ -180,8 +174,8 @@
           <span class="tag tag-blue" data-zh="一起玩" data-es="Sociable">Sociable</span>
         </div>
       </div>
-
-      <button class="btn-action" onclick="reiniciar()" style="margin-top: 16px; background: #e2e8f0; color: #475569; box-shadow: none;" data-zh="重新测试 ↺" data-es="Repetir Test ↺">Repetir Test ↺</button>
+      <!-- Botón protegido para reiniciar el test -->
+<button class="btn-action" onclick="intentarReiniciar()" style="margin-top: 16px; background: #e2e8f0; color: #475569; box-shadow: none;" data-zh="开发者重置 🔒" data-es="Reset (Dev) 🔒">Reset (Dev) 🔒</button>
     </div>
   </div>
 
@@ -571,6 +565,24 @@
       }
     }
 
+    function intentarReiniciar() {
+  // Pide la contraseña respetando el idioma actual
+  const mensaje = currentLang === 'es' 
+    ? "Introduce la contraseña de administrador para reiniciar:" 
+    : "请输入管理员密码以重置:";
+  
+  const password = prompt(mensaje);
+  
+  // Cambia 'admin123' por la contraseña secreta que prefieras
+  if (password === 'admin123') {
+    // Si es correcta, borra los datos guardados y recarga la página
+    localStorage.removeItem('userQuizStats');
+    location.reload();
+  } else if (password !== null) {
+    // Si es incorrecta (y el usuario no le dio a cancelar), muestra una alerta
+    alert(currentLang === 'es' ? "Contraseña incorrecta." : "密码错误。");
+  }
+}
     // Reemplaza la llamada final a renderQuestions() por initApp()
     initApp();
 
