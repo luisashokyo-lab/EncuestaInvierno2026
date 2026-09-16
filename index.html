@@ -3,520 +3,446 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Evaluación de Competencias Profesionales</title>
-  <!-- Tipografía Profesional Inter -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>Ficha de Stats & Perfil</title>
+  <!-- Font moderna Sans-Serif -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --border: #334155;
-      --accent: #38bdf8;
-      --accent-hover: #0284c7;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --card-inner: #0f172a;
+      --bg-page: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #2d3748;
+      --text-muted: #718096;
+      --accent-blue: #4d7cfe;
+      --accent-light: rgba(77, 124, 254, 0.15);
+      --border-color: #edf2f7;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-page);
       color: var(--text-main);
-      padding: 24px 16px;
+      padding: 20px 12px;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
-    .app-card {
+    .main-card {
       width: 100%;
-      max-width: 560px;
+      max-width: 580px;
       background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
-      padding: 32px 24px;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      padding: 28px;
     }
 
-    header {
-      margin-bottom: 24px;
-      text-align: center;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 12px;
-      background: rgba(56, 189, 248, 0.1);
-      color: var(--accent);
-      border: 1px solid rgba(56, 189, 248, 0.2);
-      border-radius: 999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-
-    h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text-main);
-      letter-spacing: -0.02em;
-    }
-
-    .subtitle {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      margin-top: 6px;
-    }
-
-    /* Barra de Progreso */
-    .progress-container {
-      margin-bottom: 24px;
-      display: none;
-    }
-
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-
-    .progress-bar-bg {
-      width: 100%;
-      height: 6px;
-      background: var(--border);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #38bdf8, #818cf8);
-      transition: width 0.3s ease;
-    }
-
-    /* Pantalla de Inicio */
-    #start-screen {
-      text-align: center;
-      padding: 12px 0;
-    }
-
-    .intro-p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin-bottom: 28px;
-    }
-
-    /* Preguntas y Opciones */
-    .step-card {
-      display: none;
-    }
-
-    .step-card.active {
-      display: block;
-      animation: fadeIn 0.3s ease-out;
-    }
+    /* PANTALLA CUESTIONARIO Y PASOS */
+    .step-card { display: none; }
+    .step-card.active { display: block; animation: fadeIn 0.3s ease; }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .question-title {
-      font-size: 1.1rem;
+    h2.title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    p.subtitle {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
       font-weight: 600;
-      margin-bottom: 20px;
-      line-height: 1.4;
       color: var(--text-main);
+      margin-bottom: 6px;
     }
 
-    .option-card {
-      background: var(--card-inner);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .option-card:hover {
-      border-color: var(--accent);
-      background: rgba(56, 189, 248, 0.03);
-    }
-
-    .option-card.selected {
-      border-color: var(--accent);
-      background: rgba(56, 189, 248, 0.08);
-      box-shadow: 0 0 0 1px var(--accent);
-    }
-
-    .radio-indicator {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      border: 2px solid var(--border);
-      margin-top: 2px;
-      flex-shrink: 0;
-      transition: all 0.2s;
-    }
-
-    .option-card.selected .radio-indicator {
-      border-color: var(--accent);
-      background: var(--accent);
-      box-shadow: inset 0 0 0 3px var(--card-bg);
-    }
-
-    .option-card input[type="radio"] { display: none; }
-
-    .option-label {
-      font-size: 0.925rem;
-      color: var(--text-main);
-      line-height: 1.5;
-    }
-
-    /* Botones */
-    .btn-primary {
+    .input-field {
       width: 100%;
-      background: var(--accent);
-      color: #0f172a;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--accent-blue);
+    }
+
+    .opcion-btn {
+      background: #f8fafc;
+      border: 1.5px solid var(--border-color);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s;
+      font-size: 0.925rem;
+      font-weight: 500;
+    }
+
+    .opcion-btn:hover {
+      border-color: #cbd5e1;
+      background: #f1f5f9;
+    }
+
+    .opcion-btn.selected {
+      border-color: var(--accent-blue);
+      background: var(--accent-light);
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    .btn-action {
+      width: 100%;
+      background: var(--accent-blue);
+      color: #fff;
       border: none;
-      border-radius: 10px;
+      border-radius: 14px;
       padding: 14px;
       font-size: 0.95rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s;
       margin-top: 12px;
+      box-shadow: 0 4px 12px rgba(77, 124, 254, 0.3);
+      transition: transform 0.1s;
     }
 
-    .btn-primary:hover {
-      background: #7dd3fc;
-      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
+    .btn-action:active { transform: scale(0.98); }
+
+    /* LAYOUT FICHA ESTILO ASIÁTICO / PASTELES */
+    #resultado-screen { display: none; }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 20px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 24px;
     }
 
-    /* Resultados */
-    #result-screen {
-      display: none;
-      animation: fadeIn 0.4s ease-out;
+    @media (max-width: 480px) {
+      .profile-grid { grid-template-columns: 1fr; }
     }
 
-    .result-header {
+    /* Columna Izquierda: Info Personal */
+    .info-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .user-name-box {
+      background: #f8fafc;
+      padding: 8px 16px;
+      border-radius: 20px;
+      display: inline-block;
+      font-size: 1.2rem;
+      font-weight: 800;
       text-align: center;
       margin-bottom: 20px;
+      color: #1e293b;
     }
 
-    .profile-title {
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: var(--accent);
-      margin-top: 4px;
+    .info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 0.85rem;
     }
 
-    .chart-container {
-      position: relative;
-      margin: 20px auto;
-      max-width: 360px;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
+    .info-item {
+      display: flex;
+      align-items: flex-start;
       gap: 10px;
-      margin-top: 24px;
-    }
-
-    .stat-item {
-      background: var(--card-inner);
-      border: 1px solid var(--border);
-      padding: 12px;
-      border-radius: 8px;
-    }
-
-    .stat-name {
-      font-size: 0.75rem;
       color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
     }
 
-    .stat-val {
-      font-size: 1.1rem;
+    .info-item .icon { font-size: 1rem; }
+    .info-item strong { color: var(--text-main); font-weight: 600; }
+
+    /* Columna Derecha: Gráfico */
+    .chart-col {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .chart-box {
+      width: 100%;
+      max-width: 280px;
+    }
+
+    /* Sección Inferior: Keywords / Tags */
+    .keywords-section {
+      padding-top: 20px;
+    }
+
+    .keywords-title {
+      font-size: 0.85rem;
       font-weight: 700;
       color: var(--text-main);
-      margin-top: 2px;
+      margin-bottom: 12px;
     }
+
+    .tags-flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .tag-yellow { background: #fef3c7; color: #d97706; }
+    .tag-blue   { background: #e0f2fe; color: #0284c7; }
+    .tag-green  { background: #dcfce7; color: #15803d; }
+    .tag-red    { background: #ffe4e6; color: #e11d48; }
+    .tag-purple { background: #f3e8ff; color: #7e22ce; }
   </style>
 </head>
 <body>
 
-  <div class="app-card">
-    <header>
-      <span class="badge">Diagnóstico Profesional</span>
-      <h1>Evaluación de Perfil</h1>
-      <p class="subtitle">Análisis competencial para toma de decisiones</p>
-    </header>
+  <div class="main-card">
 
-    <!-- Barra de progreso -->
-    <div class="progress-container" id="progress-box">
-      <div class="progress-header">
-        <span>PROGRESO</span>
-        <span id="progress-text">0 de 6</span>
+    <!-- PASO 0: DATOS INICIALES -->
+    <div class="step-card active" id="step-0">
+      <h2 class="title">Crear tu Ficha de Perfil</h2>
+      <p class="subtitle">Ingresa tus datos para personalizar el resultado</p>
+
+      <div class="form-group">
+        <label>Nombre o Apodo</label>
+        <input type="text" id="input-nombre" class="input-field" placeholder="Ej: Alex" value="Alex">
       </div>
-      <div class="progress-bar-bg">
-        <div class="progress-bar-fill" id="progress-fill"></div>
+
+      <div class="form-group">
+        <label>Ubicación / Ciudad</label>
+        <input type="text" id="input-ubicacion" class="input-field" placeholder="Ej: Madrid" value="Madrid">
       </div>
+
+      <div class="form-group">
+        <label>Frase o Lema Personal</label>
+        <input type="text" id="input-lema" class="input-field" placeholder="Ej: Explorando el mundo con curiosidad" value="Explorando el mundo con curiosidad">
+      </div>
+
+      <button class="btn-action" onclick="iniciarPreguntas()">Comenzar Test →</button>
     </div>
 
-    <!-- Pantalla Inicial -->
-    <div id="start-screen">
-      <p class="intro-p">
-        Este test analiza 6 dimensiones competenciales estratégicas: **Liderazgo, Pensamiento Analítico, Adaptabilidad, Ejecución, Innovación y Trabajo en Equipo**. Responda según sus pautas de actuación habituales.
-      </p>
-      <button class="btn-primary" onclick="iniciarTest()">Iniciar Evaluación</button>
-    </div>
+    <!-- CUESTIONARIO -->
+    <form id="quizForm">
 
-    <!-- Formulario / Preguntas -->
-    <form id="evalForm" style="display: none;">
-
-      <!-- P1: Liderazgo vs Trabajo en Equipo -->
-      <div class="step-card active" id="step-0">
-        <div class="question-title">1. Ante un proyecto complejo sin rumbo claro, usted prefiere:</div>
-        <div class="option-card" onclick="selectOpt(this, 'liderazgo')">
-          <div class="radio-indicator"></div>
-          <input type="radio" name="p1" value="liderazgo" required>
-          <div class="option-label">Asumir el mando, fijar prioridades y definir la hoja de ruta del equipo.</div>
-        </div>
-        <div class="option-card" onclick="selectOpt(this, 'equipo')">
-          <div class="radio-indicator"></div>
-          <input type="radio" name="p1" value="equipo">
-          <div class="option-label">Convocar una sesión colaborativa para alcanzar consensos y distribuir tareas.</div>
-        </div>
-        <button type="button" class="btn-primary" onclick="nextStep(1)">Continuar →</button>
-      </div>
-
-      <!-- P2: Pensamiento Analítico vs Innovación -->
+      <!-- P1: Físico vs Mente -->
       <div class="step-card" id="step-1">
-        <div class="question-title">2. Cuando debe resolver un problema operativo recurrente:</div>
-        <div class="option-card" onclick="selectOpt(this, 'analitico')">
-          <div class="radio-indicator"></div>
-          <input type="radio" name="p2" value="analitico" required>
-          <div class="option-label">Examina datos históricos y métricas para hallar la causa raíz objetiva.</div>
-        </div>
-        <div class="option-card" onclick="selectOpt(this, 'innovacion')">
-          <div class="radio-indicator"></div>
-          <input type="radio" name="p2" value="innovacion">
-          <div class="option-label">Diseña un enfoque completamente nuevo probando soluciones no convencionales.</div>
-        </div>
-        <button type="button" class="btn-primary" onclick="nextStep(2)">Continuar →</button>
+        <h2 class="title">Pregunta 1 de 6</h2>
+        <p class="subtitle">¿En qué inviertes más energía en tu día a día?</p>
+        <div class="opcion-btn" onclick="selectOption(this, 'fisico')">Actividad física, deporte o movimiento constante.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'mente')">Lectura, estrategia, lógica o resolución de problemas.</div>
+        <button type="button" class="btn-action" onclick="nextStep(2)">Siguiente →</button>
       </div>
 
-      <!-- P3: Adaptabilidad vs Ejecución -->
+      <!-- P2: Respuesta vs Expresión -->
       <div class="step-card" id="step-2">
-        <div class="question-title">3. Frente a un cambio repentino en las prioridades del negocio:</div>
-        <div class="option-card" onclick="selectOpt(this, 'adaptabilidad')">
-          <div class="radio-indicator"></div>
-          <input type="radio" name="p3" value="adaptabilidad" required>
-          <div class="option-label">Ajusta la estrategia con agilidad e incorpora el nuevo escenario sin fricción.</div>
-        </div>
-        <div class="option-card" onclick="selectOpt(this, 'ejecucion')">
-          <div class="radio-indicator"></div>
-          <input type="radio" name="p3" value="ejecucion">
-          <div class="option-label">Reorganiza inmediatamente el plan de trabajo para garantizar el cumplimiento de entregables.</div>
-        </div>
-        <button type="button" class="btn-primary" onclick="nextStep(3)">Continuar →</button>
+        <h2 class="title">Pregunta 2 de 6</h2>
+        <p class="subtitle">Ante un cambio imprevisto de planes...</p>
+        <div class="opcion-btn" onclick="selectOption(this, 'respuesta')">Reacciono rápido y me adapto sin pensarlo mucho.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'expresion')">Comunico lo que siento y busco expresar alternativas.</div>
+        <button type="button" class="btn-action" onclick="nextStep(3)">Siguiente →</button>
       </div>
 
-      <!-- P4: Analítico vs Adaptabilidad -->
+      <!-- P3: Trabajo en Equipo vs Comunicación -->
       <div class="step-card" id="step-3">
-        <div class="question-title">4. Al evaluar una nueva propuesta de inversión o proyecto:</div>
-        <div class="option-card" onclick="selectOpt(this, 'analitico')">
-          <div class="radio-indicator"></div>
-          <input type="radio" name="p4" value="analitico" required>
-          <div class="option-label">Exige un estudio de viabilidad riguroso y análisis del retorno financiero.</div>
-        </div>
-        <div class="option-card" onclick="selectOpt(this, 'adaptabilidad')">
-          <div class="radio-indicator"></div>
-          <input type="radio" name="p4" value="adaptabilidad">
-          <div class="option-label">Apuesta por un prototipo rápido (MVP) para validar la respuesta del mercado.</div>
-        </div>
-        <button type="button" class="btn-primary" onclick="nextStep(4)">Continuar →</button>
+        <h2 class="title">Pregunta 3 de 6</h2>
+        <p class="subtitle">En un grupo de trabajo o amigos, te gusta más...</p>
+        <div class="opcion-btn" onclick="selectOption(this, 'equipo')">Colaborar activamente y apoyar en la organización.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'comunicacion')">Facilitar el diálogo y conectar con las personas.</div>
+        <button type="button" class="btn-action" onclick="nextStep(4)">Siguiente →</button>
       </div>
 
-      <!-- P5: Liderazgo vs Ejecución -->
+      <!-- P4: Mente vs Respuesta -->
       <div class="step-card" id="step-4">
-        <div class="question-title">5. Su principal aporte dentro de una organización suele ser:</div>
-        <div class="option-card" onclick="selectOpt(this, 'liderazgo')">
-          <div class="radio-indicator"></div>
-          <input type="radio" name="p5" value="liderazgo" required>
-          <div class="option-label">Inspirar una visión clara y alinear las metas estratégicas a largo plazo.</div>
-        </div>
-        <div class="option-card" onclick="selectOpt(this, 'ejecucion')">
-          <div class="radio-indicator"></div>
-          <input type="radio" name="p5" value="ejecucion">
-          <div class="option-label">Asegurar la calidad operativa y el cumplimiento estricto de plazos.</div>
-        </div>
-        <button type="button" class="btn-primary" onclick="nextStep(5)">Continuar →</button>
+        <h2 class="title">Pregunta 4 de 6</h2>
+        <p class="subtitle">¿Cómo abordas un reto difícil?</p>
+        <div class="opcion-btn" onclick="selectOption(this, 'mente')">Investigo a fondo y planifico cada paso.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'respuesta')">Paso a la acción directa y voy ajustando sobre la marcha.</div>
+        <button type="button" class="btn-action" onclick="nextStep(5)">Siguiente →</button>
       </div>
 
-      <!-- P6: Innovación vs Equipo -->
+      <!-- P5: Expresión vs Físico -->
       <div class="step-card" id="step-5">
-        <div class="question-title">6. ¿Qué entorno de trabajo estimula mejor su rendimiento?</div>
-        <div class="option-card" onclick="selectOpt(this, 'innovacion')">
-          <input type="radio" name="p6" value="innovacion" required>
-          <div class="option-label">Entornos dinámicos de creación, experimentación y disrupción tecnológica.</div>
-        </div>
-        <div class="option-card" onclick="selectOpt(this, 'equipo')">
-          <div class="radio-indicator"></div>
-          <input type="radio" name="p6" value="equipo">
-          <div class="option-label">Equipos multidisciplinares basados en la confianza y el desarrollo mutuo.</div>
-        </div>
-        <button type="button" class="btn-primary" onclick="calcular()">Generar Diagnóstico</button>
+        <h2 class="title">Pregunta 5 de 6</h2>
+        <p class="subtitle">¿Qué talento te representa mejor?</p>
+        <div class="opcion-btn" onclick="selectOption(this, 'expresion')">Facilidad para las artes, escritura o oratoria.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'fisico')">Resistencia, energía física y dinamismo.</div>
+        <button type="button" class="btn-action" onclick="nextStep(6)">Siguiente →</button>
+      </div>
+
+      <!-- P6: Equipo vs Comunicación -->
+      <div class="step-card" id="step-6">
+        <h2 class="title">Pregunta 6 de 6</h2>
+        <p class="subtitle">Tu mayor cualidad social es...</p>
+        <div class="opcion-btn" onclick="selectOption(this, 'equipo')">La lealtad y el espíritu de cooperación.</div>
+        <div class="opcion-btn" onclick="selectOption(this, 'comunicacion')">La empatía y la capacidad de escucha.</div>
+        <button type="button" class="btn-action" onclick="generarResultado()">Ver Mi Ficha ✧</button>
       </div>
 
     </form>
 
-    <!-- Pantalla de Resultados -->
-    <div id="result-screen">
-      <div class="result-header">
-        <span class="badge">Perfil Identificado</span>
-        <div class="profile-title" id="profile-name">Estratega Ejecutivo</div>
+    <!-- FICHA FINAL ESTILO IMAGEN (RESULTADOS) -->
+    <div id="resultado-screen">
+      
+      <div class="profile-grid">
+        <!-- Izquierda: Datos del usuario -->
+        <div class="info-col">
+          <div class="user-name-box" id="res-nombre">Alex</div>
+          
+          <div class="info-list">
+            <div class="info-item">
+              <span class="icon">📍</span>
+              <div><span>Ubicación</span><br><strong id="res-ubicacion">Madrid</strong></div>
+            </div>
+            <div class="info-item">
+              <span class="icon">💬</span>
+              <div><span>Lema</span><br><strong id="res-lema">Explorando el mundo</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Derecha: Hexágono de Stats -->
+        <div class="chart-col">
+          <div class="chart-box">
+            <canvas id="radarChart"></canvas>
+          </div>
+        </div>
       </div>
 
-      <div class="chart-container">
-        <canvas id="radarChart"></canvas>
+      <!-- Sección Inferior: Keywords / Tags -->
+      <div class="keywords-section">
+        <div class="keywords-title">Mis Palabras Clave</div>
+        <div class="tags-flex">
+          <span class="tag tag-yellow">Curioso</span>
+          <span class="tag tag-blue">Enfocado</span>
+          <span class="tag tag-green">Cálido</span>
+          <span class="tag tag-red">Confiable</span>
+          <span class="tag tag-purple">Sociable</span>
+        </div>
       </div>
 
-      <div class="stats-grid" id="stats-summary">
-        <!-- Se rellena dinámicamente -->
-      </div>
-
-      <button class="btn-primary" onclick="reiniciar()" style="margin-top: 24px;">Realizar Nueva Evaluación</button>
+      <button class="btn-action" onclick="reiniciar()" style="margin-top: 24px; background: #e2e8f0; color: #475569; box-shadow: none;">Repetir Test ↺</button>
     </div>
+
   </div>
 
   <script>
     let currentStep = 0;
-    const totalSteps = 6;
+    let chartInstance = null;
+    let selectedValues = {};
 
-    function iniciarTest() {
-      document.getElementById('start-screen').style.display = 'none';
-      document.getElementById('evalForm').style.display = 'block';
-      document.getElementById('progress-box').style.display = 'block';
-      updateProgress();
+    function iniciarPreguntas() {
+      document.getElementById('step-0').classList.remove('active');
+      currentStep = 1;
+      document.getElementById('step-1').classList.add('active');
     }
 
-    function selectOpt(card, val) {
-      const activeStep = document.querySelector('.step-card.active');
-      activeStep.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      card.querySelector('input[type="radio"]').checked = true;
+    function selectOption(element, category) {
+      const parent = element.parentElement;
+      parent.querySelectorAll('.opcion-btn').forEach(b => b.classList.remove('selected'));
+      element.classList.add('selected');
+      selectedValues[`p${currentStep}`] = category;
     }
 
-    function updateProgress() {
-      const pct = Math.round(((currentStep + 1) / totalSteps) * 100);
-      document.getElementById('progress-fill').style.width = pct + '%';
-      document.getElementById('progress-text').innerText = `${currentStep + 1} de ${totalSteps}`;
-    }
-
-    function nextStep(stepIndex) {
-      const activeCard = document.getElementById(`step-${currentStep}`);
-      const checked = activeCard.querySelector('input[type="radio"]:checked');
-
-      if (!checked) {
-        alert("Seleccione una opción para continuar.");
+    function nextStep(step) {
+      if (!selectedValues[`p${currentStep}`]) {
+        alert("Por favor elige una opción.");
         return;
       }
-
-      activeCard.classList.remove('active');
-      currentStep = stepIndex;
+      document.getElementById(`step-${currentStep}`).classList.remove('active');
+      currentStep = step;
       document.getElementById(`step-${currentStep}`).classList.add('active');
-      updateProgress();
     }
 
-    function calcular() {
-      const activeCard = document.getElementById(`step-${currentStep}`);
-      if (!activeCard.querySelector('input[type="radio"]:checked')) {
-        alert("Seleccione una opción para finalizar.");
+    function generarResultado() {
+      if (!selectedValues[`p${currentStep}`]) {
+        alert("Por favor elige una opción.");
         return;
       }
 
-      let scores = {
-        Liderazgo: 25,
-        Analítico: 25,
-        Adaptabilidad: 25,
-        Ejecución: 25,
-        Innovación: 25,
-        Equipo: 25
+      // Base de cálculo (sobre 24 puntos al estilo de la imagen)
+      let stats = {
+        Físico: 10,
+        Mente: 10,
+        Respuesta: 10,
+        Equipo: 10,
+        Comunicación: 10,
+        Expresión: 10
       };
 
-      const formData = new FormData(document.getElementById('evalForm'));
-      for (let val of formData.values()) {
-        if (val === 'liderazgo') scores.Liderazgo += 35;
-        if (val === 'analitico') scores.Analítico += 35;
-        if (val === 'adaptabilidad') scores.Adaptabilidad += 35;
-        if (val === 'ejecucion') scores.Ejecución += 35;
-        if (val === 'innovacion') scores.Innovación += 35;
-        if (val === 'equipo') scores.Equipo += 35;
-      }
-
-      document.getElementById('evalForm').style.display = 'none';
-      document.getElementById('progress-box').style.display = 'none';
-      document.getElementById('result-screen').style.display = 'block';
-
-      // Definir nombre de perfil
-      let maxKey = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-      const profiles = {
-        Liderazgo: "Líder Estratégico",
-        Analítico: "Analista de Negocio & Datos",
-        Adaptabilidad: "Gestor de Cambio & Agilidad",
-        Ejecución: "Director de Operaciones",
-        Innovación: "Impulsor de Innovación",
-        Equipo: "Facilitador & Liderazgo de Personas"
-      };
-      document.getElementById('profile-name').innerText = profiles[maxKey];
-
-      // Desglose de Stats en Grid
-      const grid = document.getElementById('stats-summary');
-      grid.innerHTML = '';
-      Object.keys(scores).forEach(k => {
-        grid.innerHTML += `
-          <div class="stat-item">
-            <div class="stat-name">${k}</div>
-            <div class="stat-val">${scores[k]}%</div>
-          </div>
-        `;
+      Object.values(selectedValues).forEach(val => {
+        if (val === 'fisico') stats.Físico += 7;
+        if (val === 'mente') stats.Mente += 7;
+        if (val === 'respuesta') stats.Respuesta += 7;
+        if (val === 'equipo') stats.Equipo += 7;
+        if (val === 'comunicacion') stats.Comunicación += 7;
+        if (val === 'expresion') stats.Expresión += 7;
       });
 
-      // Render de Chart.js con estilo limpio corporativo
+      // Insertar datos personales
+      document.getElementById('res-nombre').innerText = document.getElementById('input-nombre').value || 'Usuario';
+      document.getElementById('res-ubicacion').innerText = document.getElementById('input-ubicacion').value || 'Sin especificar';
+      document.getElementById('res-lema').innerText = document.getElementById('input-lema').value || '-';
+
+      // Ocultar formulario, mostrar resultado
+      document.getElementById(`step-${currentStep}`).classList.remove('active');
+      document.getElementById('resultado-screen').style.display = 'block';
+
+      // Render de Chart.js idéntico a la imagen (Azul claro pastel con puntos)
       const ctx = document.getElementById('radarChart').getContext('2d');
-      new Chart(ctx, {
+      chartInstance = new Chart(ctx, {
         type: 'radar',
         data: {
-          labels: ['Liderazgo', 'Analítico', 'Adaptabilidad', 'Ejecución', 'Innovación', 'Equipo'],
+          labels: [
+            `Físico\n${stats.Físico}/24`,
+            `Mente\n${stats.Mente}/24`,
+            `Expresión\n${stats.Expresión}/24`,
+            `Comunicación\n${stats.Comunicación}/24`,
+            `Equipo\n${stats.Equipo}/24`,
+            `Respuesta\n${stats.Respuesta}/24`
+          ],
           datasets: [{
-            label: 'Puntuación (%)',
-            data: [scores.Liderazgo, scores.Analítico, scores.Adaptabilidad, scores.Ejecución, scores.Innovación, scores.Equipo],
-            backgroundColor: 'rgba(56, 189, 248, 0.18)',
-            borderColor: '#38bdf8',
+            data: [stats.Físico, stats.Mente, stats.Expresión, stats.Comunicación, stats.Equipo, stats.Respuesta],
+            backgroundColor: 'rgba(77, 124, 254, 0.25)',
+            borderColor: '#4d7cfe',
             borderWidth: 2,
-            pointBackgroundColor: '#38bdf8',
-            pointBorderColor: '#0f172a',
+            pointBackgroundColor: '#4d7cfe',
             pointRadius: 4
           }]
         },
@@ -526,15 +452,15 @@
           plugins: { legend: { display: false } },
           scales: {
             r: {
-              angleLines: { color: '#334155' },
-              grid: { color: '#1e293b' },
+              angleLines: { color: '#e2e8f0' },
+              grid: { color: '#f1f5f9' },
               pointLabels: {
-                color: '#94a3b8',
-                font: { family: 'Inter', size: 11, weight: '500' }
+                color: '#475569',
+                font: { family: 'Plus Jakarta Sans', size: 10, weight: '600' }
               },
               ticks: { display: false },
               suggestedMin: 0,
-              suggestedMax: 100
+              suggestedMax: 24
             }
           }
         }
@@ -542,15 +468,7 @@
     }
 
     function reiniciar() {
-      currentStep = 0;
-      document.getElementById('evalForm').reset();
-      document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
-      document.querySelectorAll('.step-card').forEach((sc, i) => {
-        if (i === 0) sc.classList.add('active');
-        else sc.classList.remove('active');
-      });
-      document.getElementById('result-screen').style.display = 'none';
-      document.getElementById('start-screen').style.display = 'block';
+      location.reload();
     }
   </script>
 </body>
