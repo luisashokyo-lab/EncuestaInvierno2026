@@ -3,54 +3,454 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test de Stats RPG</title>
-  <!-- Cargamos la librería gráfica Chart.js desde CDN -->
+  <title>¡TU PERSONAJE RPG!</title>
+  <!-- Tipografía medieval y de fantasía desde Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Marcellus&display=swap" rel="stylesheet">
+  <!-- Librería gráfica Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background-color: #121212; color: #fff; max-width: 600px; margin: auto; }
-    .pregunta { margin-bottom: 20px; background: #1e1e1e; padding: 15px; border-radius: 8px; }
-    button { background-color: #bb86fc; color: #000; padding: 12px 20px; border: none; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; }
-    #resultado { margin-top: 30px; display: none; }
+    /* Estilos generales con estética de fantasía RPG */
+    :root {
+      --gold: #dfb15b;
+      --gold-dark: #8c6a24;
+      --gold-glow: rgba(223, 177, 91, 0.4);
+      --bg-dark: #0f0d0a;
+      --card-bg: rgba(26, 22, 16, 0.9);
+      --text-color: #e6dfd3;
+      --accent: #ff6a00;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Marcellus', serif;
+      background-color: var(--bg-dark);
+      background-image: radial-gradient(circle, #1a130b 0%, #080604 100%);
+      color: var(--text-color);
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      background: var(--card-bg);
+      border: 3px double var(--gold);
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8), inset 0 0 15px rgba(223, 177, 91, 0.15);
+      padding: 25px 20px;
+      margin-top: 10px;
+      position: relative;
+    }
+
+    /* Marcos decorativos en esquinas */
+    .container::before, .container::after {
+      content: '✥';
+      position: absolute;
+      color: var(--gold);
+      font-size: 18px;
+    }
+    .container::before { top: 8px; left: 10px; }
+    .container::after { top: 8px; right: 10px; }
+
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+      border-bottom: 1px solid var(--gold-dark);
+      padding-bottom: 15px;
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 8px rgba(223, 177, 91, 0.4);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #9c8e76;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 5px;
+    }
+
+    /* Pantalla de introducción */
+    #start-screen {
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    p.intro-text {
+      color: #bfa881;
+      line-height: 1.6;
+      margin-bottom: 25px;
+      font-size: 1.05rem;
+    }
+
+    /* Caja de cada pregunta */
+    .pregunta-card {
+      display: none; /* Las mostramos una a una mediante JS */
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+
+    .pregunta-card.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .progreso {
+      font-size: 0.8rem;
+      color: var(--gold);
+      text-align: center;
+      margin-bottom: 15px;
+      letter-spacing: 1px;
+    }
+
+    .pregunta-titulo {
+      font-size: 1.15rem;
+      margin-bottom: 20px;
+      color: #fff;
+      line-height: 1.4;
+      text-align: center;
+      border-bottom: 1px dashed rgba(223, 177, 91, 0.2);
+      padding-bottom: 12px;
+    }
+
+    /* Opciones interactivas con look de RPG */
+    .opcion {
+      background: rgba(40, 32, 22, 0.6);
+      border: 1px solid #4a3b25;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .opcion:hover {
+      background: rgba(89, 70, 44, 0.4);
+      border-color: var(--gold);
+      box-shadow: 0 0 8px var(--gold-glow);
+    }
+
+    .opcion.selected {
+      background: rgba(140, 106, 36, 0.25);
+      border: 2px solid var(--gold);
+      box-shadow: 0 0 12px var(--gold-glow);
+    }
+
+    /* Ocultamos el checkbox/radio por defecto */
+    .opcion input[type="radio"] {
+      display: none;
+    }
+
+    .opcion-texto {
+      font-size: 1rem;
+      color: var(--text-color);
+    }
+
+    .opcion.selected .opcion-texto {
+      color: #fff;
+      font-weight: bold;
+    }
+
+    /* Botones RPG con efectos dorados */
+    .btn {
+      display: block;
+      width: 100%;
+      background: linear-gradient(135deg, #a37937 0%, #6e4e1a 100%);
+      color: #fff;
+      border: 1px solid var(--gold);
+      border-radius: 6px;
+      padding: 14px;
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      text-shadow: 1px 1px 2px #000;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+      transition: all 0.2s;
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, #c5974c 0%, #8c6225 100%);
+      box-shadow: 0 0 12px var(--gold-glow);
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    /* Pantalla de resultados */
+    #resultado {
+      display: none;
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    .rol-desc {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .rol-clase {
+      font-family: 'Cinzel', serif;
+      font-size: 1.6rem;
+      color: var(--gold);
+      text-shadow: 0 0 10px rgba(223, 177, 91, 0.4);
+      margin-top: 5px;
+    }
+
+    .canvas-container {
+      position: relative;
+      margin: 15px auto;
+      max-width: 320px;
+    }
+
+    /* Pie de página con "Runas" y decoración */
+    .decor-bottom {
+      text-align: center;
+      color: var(--gold-dark);
+      font-size: 12px;
+      letter-spacing: 4px;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
 
-  <h2>Cuestionario de Atributos RPG</h2>
+  <div class="container">
+    <header>
+      <h1>¡TU PERSONAJE RPG!</h1>
+      <div class="subtitle">Evaluación de Stats & Atributos</div>
+    </header>
 
-  <form id="rpgForm">
-    <!-- Pregunta 1: Afecta a Fuerza e Inteligencia -->
-    <div class="pregunta">
-      <p>1. ¿Cómo resuelves un problema difícil?</p>
-      <label><input type="radio" name="p1" value="fuerza" required> A golpes/Fuerza bruta</label><br>
-      <label><input type="radio" name="p1" value="inteligencia"> Analizando la situación</label>
+    <!-- PANTALLA INICIAL -->
+    <div id="start-screen">
+      <p class="intro-text">
+        Bienvenidos, viajeros. Responded a las siguientes preguntas con honestidad para calcular vuestras habilidades y descubrir qué clase de héroe sois en este mundo.
+      </p>
+      <button class="btn" onclick="iniciarCuestionario()">Comenzar Aventura</button>
     </div>
 
-    <!-- Pregunta 2: Afecta a Agilidad y Carisma -->
-    <div class="pregunta">
-      <p>2. En un evento social, tú...</p>
-      <label><input type="radio" name="p2" value="carisma" required> Eres el centro de atención</label><br>
-      <label><input type="radio" name="p2" value="agilidad"> Te mueves rápido para pasar desapercibido</label>
+    <form id="rpgForm" style="display: none;">
+      
+      <!-- PREGUNTA 1: Fuerza vs Agilidad -->
+      <div class="pregunta-card active" id="p-card-0">
+        <div class="progreso">Atributo I de VI</div>
+        <div class="pregunta-titulo">¿Cómo prefieres abrirte paso ante un bloqueo pesado?</div>
+        
+        <div class="opcion" onclick="seleccionarOpcion(this, 'fuerza')">
+          <input type="radio" name="p1" value="fuerza" required>
+          <div class="opcion-texto">Uso la fuerza física de impacto para derribarlo.</div>
+        </div>
+        <div class="opcion" onclick="seleccionarOpcion(this, 'agilidad')">
+          <input type="radio" name="p1" value="agilidad">
+          <div class="opcion-texto">Busco un resquicio y me deslizo velozmente por él.</div>
+        </div>
+        
+        <div class="btn-container">
+          <button type="button" class="btn" onclick="cambiarPregunta(1)">Siguiente ⚔</button>
+        </div>
+      </div>
+
+      <!-- PREGUNTA 2: Inteligencia vs Carisma -->
+      <div class="pregunta-card" id="p-card-1">
+        <div class="progreso">Atributo II de VI</div>
+        <div class="pregunta-titulo">Cuando entras en un conflicto inesperado...</div>
+        
+        <div class="opcion" onclick="seleccionarOpcion(this, 'inteligencia')">
+          <input type="radio" name="p2" value="inteligencia" required>
+          <div class="opcion-texto">Analizo las debilidades y planeo una estrategia lógica.</div>
+        </div>
+        <div class="opcion" onclick="seleccionarOpcion(this, 'carisma')">
+          <input type="radio" name="p2" value="carisma">
+          <div class="opcion-texto">Utilizo la diplomacia y el diálogo para convencerlos.</div>
+        </div>
+        
+        <div class="btn-container">
+          <button type="button" class="btn" onclick="cambiarPregunta(2)">Siguiente ⚔</button>
+        </div>
+      </div>
+
+      <!-- PREGUNTA 3: Resistencia vs Suerte -->
+      <div class="pregunta-card" id="p-card-2">
+        <div class="progreso">Atributo III de VI</div>
+        <div class="pregunta-titulo">Frente a una gran tormenta o un castigo del entorno...</div>
+        
+        <div class="opcion" onclick="seleccionarOpcion(this, 'resistencia')">
+          <input type="radio" name="p3" value="resistencia" required>
+          <div class="opcion-texto">Apreto los dientes y aguanto el castigo físico con paciencia.</div>
+        </div>
+        <div class="opcion" onclick="seleccionarOpcion(this, 'suerte')">
+          <input type="radio" name="p3" value="suerte">
+          <div class="opcion-texto">Confío en el azar y en que la fortuna me sacará libre de daño.</div>
+        </div>
+        
+        <div class="btn-container">
+          <button type="button" class="btn" onclick="cambiarPregunta(3)">Siguiente ⚔</button>
+        </div>
+      </div>
+
+      <!-- PREGUNTA 4: Inteligencia vs Agilidad -->
+      <div class="pregunta-card" id="p-card-3">
+        <div class="progreso">Atributo IV de VI</div>
+        <div class="pregunta-titulo">¿Cuál es tu método predilecto para explorar una mazmorra oscura?</div>
+        
+        <div class="opcion" onclick="seleccionarOpcion(this, 'inteligencia')">
+          <input type="radio" name="p4" value="inteligencia" required>
+          <div class="opcion-texto">Dibujar un mapa detallado y buscar patrones e historia antigua.</div>
+        </div>
+        <div class="opcion" onclick="seleccionarOpcion(this, 'agilidad')">
+          <input type="radio" name="p4" value="agilidad">
+          <div class="opcion-texto">Avanzar en el más absoluto silencio y detectar trampas con rapidez.</div>
+        </div>
+        
+        <div class="btn-container">
+          <button type="button" class="btn" onclick="cambiarPregunta(4)">Siguiente ⚔</button>
+        </div>
+      </div>
+
+      <!-- PREGUNTA 5: Carisma vs Fuerza -->
+      <div class="pregunta-card" id="p-card-4">
+        <div class="progreso">Atributo V de VI</div>
+        <div class="pregunta-titulo">En una escuadra o grupo, ¿cuál consideras que es tu rol?</div>
+        
+        <div class="opcion" onclick="seleccionarOpcion(this, 'carisma')">
+          <input type="radio" name="p5" value="carisma" required>
+          <div class="opcion-texto">Inspirar y liderar a los compañeros con la palabra.</div>
+        </div>
+        <div class="opcion" onclick="seleccionarOpcion(this, 'fuerza')">
+          <input type="radio" name="p5" value="fuerza">
+          <div class="opcion-texto">Ser el escudo, defenderlos y plantar cara a los peligros.</div>
+        </div>
+        
+        <div class="btn-container">
+          <button type="button" class="btn" onclick="cambiarPregunta(5)">Siguiente ⚔</button>
+        </div>
+      </div>
+
+      <!-- PREGUNTA 6: Suerte vs Resistencia -->
+      <div class="pregunta-card" id="p-card-5">
+        <div class="progreso">Atributo VI de VI</div>
+        <div class="pregunta-titulo">Si te topas con un misterioso cofre cubierto de polvo...</div>
+        
+        <div class="opcion" onclick="seleccionarOpcion(this, 'suerte')">
+          <input type="radio" name="p6" value="suerte" required>
+          <div class="opcion-texto">Lo abro de inmediato confiando en recibir una buena sorpresa.</div>
+        </div>
+        <div class="opcion" onclick="seleccionarOpcion(this, 'resistencia')">
+          <input type="radio" name="p6" value="resistencia">
+          <div class="opcion-texto">Lo analizo y me preparo para aguantar cualquier trampa en caso de fallo.</div>
+        </div>
+        
+        <div class="btn-container">
+          <button type="button" class="btn" onclick="calcularResultados()">Revelar Mi Destino ✧</button>
+        </div>
+      </div>
+
+    </form>
+
+    <!-- PANTALLA DE RESULTADOS -->
+    <div id="resultado">
+      <div class="rol-desc">
+        <div class="subtitle">Has completado la prueba, eres un</div>
+        <div class="rol-clase" id="clan-result">HÉROE AVENTURERO</div>
+        <div class="subtitle">Nivel 1</div>
+      </div>
+
+      <div class="canvas-container">
+        <canvas id="rpgChart"></canvas>
+      </div>
+
+      <button class="btn" onclick="reiniciarAventura()" style="margin-top: 15px;">Intentar de Nuevo ↺</button>
     </div>
 
-    <!-- Pregunta 3: Afecta a Resistencia y Suerte -->
-    <div class="pregunta">
-      <p>3. Ante un peligro inminente...</p>
-      <label><input type="radio" name="p3" value="resistencia" required> Aguantas el impacto</label><br>
-      <label><input type="radio" name="p3" value="suerte"> Confías en que saldrás ileso de milagro</label>
-    </div>
-
-    <button type="button" onclick="calcularResultados()">Ver Mi Hexágono RPG</button>
-  </form>
-
-  <!-- Contenedor del Gráfico Radar -->
-  <div id="resultado">
-    <h3>Tus Estadísticas de Personaje</h3>
-    <canvas id="rpgChart"></canvas>
+    <div class="decor-bottom">✥ ⚜ ✥</div>
   </div>
 
   <script>
+    let currentQuestion = 0;
+
+    function iniciarCuestionario() {
+      document.getElementById('start-screen').style.display = 'none';
+      document.getElementById('rpgForm').style.display = 'block';
+    }
+
+    // Marca visualmente la opción elegida y marca el input radio real oculto
+    function seleccionarOpcion(element, value) {
+      // Remover selección del resto de opciones de la pregunta activa
+      const activeCard = document.querySelector('.pregunta-card.active');
+      activeCard.querySelectorAll('.opcion').forEach(op => {
+        op.classList.remove('selected');
+      });
+
+      // Añadir la clase selected
+      element.classList.add('selected');
+
+      // Activar el input de tipo radio que está adentro
+      const input = element.querySelector('input[type="radio"]');
+      input.checked = true;
+    }
+
+    function cambiarPregunta(nextIndex) {
+      const activeCard = document.getElementById(`p-card-${currentQuestion}`);
+      const inputs = activeCard.querySelectorAll('input[type="radio"]');
+      let contestada = false;
+
+      // Verificar que se haya seleccionado algo antes de continuar
+      inputs.forEach(input => {
+        if (input.checked) contestada = true;
+      });
+
+      if (!contestada) {
+        alert("¡Por favor, elige tu camino antes de continuar!");
+        return;
+      }
+
+      // Pasar a la siguiente
+      activeCard.classList.remove('active');
+      currentQuestion = nextIndex;
+      const nextCard = document.getElementById(`p-card-${currentQuestion}`);
+      nextCard.classList.add('active');
+    }
+
     function calcularResultados() {
-      // 1. Inicializar los 6 atributos
+      // Verificar última pregunta
+      const activeCard = document.getElementById(`p-card-${currentQuestion}`);
+      const inputs = activeCard.querySelectorAll('input[type="radio"]');
+      let contestada = false;
+      inputs.forEach(input => { if (input.checked) contestada = true; });
+
+      if (!contestada) {
+        alert("¡Por favor, elige tu camino antes de continuar!");
+        return;
+      }
+
+      // Base inicial de estadísticas
       let stats = {
         Fuerza: 20,
         Agilidad: 20,
@@ -60,49 +460,102 @@
         Suerte: 20
       };
 
-      // 2. Leer las respuestas del formulario
       const form = document.getElementById('rpgForm');
       const formData = new FormData(form);
 
+      // Sumamos puntos basándonos en respuestas
       for (let value of formData.values()) {
-        if (value === 'fuerza') stats.Fuerza += 30;
-        if (value === 'inteligencia') stats.Inteligencia += 30;
-        if (value === 'carisma') stats.Carisma += 30;
-        if (value === 'agilidad') stats.Agilidad += 30;
-        if (value === 'resistencia') stats.Resistencia += 30;
-        if (value === 'suerte') stats.Suerte += 30;
+        if (value === 'fuerza') stats.Fuerza += 35;
+        if (value === 'agilidad') stats.Agilidad += 35;
+        if (value === 'inteligencia') stats.Inteligencia += 35;
+        if (value === 'resistencia') stats.Resistencia += 35;
+        if (value === 'carisma') stats.Carisma += 35;
+        if (value === 'suerte') stats.Suerte += 35;
       }
 
-      // 3. Mostrar la sección de resultados
+      // Ocultar formulario y mostrar la pantalla final de resultados
+      document.getElementById('rpgForm').style.display = 'none';
       document.getElementById('resultado').style.display = 'block';
 
-      // 4. Renderizar el gráfico de hexágono usando Chart.js
+      // Dinámica de asignar una clase divertida/Rol de personaje según la puntuación dominante
+      let maxStat = Object.keys(stats).reduce((a, b) => stats[a] > stats[b] ? a : b);
+      let clase = "AVENTURERO SOLITARIO";
+      
+      if (maxStat === "Fuerza") clase = "Guerrero Feroz ⚔";
+      else if (maxStat === "Agilidad") clase = "Pícaro de las Sombras 🏹";
+      else if (maxStat === "Inteligencia") clase = "Mago Erudito 🔮";
+      else if (maxStat === "Resistencia") clase = "Paladín del Bastión 🛡";
+      else if (maxStat === "Carisma") clase = "Bardo Legendario 🎤";
+      else if (maxStat === "Suerte") clase = "Afortunado del Azar 🎲";
+
+      document.getElementById('clan-result').innerText = clase.toUpperCase();
+
+      // Renderizar el gráfico Hexagonal con un acabado de diseño fantástico
       const ctx = document.getElementById('rpgChart').getContext('2d');
       new Chart(ctx, {
         type: 'radar',
         data: {
-          labels: ['Fuerza', 'Agilidad', 'Inteligencia', 'Resistencia', 'Carisma', 'Suerte'],
+          labels: ['FUERZA', 'AGILIDAD', 'INTELIGENCIA', 'RESISTENCIA', 'CARISMA', 'SUERTE'],
           datasets: [{
-            label: 'Atributos RPG',
+            label: 'ATRIBUTOS RPG',
             data: [stats.Fuerza, stats.Agilidad, stats.Inteligencia, stats.Resistencia, stats.Carisma, stats.Suerte],
-            backgroundColor: 'rgba(187, 134, 252, 0.4)',
-            borderColor: '#bb86fc',
+            // Color de relleno (ámbar/oro translúcido)
+            backgroundColor: 'rgba(223, 177, 91, 0.25)',
+            // Color de línea (dorado vivo)
+            borderColor: '#dfb15b',
             borderWidth: 2,
-            pointBackgroundColor: '#bb86fc'
+            pointBackgroundColor: '#ff6a00',
+            pointBorderColor: '#dfb15b',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: '#ff6a00',
+            pointRadius: 4
           }]
         },
         options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { display: false } // Ocultamos la etiqueta molesta de arriba
+          },
           scales: {
             r: {
-              angleLines: { color: '#444' },
-              grid: { color: '#333' },
-              pointLabels: { color: '#fff', font: { size: 14 } },
-              suggestedMin: 0,
+              angleLines: { color: 'rgba(223, 177, 91, 0.2)' },
+              grid: { color: 'rgba(223, 177, 91, 0.15)' },
+              pointLabels: {
+                color: '#e3d2be',
+                font: {
+                  family: 'Cinzel',
+                  size: 11,
+                  weight: 'bold'
+                }
+              },
+              ticks: { display: false }, // Oculta los números internos
+              suggestedMin: 15,
               suggestedMax: 100
             }
           }
         }
       });
+    }
+
+    function reiniciarAventura() {
+      // Resetea el estado
+      currentQuestion = 0;
+      document.getElementById('rpgForm').reset();
+      
+      // Remueve la clase "selected" visual de todos lados
+      document.querySelectorAll('.opcion').forEach(op => {
+        op.classList.remove('selected');
+      });
+
+      // Oculta cartas, regresa a pantalla uno
+      document.querySelectorAll('.pregunta-card').forEach((card, idx) => {
+        if (idx === 0) card.classList.add('active');
+        else card.classList.remove('active');
+      });
+
+      document.getElementById('resultado').style.display = 'none';
+      document.getElementById('start-screen').style.display = 'block';
     }
   </script>
 </body>
