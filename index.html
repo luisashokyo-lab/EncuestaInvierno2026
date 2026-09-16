@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test de Stats RPG</title>
+  <!-- Cargamos la librería gráfica Chart.js desde CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background-color: #121212; color: #fff; max-width: 600px; margin: auto; }
+    .pregunta { margin-bottom: 20px; background: #1e1e1e; padding: 15px; border-radius: 8px; }
+    button { background-color: #bb86fc; color: #000; padding: 12px 20px; border: none; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; }
+    #resultado { margin-top: 30px; display: none; }
+  </style>
+</head>
+<body>
+
+  <h2>Cuestionario de Atributos RPG</h2>
+
+  <form id="rpgForm">
+    <!-- Pregunta 1: Afecta a Fuerza e Inteligencia -->
+    <div class="pregunta">
+      <p>1. ¿Cómo resuelves un problema difícil?</p>
+      <label><input type="radio" name="p1" value="fuerza" required> A golpes/Fuerza bruta</label><br>
+      <label><input type="radio" name="p1" value="inteligencia"> Analizando la situación</label>
+    </div>
+
+    <!-- Pregunta 2: Afecta a Agilidad y Carisma -->
+    <div class="pregunta">
+      <p>2. En un evento social, tú...</p>
+      <label><input type="radio" name="p2" value="carisma" required> Eres el centro de atención</label><br>
+      <label><input type="radio" name="p2" value="agilidad"> Te mueves rápido para pasar desapercibido</label>
+    </div>
+
+    <!-- Pregunta 3: Afecta a Resistencia y Suerte -->
+    <div class="pregunta">
+      <p>3. Ante un peligro inminente...</p>
+      <label><input type="radio" name="p3" value="resistencia" required> Aguantas el impacto</label><br>
+      <label><input type="radio" name="p3" value="suerte"> Confías en que saldrás ileso de milagro</label>
+    </div>
+
+    <button type="button" onclick="calcularResultados()">Ver Mi Hexágono RPG</button>
+  </form>
+
+  <!-- Contenedor del Gráfico Radar -->
+  <div id="resultado">
+    <h3>Tus Estadísticas de Personaje</h3>
+    <canvas id="rpgChart"></canvas>
+  </div>
+
+  <script>
+    function calcularResultados() {
+      // 1. Inicializar los 6 atributos
+      let stats = {
+        Fuerza: 20,
+        Agilidad: 20,
+        Inteligencia: 20,
+        Resistencia: 20,
+        Carisma: 20,
+        Suerte: 20
+      };
+
+      // 2. Leer las respuestas del formulario
+      const form = document.getElementById('rpgForm');
+      const formData = new FormData(form);
+
+      for (let value of formData.values()) {
+        if (value === 'fuerza') stats.Fuerza += 30;
+        if (value === 'inteligencia') stats.Inteligencia += 30;
+        if (value === 'carisma') stats.Carisma += 30;
+        if (value === 'agilidad') stats.Agilidad += 30;
+        if (value === 'resistencia') stats.Resistencia += 30;
+        if (value === 'suerte') stats.Suerte += 30;
+      }
+
+      // 3. Mostrar la sección de resultados
+      document.getElementById('resultado').style.display = 'block';
+
+      // 4. Renderizar el gráfico de hexágono usando Chart.js
+      const ctx = document.getElementById('rpgChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['Fuerza', 'Agilidad', 'Inteligencia', 'Resistencia', 'Carisma', 'Suerte'],
+          datasets: [{
+            label: 'Atributos RPG',
+            data: [stats.Fuerza, stats.Agilidad, stats.Inteligencia, stats.Resistencia, stats.Carisma, stats.Suerte],
+            backgroundColor: 'rgba(187, 134, 252, 0.4)',
+            borderColor: '#bb86fc',
+            borderWidth: 2,
+            pointBackgroundColor: '#bb86fc'
+          }]
+        },
+        options: {
+          scales: {
+            r: {
+              angleLines: { color: '#444' },
+              grid: { color: '#333' },
+              pointLabels: { color: '#fff', font: { size: 14 } },
+              suggestedMin: 0,
+              suggestedMax: 100
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
