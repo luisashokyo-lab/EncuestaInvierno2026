@@ -471,7 +471,7 @@
 
         userData = {
           nombre: document.getElementById('input-nombre').value || 'Alex',
-          lema: document.getElementById('input-lema').value || '-',
+          // ELIMINA ESTA LÍNEA: lema: document.getElementById('input-lema').value || '-',
           iglesia: userInfo.iglesia,
           edad: userInfo.edad
         };
@@ -485,7 +485,6 @@
 
       // Rellenar Ficha
       document.getElementById('res-nombre').innerText = userData.nombre;
-      document.getElementById('res-lema').innerText = userData.lema;
       document.getElementById('res-iglesia').innerText = userData.iglesia[currentLang] || '-';
       document.getElementById('res-edad').innerText = userData.edad[currentLang] || '-';
 
