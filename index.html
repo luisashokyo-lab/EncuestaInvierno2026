@@ -451,30 +451,51 @@
       }
     }
 
-    function generarResultado() {
-      // Sumar puntuaciones
-      let scores = { fis: 0, int: 0, exp: 0, com: 0, col: 0, ada: 0 };
+    function generarResultado(datosGuardados = null) {
+      let scores;
+      let userData;
 
-      Object.values(selectedAnswers).forEach(s => {
-        if (s.fis) scores.fis += s.fis;
-        if (s.int) scores.int += s.int;
-        if (s.exp) scores.exp += s.exp;
-        if (s.com) scores.com += s.com;
-        if (s.col) scores.col += s.col;
-        if (s.ada) scores.ada += s.ada;
-      });
+      // Si venimos de localStorage, cargamos los datos guardados
+      if (datosGuardados) {
+        scores = datosGuardados.scores;
+        userData = datosGuardados.userData;
+      } else {
+        // Si es la primera vez que hace el test, calculamos
+        scores = { fis: 0, int: 0, exp: 0, com: 0, col: 0, ada: 0 };
+        Object.values(selectedAnswers).forEach(s => {
+          if (s.fis) scores.fis += s.fis;
+          if (s.int) scores.int += s.int;
+          if (s.exp) scores.exp += s.exp;
+          if (s.com) scores.com += s.com;
+          if (s.col) scores.col += s.col;
+          if (s.ada) scores.ada += s.ada;
+        });
 
-      // Límite de 24 puntos
-      Object.keys(scores).forEach(k => {
-        if (scores[k] > 24) scores[k] = 24;
-      });
+        Object.keys(scores).forEach(k => {
+          if (scores[k] > 24) scores[k] = 24;
+        });
 
-      // Rellenar Ficha de datos personales
-      document.getElementById('res-nombre').innerText = document.getElementById('input-nombre').value || 'Alex';
-      document.getElementById('res-lema').innerText = document.getElementById('input-lema').value || '-';
-      document.getElementById('res-iglesia').innerText = userInfo.iglesia[currentLang] || '-';
-      document.getElementById('res-edad').innerText = userInfo.edad[currentLang] || '-';
+        userData = {
+          nombre: document.getElementById('input-nombre').value || 'Alex',
+          lema: document.getElementById('input-lema').value || '-',
+          iglesia: userInfo.iglesia,
+          edad: userInfo.edad
+        };
 
+        // Guardar en el navegador para evitar repeticiones
+        localStorage.setItem('userQuizStats', JSON.stringify({
+          scores: scores,
+          userData: userData
+        }));
+      }
+
+      // Rellenar Ficha
+      document.getElementById('res-nombre').innerText = userData.nombre;
+      document.getElementById('res-lema').innerText = userData.lema;
+      document.getElementById('res-iglesia').innerText = userData.iglesia[currentLang] || '-';
+      document.getElementById('res-edad').innerText = userData.edad[currentLang] || '-';
+
+      // Lógica de la imagen: 每4分为一档 (1 nivel cada 4 puntos)
       const getLevel = val => Math.min(6, Math.floor(val / 4) + 1);
 
       const statsMap = [
@@ -499,6 +520,8 @@
         `;
       });
 
+      // Ocultar paso actual y mostrar resultados
+      document.querySelectorAll('.step-card').forEach(el => el.classList.remove('active'));
       document.getElementById('resultado-screen').style.display = 'block';
 
       // Gráfico Radar
@@ -536,12 +559,21 @@
       });
     }
 
-    function reiniciar() {
-      location.reload();
+    // LÓGICA DE INICIALIZACIÓN Y BLOQUEO DE REPETICIÓN
+    function initApp() {
+      const savedData = localStorage.getItem('userQuizStats');
+      if (savedData) {
+        // Si ya hay datos, saltar directamente a la pantalla de resultados
+        generarResultado(JSON.parse(savedData));
+      } else {
+        // Si no hay datos, mostrar el test normal
+        renderQuestions();
+      }
     }
 
-    // Inicializar preguntas
-    renderQuestions();
+    // Reemplaza la llamada final a renderQuestions() por initApp()
+    initApp();
+
   </script>
 </body>
 </html>
