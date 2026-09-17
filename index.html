@@ -79,6 +79,16 @@
       border-radius: 12px; font-family: inherit; font-size: 0.95rem; outline: none; background: #fff;
     }
 
+    .sexo-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .sexo-btn {
+      background: #f8fafc; border: 1.5px solid var(--border-color); border-radius: 14px;
+      padding: 14px 16px; cursor: pointer; text-align: center; font-size: 0.95rem;
+      font-weight: 600; transition: all 0.2s;
+    }
+    .sexo-btn:hover { border-color: #cbd5e1; background: #f1f5f9; }
+    .sexo-btn.selected { border-color: var(--accent-blue); background: var(--accent-light); color: var(--accent-blue); }
+    .input-helper { font-size: 0.78rem; color: var(--text-muted); margin-top: 6px; line-height: 1.45; }
+
     .opcion-btn {
       background: #f8fafc; border: 1.5px solid var(--border-color); border-radius: 14px;
       padding: 14px 16px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center;
@@ -182,10 +192,10 @@
     let currentLang = 'es'; // 'es' o 'zh'
     let currentStep = 0;
     let selectedAnswers = {};
-    let userInfo = { iglesia: {es: '', zh: ''}, edad: {es: '', zh: ''} };
+    let userInfo = { sexo: {es: '', zh: ''}, iglesia: {es: '', zh: ''}, edad: {es: '', zh: ''}, habilidad: '' };
     let chartInstance = null;
 
-    // BANCO DE PREGUNTAS (Q1 a Q16)
+    // BANCO DE PREGUNTAS (Q1 a Q17)
     const questions = [
       {
         id: 1,
@@ -351,6 +361,16 @@
           { label: { zh: "C. 先和大家讨论下,有了大概方向就知道怎么做了", es: "C. Discuto la idea con el grupo y me pongo a trabajar." }, scores: { ada: 6, com: 2, col: 3 } },
           { label: { zh: "D. 需要有人先给我具体方向,完全空白比较难开始", es: "D. Necesito una guía clara; de la nada me cuesta empezar." }, scores: { col: 2, ada: 1 } }
         ]
+      },
+      {
+        id: 17,
+        field: 'habilidad',
+        inputType: 'text',
+        title: { zh: "Q17. 你擅长什么？", es: "Q17. ¿Qué se te da bien?" },
+        placeholder: {
+          zh: "例如：足球、篮球、乐器、摄影、绘画、表演、舞蹈、剪辑、沟通、策划……",
+          es: "Ej: Fútbol, baloncesto, tocar un instrumento, fotografía, dibujo, actuación, baile, edición, comunicación, planificación..."
+        }
       }
     ];
 
@@ -366,13 +386,31 @@
             <p class="subtitle">${stepNum} / ${questions.length}</p>
         `;
 
-        q.options.forEach((opt, oIdx) => {
+        if (q.inputType === 'text') {
           html += `
-            <div class="opcion-btn" onclick="selectOpt(this, ${stepNum}, ${oIdx})">
-              <span data-zh="${opt.label.zh}" data-es="${opt.label.es}">${opt.label[currentLang]}</span>
+            <div class="form-group">
+              <input
+                type="text"
+                id="input-${q.field}"
+                class="input-field"
+                placeholder="${q.placeholder[currentLang]}"
+                data-placeholder-zh="${q.placeholder.zh}"
+                data-placeholder-es="${q.placeholder.es}"
+                maxlength="200"
+                required
+              >
+              <div class="input-helper" data-zh="可以写一个或多个，例如：足球、摄影、沟通、策划……" data-es="Puedes escribir una o varias, por ejemplo: fútbol, fotografía, comunicación, planificación...">${currentLang === 'es' ? 'Puedes escribir una o varias, por ejemplo: fútbol, fotografía, comunicación, planificación...' : '可以写一个或多个，例如：足球、摄影、沟通、策划……'}</div>
             </div>
           `;
-        });
+        } else {
+          q.options.forEach((opt, oIdx) => {
+            html += `
+              <div class="opcion-btn" onclick="selectOpt(this, ${stepNum}, ${oIdx})">
+                <span data-zh="${opt.label.zh}" data-es="${opt.label.es}">${opt.label[currentLang]}</span>
+              </div>
+            `;
+          });
+        }
 
         const btnText = stepNum === questions.length 
           ? { zh: "生成属性卡 ✧", es: "Ver Mi Ficha ✧" } 
@@ -393,17 +431,52 @@
       document.querySelectorAll('[data-zh]').forEach(el => {
         el.innerText = el.getAttribute(`data-${currentLang}`);
       });
+
+      document.querySelectorAll('[data-placeholder-zh]').forEach(el => {
+        el.placeholder = el.getAttribute(`data-placeholder-${currentLang}`);
+      });
       
-      // Actualizar el texto del resultado si ya se guardó
+      if (userInfo.sexo[currentLang]) {
+        const sexoValue = userInfo.sexo[currentLang];
+        document.getElementById('res-sexo').innerText = sexoValue;
+      }
       if (userInfo.iglesia[currentLang]) {
         document.getElementById('res-iglesia').innerText = userInfo.iglesia[currentLang];
       }
       if (userInfo.edad[currentLang]) {
         document.getElementById('res-edad').innerText = userInfo.edad[currentLang];
       }
+      if (userInfo.habilidad) {
+        document.getElementById('res-habilidad').innerText = userInfo.habilidad;
+      }
+    }
+
+    function seleccionarSexo(elem, sexo) {
+      document.querySelectorAll('.sexo-btn').forEach(b => b.classList.remove('selected'));
+      elem.classList.add('selected');
+
+      const etiquetas = {
+        hombre: { es: 'Hombre', zh: '男性' },
+        mujer: { es: 'Mujer', zh: '女性' }
+      };
+
+      userInfo.sexo = etiquetas[sexo];
     }
 
     function iniciarPreguntas() {
+      const nombre = document.getElementById('input-nombre').value.trim();
+
+      if (!nombre) {
+        alert(currentLang === 'es' ? 'Por favor, introduce tu nombre.' : '请输入你的姓名。');
+        document.getElementById('input-nombre').focus();
+        return;
+      }
+
+      if (!userInfo.sexo.es) {
+        alert(currentLang === 'es' ? 'Por favor, selecciona tu sexo.' : '请选择你的性别。');
+        return;
+      }
+
       document.getElementById('step-0').classList.remove('active');
       currentStep = 1;
       document.getElementById('step-1').classList.add('active');
@@ -416,7 +489,7 @@
       
       const q = questions[step - 1];
       
-      // Si la pregunta es un campo de info (Iglesia o Edad), guardamos el texto en ambos idiomas
+      // Para preguntas informativas (Iglesia o Edad), guardamos ambos idiomas.
       if (q.field) {
         userInfo[q.field] = q.options[optIndex].label;
       } else {
@@ -426,12 +499,23 @@
 
     function nextStep(step) {
       const q = questions[step - 1];
-      // Validación diferente si es pregunta informativa o de puntuación
-      if (q.field && !userInfo[q.field].es) {
-        alert(currentLang === 'es' ? "Por favor selecciona una opción" : "请选择一个选项");
+
+      if (q.inputType === 'text') {
+        const input = document.getElementById(`input-${q.field}`);
+        const value = input ? input.value.trim() : '';
+
+        if (!value) {
+          alert(currentLang === 'es' ? 'Por favor, escribe qué se te da bien.' : '请输入你擅长的内容。');
+          if (input) input.focus();
+          return;
+        }
+
+        userInfo[q.field] = value;
+      } else if (q.field && !userInfo[q.field].es) {
+        alert(currentLang === 'es' ? 'Por favor selecciona una opción' : '请选择一个选项');
         return;
       } else if (!q.field && !selectedAnswers[step]) {
-        alert(currentLang === 'es' ? "Por favor selecciona una opción" : "请选择一个选项");
+        alert(currentLang === 'es' ? 'Por favor selecciona una opción' : '请选择一个选项');
         return;
       }
 
@@ -469,10 +553,11 @@
         });
 
         userData = {
-          nombre: document.getElementById('input-nombre').value || 'Alex',
-          // ELIMINA ESTA LÍNEA: lema: document.getElementById('input-lema').value || '-',
+          nombre: document.getElementById('input-nombre').value.trim(),
+          sexo: userInfo.sexo,
           iglesia: userInfo.iglesia,
-          edad: userInfo.edad
+          edad: userInfo.edad,
+          habilidad: userInfo.habilidad
         };
 
         // Guardar en el navegador para evitar repeticiones
@@ -483,9 +568,21 @@
       }
 
       // Rellenar Ficha
-      document.getElementById('res-nombre').innerText = userData.nombre;
-      document.getElementById('res-iglesia').innerText = userData.iglesia[currentLang] || '-';
-      document.getElementById('res-edad').innerText = userData.edad[currentLang] || '-';
+      document.getElementById('res-nombre').innerText = userData.nombre || '-';
+
+      const sexoGuardado = userData.sexo;
+      const sexoTexto = sexoGuardado && typeof sexoGuardado === 'object'
+        ? (sexoGuardado[currentLang] || sexoGuardado.es || '-')
+        : (sexoGuardado || '-');
+
+      const iglesiaGuardada = userData.iglesia || {};
+      const edadGuardada = userData.edad || {};
+      const habilidadGuardada = userData.habilidad || '-';
+
+      document.getElementById('res-sexo').innerText = sexoTexto;
+      document.getElementById('res-iglesia').innerText = iglesiaGuardada[currentLang] || iglesiaGuardada.es || '-';
+      document.getElementById('res-edad').innerText = edadGuardada[currentLang] || edadGuardada.es || '-';
+      document.getElementById('res-habilidad').innerText = habilidadGuardada;
 
       // Lógica de la imagen: 每4分为一档 (1 nivel cada 4 puntos)
       const getLevel = val => Math.min(6, Math.floor(val / 4) + 1);
