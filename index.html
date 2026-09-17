@@ -204,6 +204,14 @@
             <div class="info-item"><span class="icon">🎂</span><div><span data-zh="年龄" data-es="Edad">Edad</span>: <strong id="res-edad">22+</strong></div></div>
             <div class="info-item"><span class="icon">📍</span><div><span data-zh="教会" data-es="Iglesia">Iglesia</span>: <strong id="res-iglesia">Norte</strong></div></div>
             <div class="info-item"><span class="icon">⭐</span><div><span data-zh="擅长" data-es="Se le da bien">Se le da bien</span>: <strong id="res-habilidad">-</strong></div></div>
+            <div class="info-item">
+  <span class="icon">🎨</span>
+  <div><span data-zh="爱好" data-es="Hobbie">Hobbie</span>: <strong id="res-hobbie">-</strong></div>
+</div>
+<div class="info-item">
+  <span class="icon">💬</span>
+  <div><span data-zh="座右铭" data-es="Frase">Frase</span>: <strong id="res-frase">-</strong></div>
+</div>
           </div>
         </div>
 
@@ -434,7 +442,27 @@
           zh: "例如：足球、篮球、乐器、摄影、绘画、表演、舞蹈、剪辑、沟通、策划……",
           es: "Ej: Fútbol, baloncesto, tocar un instrumento, fotografía, dibujo, actuación, baile, edición, comunicación, planificación..."
         }
-      }
+      },
+      {
+  id: 18,
+  field: 'hobbie',
+  inputType: 'paragraph',
+  title: { zh: "Q17. 你的兴趣爱好是什么？", es: "Q18. ¿Cuál es tu hobbie?" },
+  placeholder: {
+    zh: "例如：电影、艺术、运动、音乐、阅读……",
+    es: "Cine, arte, deporte, música, lectura, etc."
+  }
+},
+{
+  id: 19,
+  field: 'frase',
+  inputType: 'paragraph',
+  title: { zh: "Q18. 用一句话形容你自己：", es: "Q19. Escribe una frase que te describa:" },
+  placeholder: {
+    zh: "例如：一个热衷于探索新事物的人……",
+    es: "Ej: Una persona entusiasta a la que le apasiona aprender cosas nuevas..."
+  }
+}
     ];
 
     function renderQuestions() {
@@ -577,35 +605,35 @@
     }
 
     function nextStep(step) {
-      const q = questions[step - 1];
+  const q = questions[step - 1];
 
-      if (q.inputType === 'paragraph' || q.inputType === 'text') {
-        const input = document.getElementById(`input-${q.field}`);
-        const value = input ? input.value.trim() : '';
+  if (q.inputType === 'paragraph' || q.inputType === 'text') {
+    const input = document.getElementById(`input-${q.field}`);
+    const value = input ? input.value.trim() : '';
 
-        if (!value) {
-          alert(currentLang === 'es' ? 'Por favor, escribe qué se te da bien.' : '请输入你擅长的内容。');
-          if (input) input.focus();
-          return;
-        }
-
-        userInfo[q.field] = value;
-      } else if (q.field && !userInfo[q.field].es) {
-        alert(currentLang === 'es' ? 'Por favor selecciona una opción' : '请选择一个选项');
-        return;
-      } else if (!q.field && !selectedAnswers[step]) {
-        alert(currentLang === 'es' ? 'Por favor selecciona una opción' : '请选择一个选项');
-        return;
-      }
-
-      document.getElementById(`step-${step}`).classList.remove('active');
-      if (step < questions.length) {
-        currentStep = step + 1;
-        document.getElementById(`step-${currentStep}`).classList.add('active');
-      } else {
-        generarResultado();
-      }
+    if (!value) {
+      alert(currentLang === 'es' ? 'Por favor, completa este campo.' : '请填写此项内容。');
+      if (input) input.focus();
+      return;
     }
+
+    userInfo[q.field] = value;
+  } else if (q.field && !userInfo[q.field].es) {
+    alert(currentLang === 'es' ? 'Por favor selecciona una opción' : '请选择一个选项');
+    return;
+  } else if (!q.field && !selectedAnswers[step]) {
+    alert(currentLang === 'es' ? 'Por favor selecciona una opción' : '请选择一个选项');
+    return;
+  }
+
+  document.getElementById(`step-${step}`).classList.remove('active');
+  if (step < questions.length) {
+    currentStep = step + 1;
+    document.getElementById(`step-${currentStep}`).classList.add('active');
+  } else {
+    generarResultado();
+  }
+}
 
     async function enviarResultadoPorCorreo(scores, userData) {
       // No intenta enviar nada hasta que se configuren las credenciales de EmailJS.
@@ -740,7 +768,9 @@
           sexo: userInfo.sexo,
           iglesia: userInfo.iglesia,
           edad: userInfo.edad,
-          habilidad: userInfo.habilidad
+          habilidad: userInfo.habilidad,
+          hobbie: userInfo.hobbie,   
+  frase: userInfo.frase
         };
 
         // Guardar en el navegador para evitar repeticiones
@@ -778,6 +808,8 @@
       document.getElementById('res-iglesia').innerText = iglesiaGuardada[currentLang] || iglesiaGuardada.es || '-';
       document.getElementById('res-edad').innerText = edadGuardada[currentLang] || edadGuardada.es || '-';
       document.getElementById('res-habilidad').innerText = habilidadGuardada;
+      if (document.getElementById('res-hobbie')) document.getElementById('res-hobbie').innerText = userData.hobbie || '-';
+if (document.getElementById('res-frase')) document.getElementById('res-frase').innerText = userData.frase || '-';
 
       // Renderizar estadísticas en el idioma actual.
       actualizarEstadisticasIdioma(scores);
