@@ -121,17 +121,22 @@
 
     .info-col { display: flex; flex-direction: column; justify-content: center; }
     .user-emoji {
-      font-size: 2.6rem;
-      line-height: 1;
       text-align: center;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
+      font-size: 3rem;
+      line-height: 1;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .user-name-box { background: #f8fafc; padding: 8px 16px; border-radius: 20px; font-size: 1.2rem; font-weight: 800; text-align: center; margin-bottom: 16px; }
     .info-list { display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem; }
     .info-item { display: flex; align-items: flex-start; gap: 8px; color: var(--text-muted); }
 
     .chart-col { display: flex; justify-content: center; align-items: center; }
-    .chart-box { width: 100%; max-width: 290px; }
+    .chart-box { width: 290px; height: 290px; flex: 0 0 290px; display: flex; justify-content: center; align-items: center; }
+    .chart-box canvas { width: 290px !important; height: 290px !important; display: block; }
 
     .stats-badges-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
     .stat-badge-item { background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 8px 4px; text-align: center; }
@@ -188,7 +193,7 @@
     <div id="resultado-screen">
       <div class="profile-grid">
         <div class="info-col">
-          <div class="user-emoji" id="res-sexo-emoji" aria-hidden="true">🙂</div>
+          <div class="user-emoji" id="res-sexo-emoji" aria-hidden="true">🙋‍♂️</div>
           <div class="user-name-box" id="res-nombre">Alex</div>
           <div class="info-list">
             <div class="info-item"><span class="icon">🎂</span><div><span data-zh="年龄" data-es="Edad">Edad</span>: <strong id="res-edad">22+</strong></div></div>
@@ -239,6 +244,7 @@
     let selectedAnswers = {};
     let userInfo = { sexo: {es: '', zh: ''}, iglesia: {es: '', zh: ''}, edad: {es: '', zh: ''}, habilidad: '' };
     let chartInstance = null;
+    let currentScores = null;
 
     // BANCO DE PREGUNTAS (Q1 a Q17)
     const questions = [
@@ -253,6 +259,9 @@
           { label: { zh: "爱丽甘地生命堂", es: "Iglesia Vida Alicante" }, scores: null },
           { label: { zh: "加纳利亚生命堂", es: "Iglesia Vida Canarias" }, scores: null },
           { label: { zh: "巴塞罗那生命堂", es: "Iglesia Vida Barcelona" }, scores: null },
+          { label: { zh: "福恩城生命堂", es: "Iglesia Vida Fuenlabrada" }, scores: null },
+          { label: { zh: "以斯拉生命堂", es: "Iglesia Vida Israel" }, scores: null },
+          { label: { zh: "贝妮东生命堂", es: "Iglesia Vida Benidorm" }, scores: null },
           { label: { zh: "其他", es: "Otra" }, scores: null }
         ]
       },
@@ -339,7 +348,7 @@
       },
       {
         id: 10,
-        title: { zh: "Q10. 当你听懂 complex 规则要解释给不懂的人时?", es: "Q10. Al explicar una regla compleja a alguien que no la entendió..." },
+        title: { zh: "Q10. 当你已经听懂一个比较复杂的游戏规则，需要你传述给你没听懂的组员是， 你通常?", es: "Q10. Al explicar una regla compleja a alguien que no la entendió..." },
         options: [
           { label: { zh: "A. 用自己的话提炼规则再举例,对方很快就懂", es: "A. Resumo con mis palabras y doy ejemplos; entienden rápido." }, scores: { exp: 5, com: 5, int: 5 } },
           { label: { zh: "B. 自己知道怎么玩,但让解释可能会越讲越复杂", es: "B. Sé jugarlo, pero al explicarlo me enredo un poco." }, scores: { exp: 3, com: 1, int: 3 } },
@@ -352,7 +361,7 @@
         title: { zh: "Q11. 小组讨论时你有个好想法但其他人没理解,你?", es: "Q11. Si tienes una buena idea en grupo pero no la entienden..." },
         options: [
           { label: { zh: "A. 换一种说法或举例,让大家明白我想表达什么", es: "A. Explicaré de otra forma o daré ejemplos hasta aclararlo." }, scores: { exp: 6, com: 3, ada: 4 } },
-          { label: { zh: "B. 先向“懂我的朋友”解释,让他一起向大家说明白", es: "B. Se lo explico a un amigo para que me ayude a exponerlo." }, scores: { exp: 2, com: 3, col: 3, ada: 2 } },
+          { label: { zh: "B. 先向“懂我的朋友”解释,和他一起向大家说明白", es: "B. Se lo explico a un amigo para que me ayude a exponerlo." }, scores: { exp: 2, com: 3, col: 3, ada: 2 } },
           { label: { zh: "C. 经常有一种“我知道想说什么但说不清楚”的感觉", es: "C. Siento 'sé lo que quiero decir pero no me sale'." }, scores: { exp: 1 } },
           { label: { zh: "D. 解释两次还没懂的话,我可能就放弃这个想法了", es: "D. Si tras 2 intentos no entienden, descarto la idea." }, scores: { exp: 2 } }
         ]
@@ -369,12 +378,12 @@
       },
       {
         id: 13,
-        title: { zh: "Q13. 你觉得方案更好,但全组决定用另一个方案?", es: "Q13. Si prefieres tu idea pero el grupo elige otra..." },
+        title: { zh: "Q13. 你觉得你的方案更好,但全组决定用另一个方案?", es: "Q13. Si prefieres tu idea pero el grupo elige otra..." },
         options: [
           { label: { zh: "A. 有点可惜,但既然大家决定了就认真配合", es: "A. Una lástima, pero me sumo y colaboro al 100%." }, scores: { col: 3 } },
           { label: { zh: "B. 争取把自己的好部分融入新方案", es: "B. Intento integrar las mejores partes de mi idea en la elegida." }, scores: { exp: 2, com: 3, col: 3, ada: 3 } },
           { label: { zh: "C. 如果认为自己明显更好,较难全心投入不认同的方案", es: "C. Me cuesta comprometerme con una idea que no comparto." }, scores: { exp: 2 } },
-          { label: { zh: "D. 一般不太喜欢负责想方案,决定好后会积极配合", es: "D. No me gusta idear; prefiero ejecutar lo planificado." }, scores: { col: 3 } }
+          { label: { zh: "D. 一般不太喜欢负责想方案,全组决定好后会积极配合", es: "D. No me gusta idear; prefiero ejecutar lo planificado." }, scores: { col: 3 } }
         ]
       },
       {
@@ -492,6 +501,11 @@
       if (userInfo.habilidad) {
         document.getElementById('res-habilidad').innerText = userInfo.habilidad;
       }
+
+      // Actualizar también las estadísticas y las etiquetas del gráfico al cambiar de idioma.
+      if (currentScores) {
+        actualizarEstadisticasIdioma(currentScores);
+      }
     }
 
     function seleccionarSexo(elem, sexo) {
@@ -507,12 +521,16 @@
       actualizarEmojiSexo();
     }
 
+    // Emojis oficiales de Unicode: hombre/mujer levantando la mano.
+    const AVATAR_HOMBRE = '🙋‍♂️';
+    const AVATAR_MUJER = '🙋‍♀️';
+
     function actualizarEmojiSexo() {
-      const emojiEl = document.getElementById('res-sexo-emoji');
-      if (!emojiEl) return;
+      const avatarEl = document.getElementById('res-sexo-emoji');
+      if (!avatarEl) return;
 
       const sexoGuardado = userInfo.sexo?.es || userInfo.sexo || '';
-      emojiEl.innerText = sexoGuardado === 'Mujer' ? '👩' : sexoGuardado === 'Hombre' ? '👨' : '🙂';
+      avatarEl.textContent = sexoGuardado === 'Mujer' ? AVATAR_MUJER : AVATAR_HOMBRE;
     }
 
     function iniciarPreguntas() {
@@ -552,7 +570,7 @@
     function nextStep(step) {
       const q = questions[step - 1];
 
-      if (q.inputType === 'text') {
+      if (q.inputType === 'paragraph' || q.inputType === 'text') {
         const input = document.getElementById(`input-${q.field}`);
         const value = input ? input.value.trim() : '';
 
@@ -616,6 +634,74 @@
       }
     }
 
+    function actualizarEstadisticasIdioma(scores) {
+      const getLevel = val => Math.min(6, Math.floor(val / 4) + 1);
+      const statsMap = [
+        { key: 'fis', zh: '体能', es: 'Físico', icon: '🏃‍♂️', val: scores.fis },
+        { key: 'int', zh: '脑力', es: 'Intelecto', icon: '🧠', val: scores.int },
+        { key: 'exp', zh: '表达', es: 'Expresión', icon: '🗣️', val: scores.exp },
+        { key: 'com', zh: '沟通', es: 'Comunicación', icon: '💬', val: scores.com },
+        { key: 'col', zh: '协作', es: 'Colaboración', icon: '🤝', val: scores.col },
+        { key: 'ada', zh: '应变', es: 'Adaptabilidad', icon: '⚡', val: scores.ada }
+      ];
+
+      const badgesContainer = document.getElementById('stats-badges');
+      if (badgesContainer) {
+        badgesContainer.innerHTML = '';
+        statsMap.forEach(s => {
+          const nivel = getLevel(s.val);
+          badgesContainer.innerHTML += `
+            <div class="stat-badge-item">
+              <span class="stat-badge-icon">${s.icon}</span>
+              <div class="stat-badge-name">${currentLang === 'es' ? s.es : s.zh}</div>
+              <div class="stat-badge-val">${s.val}/24</div>
+              <div class="stat-badge-level">${currentLang === 'es' ? 'Nivel ' + nivel : '等级 ' + nivel}</div>
+            </div>
+          `;
+        });
+      }
+
+      const canvas = document.getElementById('radarChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+
+      chartInstance = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          // Usamos etiquetas compactas en el radar para mantener exactamente el mismo tamaño visual en ambos idiomas.
+          labels: statsMap.map(s => {
+            const radarEs = { fis: 'Fís.', int: 'Int.', exp: 'Expr.', com: 'Com.', col: 'Col.', ada: 'Adap.' };
+            return `${s.icon} ${currentLang === 'es' ? radarEs[s.key] : s.zh}`;
+          }),
+          datasets: [{
+            data: statsMap.map(s => s.val),
+            backgroundColor: 'rgba(77, 124, 254, 0.25)',
+            borderColor: '#4d7cfe',
+            borderWidth: 2,
+            pointBackgroundColor: '#4d7cfe',
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: false,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            r: {
+              angleLines: { color: '#e2e8f0' },
+              grid: { color: '#f1f5f9' },
+              pointLabels: { color: '#475569', padding: 4, font: { family: 'Plus Jakarta Sans', size: 10, weight: '700' } },
+              ticks: { display: false },
+              suggestedMin: 0,
+              suggestedMax: 24
+            }
+          }
+        }
+      });
+    }
+
     function generarResultado(datosGuardados = null) {
       let scores;
       let userData;
@@ -665,6 +751,8 @@
         });
       }
 
+      currentScores = scores;
+
       // Rellenar Ficha
       document.getElementById('res-nombre').innerText = userData.nombre || '-';
 
@@ -677,73 +765,18 @@
       const edadGuardada = userData.edad || {};
       const habilidadGuardada = userData.habilidad || '-';
 
-      document.getElementById('res-sexo-emoji').innerText = sexoValor === 'Mujer' ? '👩' : sexoValor === 'Hombre' ? '👨' : '🙂';
+      document.getElementById('res-sexo-emoji').textContent = sexoValor === 'Mujer' ? AVATAR_MUJER : AVATAR_HOMBRE;
       document.getElementById('res-iglesia').innerText = iglesiaGuardada[currentLang] || iglesiaGuardada.es || '-';
       document.getElementById('res-edad').innerText = edadGuardada[currentLang] || edadGuardada.es || '-';
       document.getElementById('res-habilidad').innerText = habilidadGuardada;
 
-      // Lógica de la imagen: 每4分为一档 (1 nivel cada 4 puntos)
-      const getLevel = val => Math.min(6, Math.floor(val / 4) + 1);
-
-      const statsMap = [
-        { key: 'fis', zh: '体能', es: 'Físico', icon: '🏃‍♂️', val: scores.fis },
-        { key: 'int', zh: '脑力', es: 'Intelecto', icon: '🧠', val: scores.int },
-        { key: 'exp', zh: '表达', es: 'Expresión', icon: '🗣️', val: scores.exp },
-        { key: 'com', zh: '沟通', es: 'Comunicación', icon: '💬', val: scores.com },
-        { key: 'col', zh: '协作', es: 'Colaboración', icon: '🤝', val: scores.col },
-        { key: 'ada', zh: '应变', es: 'Adaptabilidad', icon: '⚡', val: scores.ada }
-      ];
-
-      const badgesContainer = document.getElementById('stats-badges');
-      badgesContainer.innerHTML = '';
-      statsMap.forEach(s => {
-        badgesContainer.innerHTML += `
-          <div class="stat-badge-item">
-            <span class="stat-badge-icon">${s.icon}</span>
-            <div class="stat-badge-name" data-zh="${s.zh}" data-es="${s.es}">${currentLang === 'es' ? s.es : s.zh}</div>
-            <div class="stat-badge-val">${s.val}/24</div>
-            <div class="stat-badge-level" data-zh="${getLevel(s.val)}档" data-es="Nivel ${getLevel(s.val)}">${currentLang === 'es' ? 'Nivel ' + getLevel(s.val) : getLevel(s.val) + '档'}</div>
-          </div>
-        `;
-      });
+      // Renderizar estadísticas en el idioma actual.
+      actualizarEstadisticasIdioma(scores);
 
       // Ocultar paso actual y mostrar resultados
       document.querySelectorAll('.step-card').forEach(el => el.classList.remove('active'));
       document.getElementById('resultado-screen').style.display = 'block';
 
-      // Gráfico Radar
-      const ctx = document.getElementById('radarChart').getContext('2d');
-      if (chartInstance) chartInstance.destroy();
-
-      chartInstance = new Chart(ctx, {
-        type: 'radar',
-        data: {
-          labels: statsMap.map(s => `${s.icon} ${currentLang === 'es' ? s.es : s.zh}`),
-          datasets: [{
-            data: statsMap.map(s => s.val),
-            backgroundColor: 'rgba(77, 124, 254, 0.25)',
-            borderColor: '#4d7cfe',
-            borderWidth: 2,
-            pointBackgroundColor: '#4d7cfe',
-            pointRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          plugins: { legend: { display: false } },
-          scales: {
-            r: {
-              angleLines: { color: '#e2e8f0' },
-              grid: { color: '#f1f5f9' },
-              pointLabels: { color: '#475569', font: { family: 'Plus Jakarta Sans', size: 10, weight: '700' } },
-              ticks: { display: false },
-              suggestedMin: 0,
-              suggestedMax: 24
-            }
-          }
-        }
-      });
     }
 
     // LÓGICA DE INICIALIZACIÓN Y BLOQUEO DE REPETICIÓN
