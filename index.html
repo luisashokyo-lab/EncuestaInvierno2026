@@ -188,7 +188,17 @@
     <div id="resultado-screen">
       <div class="profile-grid">
         <div class="info-col">
-          <div class="user-emoji" id="res-sexo-emoji" aria-hidden="true">🙋‍♂️</div>
+         <div class="user-emoji" id="res-sexo-emoji" aria-hidden="true">
+  <svg id="avatar-hombre" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+    <circle cx="50" cy="50" r="46" fill="#cce0f5" stroke="#000" stroke-width="4"/>
+    <path d="M20,96 C20,70 80,70 80,96" fill="#436f90" stroke="#000" stroke-width="4"/>
+    <polygon points="35,70 50,85 65,70" fill="#ffffff" stroke="#000" stroke-width="3"/>
+    <polygon points="48,78 45,96 55,96 52,78" fill="#d95a63" stroke="#000" stroke-width="3"/>
+    <rect x="42" y="55" width="16" height="20" fill="#ffdac2" stroke="#000" stroke-width="4"/>
+    <rect x="30" y="30" width="40" height="35" rx="15" fill="#ffdac2" stroke="#000" stroke-width="4"/>
+    <path d="M28,45 C25,25 40,20 50,20 C65,20 75,25 72,45 C75,30 60,25 50,25 C35,25 25,30 28,45 Z" fill="#2d4257" stroke="#000" stroke-width="3"/>
+  </svg>
+</div>
           <div class="user-name-box" id="res-nombre">Alex</div>
           <div class="info-list">
             <div class="info-item"><span class="icon">🏆</span><div><span data-zh="角色" data-es="Rol">Rol</span>: <strong id="res-rol">-</strong></div></div>
@@ -747,15 +757,43 @@
       userInfo.sexo = etiquetas[sexo];
       actualizarEmojiSexo();
     }
+const AVATAR_HOMBRE = `<svg id="avatar-hombre" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Fondo azul claro -->
+  <circle cx="50" cy="50" r="46" fill="#cce0f5" stroke="#000" stroke-width="4"/>
+  <!-- Traje -->
+  <path d="M20,96 C20,70 80,70 80,96" fill="#436f90" stroke="#000" stroke-width="4"/>
+  <!-- Camisa blanca -->
+  <polygon points="35,70 50,85 65,70" fill="#ffffff" stroke="#000" stroke-width="3"/>
+  <!-- Corbata roja -->
+  <polygon points="48,78 45,96 55,96 52,78" fill="#d95a63" stroke="#000" stroke-width="3"/>
+  <!-- Cuello -->
+  <rect x="42" y="55" width="16" height="20" fill="#ffdac2" stroke="#000" stroke-width="4"/>
+  <!-- Rostro -->
+  <rect x="30" y="30" width="40" height="35" rx="15" fill="#ffdac2" stroke="#000" stroke-width="4"/>
+  <!-- Cabello -->
+  <path d="M28,45 C25,25 40,20 50,20 C65,20 75,25 72,45 C75,30 60,25 50,25 C35,25 25,30 28,45 Z" fill="#2d4257" stroke="#000" stroke-width="3"/>
+</svg>`;
 
-    const AVATAR_HOMBRE = '🙋‍♂️';
-    const AVATAR_MUJER = '🙋‍♀️';
+const AVATAR_MUJER = `<svg id="avatar-mujer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Fondo azul claro -->
+  <circle cx="50" cy="50" r="46" fill="#cce0f5" stroke="#000" stroke-width="4"/>
+  <!-- Traje / Blusa -->
+  <path d="M20,96 C20,70 80,70 80,96" fill="#436f90" stroke="#000" stroke-width="4"/>
+  <!-- Cuello camisa/pañuelo -->
+  <polygon points="35,70 50,80 65,70" fill="#ffffff" stroke="#000" stroke-width="3"/>
+  <!-- Cuello -->
+  <rect x="42" y="55" width="16" height="20" fill="#ffdac2" stroke="#000" stroke-width="4"/>
+  <!-- Rostro -->
+  <rect x="30" y="30" width="40" height="35" rx="15" fill="#ffdac2" stroke="#000" stroke-width="4"/>
+  <!-- Cabello (melena) -->
+  <path d="M28,45 C25,20 40,15 50,15 C65,15 75,20 72,45 C72,60 76,75 80,80 C70,75 70,60 72,45 C65,25 40,25 28,45 C30,60 30,75 20,80 C24,75 28,60 28,45 Z" fill="#2d4257" stroke="#000" stroke-width="3"/>
+</svg>`;
 
     function actualizarEmojiSexo() {
       const avatarEl = document.getElementById('res-sexo-emoji');
       if (!avatarEl) return;
       const sexoGuardado = userInfo.sexo?.es || userInfo.sexo || '';
-      avatarEl.textContent = sexoGuardado === 'Mujer' ? AVATAR_MUJER : AVATAR_HOMBRE;
+     avatarEl.innerHTML = sexoGuardado === 'Mujer' ? AVATAR_MUJER : AVATAR_HOMBRE;
     }
 
     function iniciarPreguntas() {
@@ -979,7 +1017,7 @@
       // Rellenar Ficha Datos Básicos
       document.getElementById('res-nombre').innerText = userData.nombre || '-';
       const sexoValor = userData.sexo?.es || userData.sexo || '';
-      document.getElementById('res-sexo-emoji').textContent = sexoValor === 'Mujer' ? AVATAR_MUJER : AVATAR_HOMBRE;
+      document.getElementById('res-sexo-emoji').innerHTML = sexoValor === 'Mujer' ? AVATAR_MUJER : AVATAR_HOMBRE;
       
       const iglesiaTexto = typeof userData.iglesia === 'object' ? userData.iglesia[currentLang] : userData.iglesia;
       const edadTexto = typeof userData.edad === 'object' ? userData.edad[currentLang] : userData.edad;
