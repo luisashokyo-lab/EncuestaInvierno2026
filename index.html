@@ -242,8 +242,6 @@
     // ==========================================================
     // CONFIGURACIÓN DEL ENVÍO AUTOMÁTICO POR EMAIL
     // ==========================================================
-    // Crea una cuenta en EmailJS y sustituye estos tres valores.
-    // La dirección del administrador se configura en el Template de EmailJS.
     const EMAILJS_PUBLIC_KEY = 'TU_PUBLIC_KEY';
     const EMAILJS_SERVICE_ID = 'TU_SERVICE_ID';
     const EMAILJS_TEMPLATE_ID = 'TU_TEMPLATE_ID';
@@ -252,19 +250,359 @@
       emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
     }
 
-    let currentLang = 'es'; // 'es' o 'zh'
+    let currentLang = 'es';
     let currentStep = 0;
     let selectedAnswers = {};
-    let userInfo = { sexo: {es: '', zh: ''}, iglesia: {es: '', zh: ''}, edad: {es: '', zh: ''}, habilidad: '' };
+    let userInfo = { sexo: {es: '', zh: ''}, iglesia: {es: '', zh: ''}, edad: {es: '', zh: ''}, habilidad: '', hobbie: '', frase: '' };
     let chartInstance = null;
     let currentScores = null;
 
-    // BANCO DE PREGUNTAS (Q1 a Q17)
+    // ==========================================================
+    // DICCIONARIOS Y LÓGICA DE CLASIFICACIÓN (TRADUCCIÓN ES / ZH)
+    // ==========================================================
+    const DIM_NAMES = {
+      'P': { es: 'Físico', zh: '体能' },
+      'B': { es: 'Intelecto', zh: '脑力' },
+      'E': { es: 'Expresión', zh: '表达' },
+      'C': { es: 'Comunicación', zh: '沟通' },
+      'T': { es: 'Colaboración', zh: '协作' },
+      'A': { es: 'Adaptabilidad', zh: '应变' }
+    };
+
+    const SINGLE_ROLES = {
+      'P': { es: 'Pionero de Acción', zh: '行动先锋' },
+      'B': { es: 'Estratega de Acertijos', zh: '解谜担当' },
+      'E': { es: 'Estrella de Escenario', zh: '舞台担当' },
+      'C': { es: 'Puente Conector', zh: '人际桥梁' },
+      'T': { es: 'Pilar del Equipo', zh: '团队支柱' },
+      'A': { es: 'Salvavidas de Emergencia', zh: '临场救火王' }
+    };
+
+    const PAIR_ROLE_MAP = [
+      { pair: ['P', 'B'], role: 'AS_DESAFIO' },
+      { pair: ['P', 'A'], role: 'AS_DESAFIO' },
+      { pair: ['P', 'E'], role: 'LIDER_DINAMICO' },
+      { pair: ['P', 'C'], role: 'LIDER_DINAMICO' },
+      { pair: ['P', 'T'], role: 'COMPANERO_ACCION' },
+      { pair: ['B', 'A'], role: 'ESTRATEGA_GLOBAL' },
+      { pair: ['B', 'E'], role: 'PORTAVOZ_ANALITICO' },
+      { pair: ['B', 'C'], role: 'CONSEJERO_EQUIPO' },
+      { pair: ['B', 'T'], role: 'CONSEJERO_EQUIPO' },
+      { pair: ['E', 'A'], role: 'JUGADOR_IMPROVISADOR' },
+      { pair: ['E', 'C'], role: 'MOTOR_SOCIAL' },
+      { pair: ['E', 'T'], role: 'PORTAVOZ_EQUIPO' },
+      { pair: ['C', 'T'], role: 'CONECTOR_EQUIPO' },
+      { pair: ['C', 'A'], role: 'COORDINADOR_CAMPO' },
+      { pair: ['T', 'A'], role: 'COMODIN_UNIVERSAL' }
+    ];
+
+    const ROLE_NAMES = {
+      "Pionero de Acción": { es: "Pionero de Acción", zh: "行动先锋" },
+      "Estratega de Acertijos": { es: "Estratega de Acertijos", zh: "解谜担当" },
+      "Estrella de Escenario": { es: "Estrella de Escenario", zh: "舞台担当" },
+      "Puente Conector": { es: "Puente Conector", zh: "人际桥梁" },
+      "Pilar del Equipo": { es: "Pilar del Equipo", zh: "团队支柱" },
+      "Salvavidas de Emergencia": { es: "Salvavidas de Emergencia", zh: "临场救火王" },
+      "AS_DESAFIO": { es: "As del Desafío", zh: "挑战王牌" },
+      "LIDER_DINAMICO": { es: "Líder Dinámico", zh: "活力领队" },
+      "COMPANERO_ACCION": { es: "Compañero de Acción", zh: "行动队友" },
+      "ESTRATEGA_GLOBAL": { es: "Estratega Global", zh: "全场策士" },
+      "PORTAVOZ_ANALITICO": { es: "Portavoz Analítico", zh: "智囊发言人" },
+      "CONSEJERO_EQUIPO": { es: "Consejero del Equipo", zh: "团队军师" },
+      "JUGADOR_IMPROVISADOR": { es: "Jugador Improvisador", zh: "即兴玩家" },
+      "MOTOR_SOCIAL": { es: "Motor Social", zh: "社交发动机" },
+      "PORTAVOZ_EQUIPO": { es: "Portavoz del Equipo", zh: "团队发言人" },
+      "CONECTOR_EQUIPO": { es: "Pegamento del Equipo", zh: "团队粘合剂" },
+      "COORDINADOR_CAMPO": { es: "Coordinador de Campo", zh: "现场协调员" },
+      "COMODIN_UNIVERSAL": { es: "Comodín Universal", zh: "万能补位王" },
+      "MULTIFACETICO": { es: "Multifacético Total", zh: "六边形多面手" },
+      "EXPLORADOR": { es: "Explorador", zh: "探索家" }
+    };
+
+    const TIE_BREAK_PRIORITY = [
+      'AS_DESAFIO', 'LIDER_DINAMICO', 'CONSEJERO_EQUIPO', 'ESTRATEGA_GLOBAL', 
+      'PORTAVOZ_ANALITICO', 'JUGADOR_IMPROVISADOR', 'MOTOR_SOCIAL', 'CONECTOR_EQUIPO', 
+      'COORDINADOR_CAMPO', 'COMODIN_UNIVERSAL', 'COMPANERO_ACCION', 'PORTAVOZ_EQUIPO'
+    ];
+
+    const ROLE_DESCRIPTIONS = {
+      "Pionero de Acción": {
+        es: "Tu fuerza física e iniciativa son evidentes. Cuando hay que correr, competir, cargar o realizar retos físicos, eres la opción ideal.",
+        zh: "行动力是你的明显优势，需要跑、抢、搬或运动挑战时，可以考虑你。"
+      },
+      "Estratega de Acertijos": {
+        es: "La observación, la memoria, el razonamiento y la comprensión de reglas complejas son tu punto fuerte.",
+        zh: "观察、记忆、推理和理解规则是你的优势。"
+      },
+      "Estrella de Escenario": {
+        es: "Destacas con facilidad cuando se trata de hablar en público, presentar, dirigir o actuar.",
+        zh: "需要发言、展示、主持或表演时，你比较容易发挥优势。"
+      },
+      "Puente Conector": {
+        es: "Eres experto en entender y transmitir información, así como en coordinar a diferentes miembros del equipo.",
+        zh: "擅长理解和传递信息，也比较适合协调不同成员。"
+      },
+      "Pilar del Equipo": {
+        es: "La cooperación, la ejecución y el apoyo son tus grandes virtudes; eres la fuerza que mantiene al grupo estable.",
+        zh: "配合、执行和补位是你的明显优势，是团队稳定运转的重要力量。"
+      },
+      "Salvavidas de Emergencia": {
+        es: "Ante cambios repentinos o tareas inesperadas, te adaptas muy rápido y entras en acción sin dudar.",
+        zh: "面对突然变化和没有准备过的任务，你比较容易迅速进入状态。"
+      },
+      "AS_DESAFIO": {
+        es: "Una combinación sobresaliente entre acción rápida, análisis y resolución de retos difíciles.",
+        zh: "行动、判断和处理挑战是你的突出组合。"
+      },
+      "LIDER_DINAMICO": {
+        es: "Tienes iniciativa propia y contagias fácilmente esa energía para motivar a los demás a participar.",
+        zh: "自己有行动力，也容易带动身边的人一起参与。"
+      },
+      "COMPANERO_ACCION": {
+        es: "Más que debatir en exceso, prefieres ponerte manos a la obra con el equipo para ejecutar las tareas.",
+        zh: "比起讨论很久，更擅长和大家一起把任务真正做出来。"
+      },
+      "ESTRATEGA_GLOBAL": {
+        es: "Ante problemas totalmente nuevos, analizas rápido la situación para encontrar la mejor solución.",
+        zh: "遇到陌生问题时，比较容易迅速分析情况、寻找解决办法。"
+      },
+      "PORTAVOZ_ANALITICO": {
+        es: "No solo tienes grandes ideas estratégicas, sino que además sabes expresarlas y comunicar tu visión.",
+        zh: "不只是有想法，也比较擅长把自己的思路表达出来。"
+      },
+      "CONSEJERO_EQUIPO": {
+        es: "Analizas los problemas a fondo sin perder de vista cómo hacer que la solución funcione dentro del equipo.",
+        zh: "擅长分析问题，同时会考虑怎么让方案在团队里真正运转起来。"
+      },
+      "JUGADOR_IMPROVISADOR": {
+        es: "Combinas la expresión con la creatividad al instante, ideal para presentaciones en vivo y retos sobre la marcha.",
+        zh: "表达和临场发挥组合突出，尤其适合即兴和现场展示。"
+      },
+      "MOTOR_SOCIAL": {
+        es: "Eres comunicativo, expresivo y carismático; haces que cualquier ambiente o dinámica se llene de vida.",
+        zh: "能说、能聊、能展示，比较容易让现场互动起来。"
+      },
+      "PORTAVOZ_EQUIPO": {
+        es: "No solo te atreves a dar la cara y expresarte, sino que te gusta representar y colaborar con todo tu equipo.",
+        zh: "既愿意站出来表达，也比较愿意代表和配合整个团队。"
+      },
+      "CONECTOR_EQUIPO": {
+        es: "Especialista en unir a los integrantes, conciliar opiniones y lograr que el equipo avance en armonía.",
+        zh: "擅长连接成员、协调意见，让大家比较顺畅地一起行动。"
+      },
+      "COORDINADOR_CAMPO": {
+        es: "Aunque cambien las reglas, las personas o el entorno, te adaptas y sigues coordinando la marcha sin perder el rumbo.",
+        zh: "人变了、规则变了、情况变了，也比较容易继续协调推进。"
+      },
+      "COMODIN_UNIVERSAL": {
+        es: "Siempre que surge una necesidad imprevista, sabes reubicarte al instante en el lugar donde el equipo te necesita.",
+        zh: "哪里突然需要帮助，比较容易根据现场情况找到自己的位置。"
+      },
+      "MULTIFACETICO": {
+        es: "Tus seis cualidades están muy equilibradas, lo que te permite aportar valor en casi cualquier tipo de tarea.",
+        zh: "六个方向比较均衡，在不同类型的任务中都有发挥空间。"
+      },
+      "EXPLORADOR": {
+        es: "Cada persona tiene una combinación única. Disfruta de las actividades e irá descubriendo tu punto fuerte.",
+        zh: "每个人都有不同的能力组合，在接下来的活动里慢慢发现自己的主场吧。"
+      }
+    };
+
+    const CORE_TYPE_NAMES = {
+      1: { es: "Núcleo Único", zh: "单核型" },
+      2: { es: "Núcleo Doble", zh: "双核型" },
+      3: { es: "Núcleo Triple", zh: "三核型" },
+      4: { es: "Núcleo Cuádruple", zh: "四核型" },
+      5: { es: "Núcleo Quíntuple", zh: "五核型" },
+      6: { es: "Núcleo Héxagono", zh: "六核型" }
+    };
+
+    function buildFallback() {
+      return {
+        role_key: "EXPLORADOR",
+        core_type: { es: "Ventaja Relativa", zh: "相对优势" },
+        strong_dimensions: [{ es: "Capacidad General", zh: "综合能力" }],
+        description: ROLE_DESCRIPTIONS["EXPLORADOR"],
+        is_absolute: false
+      };
+    }
+
+    function breakTies(candidates) {
+      candidates.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        let pA = TIE_BREAK_PRIORITY.indexOf(a.role);
+        let pB = TIE_BREAK_PRIORITY.indexOf(b.role);
+        return (pA === -1 ? 999 : pA) - (pB === -1 ? 999 : pB);
+      });
+      return candidates[0].role;
+    }
+
+    function classifyRole(scoresMap) {
+      try {
+        const scores = {
+          'P': scoresMap.fis || 0, 'B': scoresMap.int || 0, 'E': scoresMap.exp || 0,
+          'C': scoresMap.com || 0, 'T': scoresMap.col || 0, 'A': scoresMap.ada || 0
+        };
+
+        const dims = ['P', 'B', 'E', 'C', 'T', 'A'];
+        const six_tier_dims = dims.filter(d => scores[d] >= 21);
+        const six_tier_count = six_tier_dims.length;
+
+        // PART A — HIGH-SCORE / ABSOLUTE-STRENGTH
+        if (six_tier_count >= 1) {
+          let core_type = CORE_TYPE_NAMES[six_tier_count];
+          let strong_dims = six_tier_dims.map(d => ({
+            es: `${DIM_NAMES[d].es} MAX`,
+            zh: `${DIM_NAMES[d].zh} MAX`
+          }));
+          let role_key = "", desc = null;
+
+          if (six_tier_count === 6) {
+            role_key = "MULTIFACETICO";
+            desc = {
+              es: "Sobresales en los seis aspectos; eres un perfil sumamente completo y equilibrado.",
+              zh: "六个方向都非常突出，是非常均衡的综合型选手。"
+            };
+          } else if (six_tier_count === 1) {
+            let primary_dim = six_tier_dims[0];
+            let singleObj = SINGLE_ROLES[primary_dim];
+            role_key = singleObj.es; // Referencia
+            let tier5_dims = dims.filter(d => scores[d] >= 17 && scores[d] <= 20);
+            if (tier5_dims.length > 0) {
+              strong_dims.push(...tier5_dims.map(d => ({
+                es: `${DIM_NAMES[d].es} (Secundario)`,
+                zh: `${DIM_NAMES[d].zh} (次要优势)`
+              })));
+            }
+            desc = ROLE_DESCRIPTIONS[singleObj.es] || ROLE_DESCRIPTIONS["EXPLORADOR"];
+          } else {
+            let candidate_scores = {};
+            PAIR_ROLE_MAP.forEach(item => {
+              if (item.pair.every(d => six_tier_dims.includes(d))) {
+                let pair_score = scores[item.pair[0]] + scores[item.pair[1]];
+                candidate_scores[item.role] = Math.max(candidate_scores[item.role] || 0, pair_score);
+              }
+            });
+
+            let candidates = Object.keys(candidate_scores).map(r => ({ role: r, score: candidate_scores[r] }));
+            if (candidates.length > 0) {
+              role_key = breakTies(candidates);
+            } else {
+              role_key = "MULTIFACETICO";
+            }
+            desc = ROLE_DESCRIPTIONS[role_key] || ROLE_DESCRIPTIONS["MULTIFACETICO"];
+          }
+
+          return { role_key: role_key, core_type: core_type, strong_dimensions: strong_dims, description: desc, is_absolute: true };
+        }
+
+        // PART B — NO 6-TIER / RELATIVE-STRENGTH
+        let sorted_dims = [...dims].sort((a, b) => scores[b] - scores[a]);
+        let s1_dim = sorted_dims[0], s2_dim = sorted_dims[1];
+        let s1 = scores[s1_dim], s2 = scores[s2_dim];
+
+        let vals = Object.values(scores);
+        let max_score = Math.max(...vals), min_score = Math.min(...vals);
+        let avg_score = vals.reduce((a, b) => a + b, 0) / 6.0;
+
+        // B1 — VERY LOW AND FLAT
+        if (max_score <= 8 && (s1 - s2 < 4)) {
+          return {
+            role_key: "EXPLORADOR",
+            core_type: { es: "Ventaja Relativa", zh: "相对优势" },
+            strong_dimensions: [{ es: "Exploración General", zh: "综合探索" }],
+            description: {
+              es: "Aún no hay un área marcadamente dominante; ideal para probar diferentes roles y encontrar tu lugar.",
+              zh: "目前还没有特别明显的优势方向，适合在不同任务中多尝试，找到自己的主场。"
+            },
+            is_absolute: false
+          };
+        }
+
+        // B2 — BALANCED PROFILE
+        if (max_score - min_score <= 4) {
+          if (avg_score >= 15) {
+            return {
+              role_key: "MULTIFACETICO",
+              core_type: { es: "Ventaja Relativa", zh: "相对优势" },
+              strong_dimensions: [{ es: "Equilibrio Séxtuple", zh: "六项均衡" }],
+              description: ROLE_DESCRIPTIONS["MULTIFACETICO"],
+              is_absolute: false
+            };
+          } else {
+            return {
+              role_key: "EXPLORADOR",
+              core_type: { es: "Ventaja Relativa", zh: "相对优势" },
+              strong_dimensions: [{ es: "Habilidades Equilibradas", zh: "能力均衡" }],
+              description: {
+                es: "Tus capacidades están muy repartidas sin un rol fijo; perfecto para adaptarse según la situación.",
+                zh: "能力分布比较均衡，没有特别固定的角色，适合在不同任务中寻找自己的主场。"
+              },
+              is_absolute: false
+            };
+          }
+        }
+
+        // B3 — CLEAR SINGLE RELATIVE STRENGTH
+        if (s1 - s2 >= 4) {
+          let singleObj = SINGLE_ROLES[s1_dim];
+          return {
+            role_key: singleObj.es,
+            core_type: { es: `Ventaja Relativa: ${DIM_NAMES[s1_dim].es}`, zh: `相对优势：${DIM_NAMES[s1_dim].zh}` },
+            strong_dimensions: [{ es: `Ventaja Relativa: ${DIM_NAMES[s1_dim].es}`, zh: `相对优势：${DIM_NAMES[s1_dim].zh}` }],
+            description: {
+              es: `Entre tus seis resultados, ${DIM_NAMES[s1_dim].es} es tu área más destacada.`,
+              zh: `在你的六项结果中，${DIM_NAMES[s1_dim].zh}是比较突出的方向。`
+            },
+            is_absolute: false
+          };
+        }
+
+        // B4 — TWO OR MORE RELATIVE STRENGTHS
+        let top_dims = dims.filter(d => scores[s1_dim] - scores[d] <= 2);
+        if (top_dims.length === 1) top_dims.push(s2_dim);
+
+        let pair_votes = {}, pair_scores = {};
+        for (let i = 0; i < top_dims.length; i++) {
+          for (let j = i + 1; j < top_dims.length; j++) {
+            let p1 = top_dims[i], p2 = top_dims[j];
+            let match = PAIR_ROLE_MAP.find(item => item.pair.includes(p1) && item.pair.includes(p2));
+            if (match) {
+              let rName = match.role;
+              let pScore = scores[p1] + scores[p2];
+              pair_votes[rName] = (pair_votes[rName] || 0) + 1;
+              pair_scores[rName] = Math.max(pair_scores[rName] || 0, pScore);
+            }
+          }
+        }
+
+        let role_key = "";
+        if (Object.keys(pair_votes).length > 0) {
+          let max_votes = Math.max(...Object.values(pair_votes));
+          let top_roles = Object.keys(pair_votes).filter(r => pair_votes[r] === max_votes);
+          let candidates = top_roles.map(r => ({ role: r, score: pair_scores[r] }));
+          role_key = breakTies(candidates);
+        } else {
+          role_key = "EXPLORADOR";
+        }
+
+        return {
+          role_key: role_key,
+          core_type: { es: "Ventaja Relativa", zh: "相对优势" },
+          strong_dimensions: top_dims.map(d => ({ es: `Ventaja Relativa: ${DIM_NAMES[d].es}`, zh: `相对优势：${DIM_NAMES[d].zh}` })),
+          description: ROLE_DESCRIPTIONS[role_key] || ROLE_DESCRIPTIONS["EXPLORADOR"],
+          is_absolute: false
+        };
+
+      } catch (e) {
+        return buildFallback();
+      }
+    }
+
+    // BANCO DE PREGUNTAS (Q1 a Q19)
     const questions = [
       {
-        id: 1,
-        field: 'iglesia',
-        title: { zh: "Q1 教会:", es: "Q1 Iglesia:" },
+        id: 1, field: 'iglesia', title: { zh: "Q1 教会:", es: "Q1 Iglesia:" },
         options: [
           { label: { zh: "马德里生命堂", es: "Iglesia Evangélica Madrid" }, scores: null },
           { label: { zh: "马德里南区生命堂", es: "Iglesia Evangélica Madrid Sur" }, scores: null },
@@ -279,23 +617,19 @@
           { label: { zh: "其他", es: "Otra" }, scores: null }
         ]
       },
-// ✅ CÓDIGO CORREGIDO:
-{
-  id: 2,
-  field: 'edad',
-  title: { zh: "Q2 年龄:", es: "Q2 Edad:" },
-  options: [
-    { label: { zh: "13-15岁", es: "13-15 años" }, scores: null },
-    { label: { zh: "16-18岁", es: "16-18 años" }, scores: null },
-    { label: { zh: "19-21岁", es: "19-21 años" }, scores: null },
-    { label: { zh: "22-24岁", es: "22-24 años" }, scores: null },
-    { label: { zh: "25-27岁", es: "25-27 años" }, scores: null },
-    { label: { zh: "28岁以上", es: "28+ años" }, scores: null }
-  ]
-},
       {
-        id: 3,
-        title: { zh: "Q3. 如果大家一起爬山2小时，你通常是？", es: "Q3. Si fuerais todos juntos de excursión por la montaña durante dos horas, ¿Cómo sueles ser?" },
+        id: 2, field: 'edad', title: { zh: "Q2 年龄:", es: "Q2 Edad:" },
+        options: [
+          { label: { zh: "13-15岁", es: "13-15 años" }, scores: null },
+          { label: { zh: "16-18岁", es: "16-18 años" }, scores: null },
+          { label: { zh: "19-21岁", es: "19-21 años" }, scores: null },
+          { label: { zh: "22-24岁", es: "22-24 años" }, scores: null },
+          { label: { zh: "25-27岁", es: "25-27 años" }, scores: null },
+          { label: { zh: "28岁以上", es: "28+ años" }, scores: null }
+        ]
+      },
+      {
+        id: 3, title: { zh: "Q3. 如果大家一起爬山2小时，你通常是？", es: "Q3. Si fuerais todos juntos de excursión por la montaña durante dos horas, ¿Cómo sueles ser?" },
         options: [
           { label: { zh: "A. 就这？我要冲在最前面！", es: "A. ¿Eso es todo? ¡Yo voy delante de todos!" }, scores: { fis: 6 } },
           { label: { zh: "B. 能跟上，但是上坡好累，好想快进到下坡", es: "B. Puedo seguir el ritmo, pero las subidas se me hacen durísimas. ¡Ojalá pudiéramos saltar directamente a la bajada!" }, scores: { fis: 4 } },
@@ -304,8 +638,7 @@
         ]
       },
       {
-        id: 4,
-        title: { zh: "Q4. 搬比较重的行李时，你通常？", es: "Q4. Cuando tienes que cargar con equipaje pesado, ¿con cuál te identificas más?" },
+        id: 4, title: { zh: "Q4. 搬比较重的行李时，你通常？", es: "Q4. Cuando tienes que cargar con equipaje pesado, ¿con cuál te identificas más?" },
         options: [
           { label: { zh: "A. 这片行李都被我承包了！都放着我来！", es: "A. ¡Dejadlo todo en mis manos! ¡Yo me encargo de todo el equipaje!" }, scores: { fis: 6, col: 1 } },
           { label: { zh: "B. 可以搬，哪怕会龇牙咧嘴，但是我可以！", es: "B. Puedo cargarlo. Aunque tenga que hacer esfuerzos y poner cara de sufrimiento, ¡puedo con ello!" }, scores: { fis: 4, col: 1 } },
@@ -314,8 +647,7 @@
         ]
       },
       {
-        id: 5,
-        title: { zh: "Q5. 如果突然让你跑一小段路去抢东西？", es: "Q5. Si de repente os pidieran correr un pequeño tramo para conseguir algo, ¿con cuál te identificas más?" },
+        id: 5, title: { zh: "Q5. 如果突然让你跑一小段路去抢东西？", es: "Q5. Si de repente os pidieran correr un pequeño tramo para conseguir algo, ¿con cuál te identificas más?" },
         options: [
           { label: { zh: "A. 交给我吧，保证第一时间冲到！", es: "A. ¡Déjamelo a mí! ¡Seré el primero en llegar, garantizado!" }, scores: { fis: 6, col: 2 } },
           { label: { zh: "B. 让我参加的话，我就去呗；不一定抢得到，但我不会拖后腿！", es: "B. Si me toca participar, voy. Puede que no consiga pillarlo, pero ¡desde luego no seré un lastre para el equipo!" }, scores: { fis: 4, col: 2 } },
@@ -324,8 +656,7 @@
         ]
       },
       {
-        id: 6,
-        title: { zh: "Q6. 遇到自行车、滑板、轮滑、滑雪这类需要平衡感的运动，你通常？", es: "Q6. Cuando practicas deportes que requieren equilibrio, como montar en bici, hacer skate, patinar o esquiar, ¿con cuál te identificas más?" },
+        id: 6, title: { zh: "Q6. 遇到自行车、滑板、轮滑、滑雪这类需要平衡感的运动，你通常？", es: "Q6. Cuando practicas deportes que requieren equilibrio, como montar en bici, hacer skate, patinar o esquiar, ¿con cuál te identificas más?" },
         options: [
           { label: { zh: "A. 给我一点时间熟悉，我一般很快就能找到感觉！", es: "A. ¡Dame un poco de tiempo para acostumbrarme y enseguida le cojo el tranquillo! " }, scores: { fis: 6 } },
           { label: { zh: "B. 刚开始会摇摇晃晃，但练一会儿基本就能上手", es: "B. Al principio voy un poco tambaleándome, pero después de practicar un rato, normalmente le cojo el tranquillo" }, scores: { fis: 4 } },
@@ -334,8 +665,7 @@
         ]
       },
       {
-        id: 7,
-        title: { zh: "Q7. 第一次见到一组十几个人并互相介绍后，你通常能记住多少人的名字？", es: "Q7. Cuando conoces por primera vez a un grupo de unas diez personas y os presentáis, ¿cuántos nombres sueles recordar?" },
+        id: 7, title: { zh: "Q7. 第一次见到一组十几个人并互相介绍后，你通常能记住多少人的名字？", es: "Q7. Cuando conoces por primera vez a un grupo de unas diez personas y os presentáis, ¿cuántos nombres sueles recordar?" },
         options: [
           { label: { zh: "A. 认真记的话，所有人都可以", es: "A. Si me esfuerzo por recordarlos, puedo acordarme de todos." }, scores: { int: 6 } },
           { label: { zh: "B. 哪怕我认真记，也只能记得一半左右", es: "B. Aunque me esfuerce, solo consigo recordar más o menos la mitad." }, scores: { int: 3 } },
@@ -344,8 +674,7 @@
         ]
       },
       {
-        id: 8,
-        title: { zh: "Q8. 玩“大家来找茬”时，你通常？", es: "Q8. Cuando juegas a «Encuentra las diferencias», ¿con cuál te identificas más?" },
+        id: 8, title: { zh: "Q8. 玩“大家来找茬”时，你通常？", es: "Q8. Cuando juegas a «Encuentra las diferencias», ¿con cuál te identificas más?" },
         options: [
           { label: { zh: "A. 会先快速扫一遍整张图，通常很快就能发现几个不同", es: "A. Primero echo un vistazo rápido a toda la imagen y normalmente encuentro varias diferencias enseguida." }, scores: { int: 6, ada: 3 } },
           { label: { zh: "B. 一个区域一个区域仔细对比，速度不一定快，但通常能找得比较全", es: "B. Voy comparando la imagen zona por zona. Puede que no sea muy rápido, pero normalmente consigo encontrarlas casi todas." }, scores: { int: 6 } },
@@ -354,8 +683,7 @@
         ]
       },
       {
-        id: 9,
-        title: { zh: "Q9. 玩狼人杀、海龟汤、推理游戏这类需要根据线索分析的游戏时，你通常？", es: "Q9. Cuando juegas a «Hombre lobo», «La sopa de tortuga» o a otros juegos de deducción en los que hay que analizar pistas, ¿con cuál te identificas más?" },
+        id: 9, title: { zh: "Q9. 玩狼人杀、海龟汤、推理游戏这类需要根据线索分析的游戏时，你通常？", es: "Q9. Cuando juegas a «Hombre lobo», «La sopa de tortuga» o a otros juegos de deducción en los que hay que analizar pistas, ¿con cuál te identificas más?" },
         options: [
           { label: { zh: "A. 线索给我！我很喜欢自己一点点推出来，而且经常能比较早发现关键点", es: "A. ¡Dame las pistas! Me encanta ir sacando mis propias conclusiones poco a poco y, muchas veces, consigo detectar las claves importantes bastante pronto." }, scores: { int: 6 } },
           { label: { zh: "B. 我能跟上大家的思路，线索多起来以后通常也能推出个大概", es: "B. Puedo seguir el razonamiento de los demás y, cuando hay suficientes pistas, normalmente también consigo hacerme una idea de lo que ha pasado." }, scores: { int: 4 } },
@@ -364,8 +692,7 @@
         ]
       },
       {
-        id: 10,
-        title: { zh: "Q10. 当你已经听懂一个比较复杂的游戏规则，需要你转述给没听懂的组员时，你通常？", es: "Q10. Cuando ya has entendido las reglas de un juego bastante complejo y tienes que explicárselas a un compañero de equipo que no las ha entendido, ¿con cuál te identificas más?" },
+        id: 10, title: { zh: "Q10. 当你已经听懂一个比较复杂的游戏规则，需要你转述给没听懂的组员时，你通常？", es: "Q10. Cuando ya has entendido las reglas de un juego bastante complejo y tienes que explicárselas a un compañero de equipo que no las ha entendido, ¿con cuál te identificas más?" },
         options: [
           { label: { zh: "A. 用自己的话提炼规则，再举个例子，对方一般很快就懂", es: "A. Explico las reglas con mis propias palabras y pongo algún ejemplo. Normalmente, la otra persona lo entiende enseguida." }, scores: { exp: 5, com: 5, int: 5 } },
           { label: { zh: "B. 自己知道怎么玩，但让我解释的话可能会越讲越复杂", es: "B. Yo sé cómo se juega, pero cuando tengo que explicarlo, puede que acabe haciéndolo aún más complicado." }, scores: { exp: 3, com: 1, int: 3 } },
@@ -374,8 +701,7 @@
         ]
       },
       {
-        id: 11,
-        title: { zh: "Q11. 小组讨论时，你脑子里有一个不错的想法，但其他人没理解，你通常？", es: "Q11. Durante una conversación en grupo, se te ocurre una buena idea, pero los demás no la entienden. ¿Con cuál te identificas más?" },
+        id: 11, title: { zh: "Q11. 小组讨论时，你脑子里有一个不错的想法，但其他人没理解，你通常？", es: "Q11. Durante una conversación en grupo, se te ocurre una buena idea, pero los demás no la entienden. ¿Con cuál te identificas más?" },
         options: [
           { label: { zh: "A. 会换一种说法，或者举个例子，让大家明白我想表达什么", es: "A. Intento explicarlo de otra manera o pongo algún ejemplo para que entiendan lo que quiero decir." }, scores: { exp: 6, com: 3, ada: 4 } },
           { label: { zh: "B. 先向 “懂我的朋友“ 解释，让他先理解，然后一起向大家说明白", es: "B. Primero se lo explico a un amigo que «me entiende» para asegurarme de que lo ha entendido y, después, se lo explicamos juntos al resto." }, scores: { exp: 2, com: 3, col: 3, ada: 2 } },
@@ -384,8 +710,7 @@
         ]
       },
       {
-        id: 12,
-        title: { zh: "Q12. 当有人发生争论，你通常？", es: "Q12. Cuando dos personas están discutiendo, ¿con cuál te identificas más?" },
+        id: 12, title: { zh: "Q12. 当有人发生争论，你通常？", es: "Q12. Cuando dos personas están discutiendo, ¿con cuál te identificas más?" },
         options: [
           { label: { zh: "A. 先听听双方怎么说，主动帮他们把各自的意思讲清楚", es: "A. Primero escucho a las dos partes e intento ayudarles a explicar claramente lo que quiere decir cada uno." }, scores: { com: 5, col: 2, ada: 1 } },
           { label: { zh: "B. 帮亲不帮理，为自己的小组争取利益", es: "B. Defiendo a los míos antes que a la razón: intento conseguir lo mejor para mi equipo." }, scores: { exp: 2, com: 2, col: 2 } },
@@ -394,8 +719,7 @@
         ]
       },
       {
-        id: 13,
-        title: { zh: "Q13. 你觉得自己的方案更好，但全组最后决定用另一个方案，你通常？", es: "Q13. Crees que tu propuesta es mejor, pero al final todo el grupo decide usar otra. ¿Con cuál te identificas más?" },
+        id: 13, title: { zh: "Q13. 你觉得自己的方案更好，但全组最后决定用另一个方案，你通常？", es: "Q13. Crees que tu propuesta es mejor, pero al final todo el grupo decide usar otra. ¿Con cuál te identificas más?" },
         options: [
           { label: { zh: "A. 有点可惜，但既然大家已经决定了，我就认真配合新方案", es: "A. Me da un poco de pena, pero si el grupo ya ha tomado una decisión, la apoyo y me implico en la nueva propuesta." }, scores: { col: 3 } },
           { label: { zh: "B. 还是会争取一下，比如看看能不能把自己方案里比较好的部分融入新方案", es: "B. Intento defender mi propuesta una vez más. Por ejemplo, trato de incorporar las mejores ideas de la mía a la nueva." }, scores: { exp: 2, com: 3, col: 3, ada: 3 } },
@@ -404,8 +728,7 @@
         ]
       },
       {
-        id: 14,
-        title: { zh: "Q14. 小组已经确定分工，但中途有人需要帮助，你会？", es: "Q14. El grupo ya ha repartido las tareas, pero en mitad del trabajo alguien necesita ayuda. ¿Qué sueles hacer?" },
+        id: 14, title: { zh: "Q14. 小组已经确定分工，但中途有人需要帮助，你会？", es: "Q14. El grupo ya ha repartido las tareas, pero en mitad del trabajo alguien necesita ayuda. ¿Qué sueles hacer?" },
         options: [
           { label: { zh: "A. 对方只要开口，我一般都会先过去帮忙，再回来完成自己的任务", es: "A. Si me pide ayuda, normalmente voy primero a echarle una mano y después vuelvo a terminar mi tarea." }, scores: { col: 3 } },
           { label: { zh: "B. 如果比较紧急，我会暂时放下自己的任务去帮他", es: "B. Si es algo urgente, dejo momentáneamente lo que estoy haciendo para ayudarle." }, scores: { col: 2, ada: 1 } },
@@ -414,18 +737,16 @@
         ]
       },
       {
-        id: 15,
-        title: { zh: "Q15. 如果让你在大家面前即兴表演 30 秒，你会？", es: "Q15. Si te pidieran hacer una actuación improvisada de 30 segundos delante de todo el mundo, ¿qué harías?" },
+        id: 15, title: { zh: "Q15. 如果让你在大家面前即兴表演 30 秒，你会？", es: "Q15. Si te pidieran hacer una actuación improvisada de 30 segundos delante de todo el mundo, ¿qué harías?" },
         options: [
           { label: { zh: "A. 我是显眼包，完全没有压力甚至享受被注视的感觉", es: "A. ¡A mí me encanta llamar la atención! No me da nada de vergüenza; incluso disfruto siendo el centro de atención." }, scores: { exp: 6 } },
           { label: { zh: "B. 有一点紧张，但是如果能加分的话，我可以", es: "B. Me pondría un poco nervioso, pero si sirve para conseguir puntos, puedo hacerlo." }, scores: { exp: 4, col: 3 } },
           { label: { zh: "C. 很紧张，实在没人了再让我去吧！", es: "C. Me pondría muy nervioso. ¡Que me toque solo si no queda absolutamente nadie más!" }, scores: { exp: 2, col: 2 } },
-          { label: { zh: "D. 不可能，绝对不可能，我可以在台下鼓掌", es: "D. ¡Ni hablar, imposible! Yo puedo quedarme abajo y aplaudir." }, scores: { col: 1 } }
+          { label: { zh: "D. 不可能，绝对不可能，我可以在台下鼓掌", es: "D. ¡Ni hablar, impossible! Yo puedo quedarme abajo y aplaudir." }, scores: { col: 1 } }
         ]
       },
       {
-        id: 16,
-        title: { zh: "Q16. 临时抽到一个完全没准备过的表演题目，你通常会？", es: "Q16. Si de repente te toca hacer una actuación sobre un tema que no habías preparado, ¿qué sueles hacer?" },
+        id: 16, title: { zh: "Q16. 临时抽到一个完全没准备过的表演题目，你通常会？", es: "Q16. Si de repente te toca hacer una actuación sobre un tema que no habías preparado, ¿qué sueles hacer?" },
         options: [
           { label: { zh: "A. 先演起来再说，边演边想，说不定灵感就来了", es: "A. Empiezo a actuar y ya iré viendo. Voy improvisando sobre la marcha; quién sabe, quizá se me ocurra algo." }, scores: { ada: 6, exp: 3 } },
           { label: { zh: "B. 给我一点时间，我一般很快能想到几个点子", es: "B. Dame un poco de tiempo y normalmente se me ocurren varias ideas bastante rápido." }, scores: { ada: 6, int: 2 } },
@@ -434,35 +755,20 @@
         ]
       },
       {
-        id: 17,
-        field: 'habilidad',
-        inputType: 'paragraph',
+        id: 17, field: 'habilidad', inputType: 'paragraph',
         title: { zh: "Q17. 你擅长什么？", es: "Q17. ¿Qué se te da bien?" },
-        placeholder: {
-          zh: "例如：足球、篮球、乐器、摄影、绘画、表演、舞蹈、剪辑、沟通、策划……",
-          es: "Ej: Fútbol, baloncesto, tocar un instrumento, fotografía, dibujo, actuación, baile, edición, comunicación, planificación..."
-        }
+        placeholder: { zh: "例如：足球、篮球、乐器、摄影、绘画、表演、舞蹈、剪辑、沟通、策划……", es: "Ej: Fútbol, baloncesto, tocar un instrumento, fotografía, dibujo, actuación, baile, edición, comunicación, planificación..." }
       },
       {
-  id: 18,
-  field: 'hobbie',
-  inputType: 'paragraph',
-  title: { zh: "Q17. 你的兴趣爱好是什么？", es: "Q18. ¿Cuál es tu hobbie?" },
-  placeholder: {
-    zh: "例如：电影、艺术、运动、音乐、阅读……",
-    es: "Cine, arte, deporte, música, lectura, etc."
-  }
-},
-{
-  id: 19,
-  field: 'frase',
-  inputType: 'paragraph',
-  title: { zh: "Q18. 用一句话形容你自己：", es: "Q19. Escribe una frase que te describa:" },
-  placeholder: {
-    zh: "例如：一个热衷于探索新事物的人……",
-    es: "Ej: Una persona entusiasta a la que le apasiona aprender cosas nuevas..."
-  }
-}
+        id: 18, field: 'hobbie', inputType: 'paragraph',
+        title: { zh: "Q18. 你的兴趣爱好是什么？", es: "Q18. ¿Cuál es tu hobbie?" },
+        placeholder: { zh: "例如：电影、艺术、运动、音乐、阅读……", es: "Cine, arte, deporte, música, lectura, etc." }
+      },
+      {
+        id: 19, field: 'frase', inputType: 'paragraph',
+        title: { zh: "Q19. 用一句话形容你自己：", es: "Q19. Escribe una frase que te describa:" },
+        placeholder: { zh: "例如：一个热衷于探索新事物的人……", es: "Ej: Una persona entusiasta a la que le apasiona aprender cosas nuevas..." }
+      }
     ];
 
     function renderQuestions() {
@@ -490,7 +796,6 @@
                 rows="5"
                 required
               ></textarea>
-              <div class="input-helper" data-zh="可以写一个或多个，例如：足球、摄影、沟通、策划……" data-es="Puedes escribir una o varias, por ejemplo: fútbol, fotografía, comunicación, planificación...">${currentLang === 'es' ? 'Puedes escribir una o varias, por ejemplo: fútbol, fotografía, comunicación, planificación...' : '可以写一个或多个，例如：足球、摄影、沟通、策划……'}</div>
             </div>
           `;
         } else {
@@ -515,6 +820,8 @@
       });
     }
 
+    let currentRoleResult = null;
+
     function toggleLang() {
       currentLang = currentLang === 'es' ? 'zh' : 'es';
       document.getElementById('lang-btn').innerText = currentLang === 'es' ? '中文' : 'Español';
@@ -526,23 +833,33 @@
       document.querySelectorAll('[data-placeholder-zh]').forEach(el => {
         el.placeholder = el.getAttribute(`data-placeholder-${currentLang}`);
       });
-      
-      // El sexo no se muestra en la ficha final; solo determina el emoji.
+
       actualizarEmojiSexo();
-      if (userInfo.iglesia[currentLang]) {
-        document.getElementById('res-iglesia').innerText = userInfo.iglesia[currentLang];
-      }
-      if (userInfo.edad[currentLang]) {
-        document.getElementById('res-edad').innerText = userInfo.edad[currentLang];
-      }
-      if (userInfo.habilidad) {
-        document.getElementById('res-habilidad').innerText = userInfo.habilidad;
+      if (userInfo.iglesia[currentLang]) document.getElementById('res-iglesia').innerText = userInfo.iglesia[currentLang];
+      if (userInfo.edad[currentLang]) document.getElementById('res-edad').innerText = userInfo.edad[currentLang];
+      if (userInfo.habilidad) document.getElementById('res-habilidad').innerText = userInfo.habilidad;
+
+      if (currentRoleResult) {
+        mostrarDatosRol(currentRoleResult);
       }
 
-      // Actualizar también las estadísticas y las etiquetas del gráfico al cambiar de idioma.
-      if (currentScores) {
-        actualizarEstadisticasIdioma(currentScores);
+      if (currentScores) actualizarEstadisticasIdioma(currentScores);
+    }
+
+    function mostrarDatosRol(roleResult) {
+      let nombreRol = "";
+      if (ROLE_NAMES[roleResult.role_key]) {
+        nombreRol = ROLE_NAMES[roleResult.role_key][currentLang];
+      } else {
+        nombreRol = roleResult.role_key;
       }
+
+      let tipoNucleo = roleResult.core_type?.[currentLang] || roleResult.core_type || "";
+      let descRol = roleResult.description?.[currentLang] || roleResult.description || "";
+
+      if (document.getElementById('res-rol')) document.getElementById('res-rol').innerText = nombreRol;
+      if (document.getElementById('res-tipo-nucleo')) document.getElementById('res-tipo-nucleo').innerText = tipoNucleo;
+      if (document.getElementById('res-desc-rol')) document.getElementById('res-desc-rol').innerText = descRol;
     }
 
     function seleccionarSexo(elem, sexo) {
@@ -558,27 +875,23 @@
       actualizarEmojiSexo();
     }
 
-    // Emojis oficiales de Unicode: hombre/mujer levantando la mano.
     const AVATAR_HOMBRE = '🙋‍♂️';
     const AVATAR_MUJER = '🙋‍♀️';
 
     function actualizarEmojiSexo() {
       const avatarEl = document.getElementById('res-sexo-emoji');
       if (!avatarEl) return;
-
       const sexoGuardado = userInfo.sexo?.es || userInfo.sexo || '';
       avatarEl.textContent = sexoGuardado === 'Mujer' ? AVATAR_MUJER : AVATAR_HOMBRE;
     }
 
     function iniciarPreguntas() {
       const nombre = document.getElementById('input-nombre').value.trim();
-
       if (!nombre) {
         alert(currentLang === 'es' ? 'Por favor, introduce tu nombre.' : '请输入你的姓名。');
         document.getElementById('input-nombre').focus();
         return;
       }
-
       if (!userInfo.sexo.es) {
         alert(currentLang === 'es' ? 'Por favor, selecciona tu sexo.' : '请选择你的性别。');
         return;
@@ -593,10 +906,8 @@
       const parent = elem.parentElement;
       parent.querySelectorAll('.opcion-btn').forEach(b => b.classList.remove('selected'));
       elem.classList.add('selected');
-      
+
       const q = questions[step - 1];
-      
-      // Para preguntas informativas (Iglesia o Edad), guardamos ambos idiomas.
       if (q.field) {
         userInfo[q.field] = q.options[optIndex].label;
       } else {
@@ -605,45 +916,41 @@
     }
 
     function nextStep(step) {
-  const q = questions[step - 1];
+      const q = questions[step - 1];
 
-  if (q.inputType === 'paragraph' || q.inputType === 'text') {
-    const input = document.getElementById(`input-${q.field}`);
-    const value = input ? input.value.trim() : '';
+      if (q.inputType === 'paragraph' || q.inputType === 'text') {
+        const input = document.getElementById(`input-${q.field}`);
+        const value = input ? input.value.trim() : '';
+        if (!value) {
+          alert(currentLang === 'es' ? 'Por favor, completa este campo.' : '请填写此项内容。');
+          if (input) input.focus();
+          return;
+        }
+        userInfo[q.field] = value;
+      } else if (q.field && !userInfo[q.field].es) {
+        alert(currentLang === 'es' ? 'Por favor selecciona una opción' : '请选择一个选项');
+        return;
+      } else if (!q.field && !selectedAnswers[step]) {
+        alert(currentLang === 'es' ? 'Por favor selecciona una opción' : '请选择一个选项');
+        return;
+      }
 
-    if (!value) {
-      alert(currentLang === 'es' ? 'Por favor, completa este campo.' : '请填写此项内容。');
-      if (input) input.focus();
-      return;
+      document.getElementById(`step-${step}`).classList.remove('active');
+      if (step < questions.length) {
+        currentStep = step + 1;
+        document.getElementById(`step-${currentStep}`).classList.add('active');
+      } else {
+        generarResultado();
+      }
     }
 
-    userInfo[q.field] = value;
-  } else if (q.field && !userInfo[q.field].es) {
-    alert(currentLang === 'es' ? 'Por favor selecciona una opción' : '请选择一个选项');
-    return;
-  } else if (!q.field && !selectedAnswers[step]) {
-    alert(currentLang === 'es' ? 'Por favor selecciona una opción' : '请选择一个选项');
-    return;
-  }
-
-  document.getElementById(`step-${step}`).classList.remove('active');
-  if (step < questions.length) {
-    currentStep = step + 1;
-    document.getElementById(`step-${currentStep}`).classList.add('active');
-  } else {
-    generarResultado();
-  }
-}
-
-    async function enviarResultadoPorCorreo(scores, userData) {
-      // No intenta enviar nada hasta que se configuren las credenciales de EmailJS.
-      if (!window.emailjs ||
-          EMAILJS_PUBLIC_KEY === 'TU_PUBLIC_KEY' ||
-          EMAILJS_SERVICE_ID === 'TU_SERVICE_ID' ||
-          EMAILJS_TEMPLATE_ID === 'TU_TEMPLATE_ID') {
-        console.warn('EmailJS no está configurado todavía. Completa PUBLIC_KEY, SERVICE_ID y TEMPLATE_ID.');
+    async function enviarResultadoPorCorreo(scores, userData, roleResult) {
+      if (!window.emailjs || EMAILJS_PUBLIC_KEY === 'TU_PUBLIC_KEY' || EMAILJS_SERVICE_ID === 'TU_SERVICE_ID' || EMAILJS_TEMPLATE_ID === 'TU_TEMPLATE_ID') {
+        console.warn('EmailJS no está configurado.');
         return false;
       }
+
+      const rolNombre = ROLE_NAMES[roleResult.role_key]?.es || roleResult.role_key;
 
       const params = {
         nombre: userData.nombre || '-',
@@ -651,6 +958,11 @@
         iglesia: userData.iglesia?.es || userData.iglesia || '-',
         edad: userData.edad?.es || userData.edad || '-',
         habilidad: userData.habilidad || '-',
+        hobbie: userData.hobbie || '-',
+        frase: userData.frase || '-',
+        rol: rolNombre,
+        tipo_nucleo: roleResult.core_type?.es || roleResult.core_type,
+        descripcion_rol: roleResult.description?.es || roleResult.description,
         fisico: `${scores.fis}/24`,
         intelecto: `${scores.int}/24`,
         expresion: `${scores.exp}/24`,
@@ -663,10 +975,9 @@
 
       try {
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
-        console.log('Resultado enviado correctamente al administrador.');
         return true;
       } catch (error) {
-        console.error('Error al enviar el resultado por correo:', error);
+        console.error('Error al enviar email:', error);
         return false;
       }
     }
@@ -706,7 +1017,6 @@
       chartInstance = new Chart(ctx, {
         type: 'radar',
         data: {
-          // Usamos etiquetas compactas en el radar para mantener exactamente el mismo tamaño visual en ambos idiomas.
           labels: statsMap.map(s => {
             const radarEs = { fis: 'Fís.', int: 'Int.', exp: 'Expr.', com: 'Com.', col: 'Col.', ada: 'Adap.' };
             return `${s.icon} ${currentLang === 'es' ? radarEs[s.key] : s.zh}`;
@@ -742,26 +1052,26 @@
     function generarResultado(datosGuardados = null) {
       let scores;
       let userData;
+      let roleResult;
 
-      // Si venimos de localStorage, cargamos los datos guardados
       if (datosGuardados) {
         scores = datosGuardados.scores;
         userData = datosGuardados.userData;
+        roleResult = datosGuardados.roleResult || classifyRole(scores);
       } else {
-        // Si es la primera vez que hace el test, calculamos
         scores = { fis: 0, int: 0, exp: 0, com: 0, col: 0, ada: 0 };
         Object.values(selectedAnswers).forEach(s => {
-          if (s.fis) scores.fis += s.fis;
-          if (s.int) scores.int += s.int;
-          if (s.exp) scores.exp += s.exp;
-          if (s.com) scores.com += s.com;
-          if (s.col) scores.col += s.col;
-          if (s.ada) scores.ada += s.ada;
+          if (s) {
+            if (s.fis) scores.fis += s.fis;
+            if (s.int) scores.int += s.int;
+            if (s.exp) scores.exp += s.exp;
+            if (s.com) scores.com += s.com;
+            if (s.col) scores.col += s.col;
+            if (s.ada) scores.ada += s.ada;
+          }
         });
 
-        Object.keys(scores).forEach(k => {
-          if (scores[k] > 24) scores[k] = 24;
-        });
+        Object.keys(scores).forEach(k => { if (scores[k] > 24) scores[k] = 24; });
 
         userData = {
           nombre: document.getElementById('input-nombre').value.trim(),
@@ -769,19 +1079,20 @@
           iglesia: userInfo.iglesia,
           edad: userInfo.edad,
           habilidad: userInfo.habilidad,
-          hobbie: userInfo.hobbie,   
-  frase: userInfo.frase
+          hobbie: userInfo.hobbie,
+          frase: userInfo.frase
         };
 
-        // Guardar en el navegador para evitar repeticiones
+        roleResult = classifyRole(scores);
+
         localStorage.setItem('userQuizStats', JSON.stringify({
           scores: scores,
           userData: userData,
+          roleResult: roleResult,
           emailEnviado: false
         }));
 
-        // Envío automático: el usuario no tiene que pulsar ningún botón.
-        enviarResultadoPorCorreo(scores, userData).then(enviado => {
+        enviarResultadoPorCorreo(scores, userData, roleResult).then(enviado => {
           if (enviado) {
             const datosActualizados = JSON.parse(localStorage.getItem('userQuizStats') || '{}');
             datosActualizados.emailEnviado = true;
@@ -791,67 +1102,49 @@
       }
 
       currentScores = scores;
+      currentRoleResult = roleResult;
 
-      // Rellenar Ficha
+      // Rellenar Ficha Datos Básicos
       document.getElementById('res-nombre').innerText = userData.nombre || '-';
-
-      const sexoGuardado = userData.sexo;
-      const sexoValor = sexoGuardado && typeof sexoGuardado === 'object'
-        ? (sexoGuardado.es || sexoGuardado[currentLang] || '')
-        : (sexoGuardado || '');
-
-      const iglesiaGuardada = userData.iglesia || {};
-      const edadGuardada = userData.edad || {};
-      const habilidadGuardada = userData.habilidad || '-';
-
+      const sexoValor = userData.sexo?.es || userData.sexo || '';
       document.getElementById('res-sexo-emoji').textContent = sexoValor === 'Mujer' ? AVATAR_MUJER : AVATAR_HOMBRE;
-      document.getElementById('res-iglesia').innerText = iglesiaGuardada[currentLang] || iglesiaGuardada.es || '-';
-      document.getElementById('res-edad').innerText = edadGuardada[currentLang] || edadGuardada.es || '-';
-      document.getElementById('res-habilidad').innerText = habilidadGuardada;
-      if (document.getElementById('res-hobbie')) document.getElementById('res-hobbie').innerText = userData.hobbie || '-';
-if (document.getElementById('res-frase')) document.getElementById('res-frase').innerText = userData.frase || '-';
+      document.getElementById('res-iglesia').innerText = userData.iglesia?.[currentLang] || userData.iglesia?.es || '-';
+      document.getElementById('res-edad').innerText = userData.edad?.[currentLang] || userData.edad?.es || '-';
+      document.getElementById('res-habilidad').innerText = userData.habilidad || '-';
 
-      // Renderizar estadísticas en el idioma actual.
+      if (document.getElementById('res-hobbie')) document.getElementById('res-hobbie').innerText = userData.hobbie || '-';
+      if (document.getElementById('res-frase')) document.getElementById('res-frase').innerText = userData.frase || '-';
+
+      // Rellenar Rol y Descripción según idioma
+      mostrarDatosRol(roleResult);
+
       actualizarEstadisticasIdioma(scores);
 
-      // Ocultar paso actual y mostrar resultados
       document.querySelectorAll('.step-card').forEach(el => el.classList.remove('active'));
       document.getElementById('resultado-screen').style.display = 'block';
-
     }
 
-    // LÓGICA DE INICIALIZACIÓN Y BLOQUEO DE REPETICIÓN
     function initApp() {
       const savedData = localStorage.getItem('userQuizStats');
       if (savedData) {
-        // Si ya hay datos, saltar directamente a la pantalla de resultados
         generarResultado(JSON.parse(savedData));
       } else {
-        // Si no hay datos, mostrar el test normal
         renderQuestions();
       }
     }
 
     function intentarReiniciar() {
-  // Pide la contraseña respetando el idioma actual
-  const mensaje = currentLang === 'es' 
-    ? "Introduce la contraseña de administrador para reiniciar:" 
-    : "请输入管理员密码以重置:";
-  
-  const password = prompt(mensaje);
-  
-  if (password === '20012000') {
-    // Si es correcta, borra los datos guardados y recarga la página
-    localStorage.removeItem('userQuizStats');
-    location.reload();
-  } else if (password !== null) {
-    // Si es incorrecta (y el usuario no le dio a cancelar), muestra una alerta
-    alert(currentLang === 'es' ? "Contraseña incorrecta." : "密码错误。");
-  }
-}
-    // Reemplaza la llamada final a renderQuestions() por initApp()
-    initApp();
+      const mensaje = currentLang === 'es' ? "Introduce la contraseña de administrador:" : "请输入管理员密码以重置:";
+      const password = prompt(mensaje);
+      if (password === '20012000') {
+        localStorage.removeItem('userQuizStats');
+        location.reload();
+      } else if (password !== null) {
+        alert(currentLang === 'es' ? "Contraseña incorrecta." : "密码错误。");
+      }
+    }
 
+    initApp();
   </script>
 </body>
 </html>
