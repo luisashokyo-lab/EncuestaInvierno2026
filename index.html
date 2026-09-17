@@ -202,7 +202,6 @@
           <div class="user-name-box" id="res-nombre">Alex</div>
           <div class="info-list">
             <div class="info-item"><span class="icon">🏆</span><div><span data-zh="角色" data-es="Rol">Rol</span>: <strong id="res-rol">-</strong></div></div>
-            <div class="info-item"><span class="icon">🧩</span><div><span data-zh="类型" data-es="Tipo">Tipo</span>: <strong id="res-tipo-nucleo">-</strong></div></div>
             <div class="info-item"><span class="icon">🎂</span><div><span data-zh="年龄" data-es="Edad">Edad</span>: <strong id="res-edad">22+</strong></div></div>
             <div class="info-item"><span class="icon">📍</span><div><span data-zh="教会" data-es="Iglesia">Iglesia</span>: <strong id="res-iglesia">Norte</strong></div></div>
           </div>
@@ -316,19 +315,9 @@
       'COORDINADOR_CAMPO', 'COMODIN_UNIVERSAL', 'COMPANERO_ACCION', 'PORTAVOZ_EQUIPO'
     ];
 
-    const CORE_TYPE_NAMES = {
-      1: { es: "Núcleo Único", zh: "单核型" },
-      2: { es: "Núcleo Doble", zh: "双核型" },
-      3: { es: "Núcleo Triple", zh: "三核型" },
-      4: { es: "Núcleo Cuádruple", zh: "四核型" },
-      5: { es: "Núcleo Quíntuple", zh: "五核型" },
-      6: { es: "Núcleo Héxagono", zh: "六核型" }
-    };
-
     function buildFallback() {
       return {
         role_key: "EXPLORADOR",
-        core_type: { es: "Ventaja Relativa", zh: "相对优势" },
         strong_dimensions: [{ es: "Capacidad General", zh: "综合能力" }],
         is_absolute: false
       };
@@ -357,7 +346,6 @@
 
         // PART A — HIGH-SCORE / ABSOLUTE-STRENGTH
         if (six_tier_count >= 1) {
-          let core_type = CORE_TYPE_NAMES[six_tier_count];
           let strong_dims = six_tier_dims.map(d => ({
             es: `${DIM_NAMES[d].es} MAX`,
             zh: `${DIM_NAMES[d].zh} MAX`
@@ -394,7 +382,7 @@
             }
           }
 
-          return { role_key: role_key, core_type: core_type, strong_dimensions: strong_dims, is_absolute: true };
+          return { role_key: role_key, strong_dimensions: strong_dims, is_absolute: true };
         }
 
         // PART B — NO 6-TIER / RELATIVE-STRENGTH
@@ -409,7 +397,6 @@
         if (max_score <= 8 && (s1 - s2 < 4)) {
           return {
             role_key: "EXPLORADOR",
-            core_type: { es: "Ventaja Relativa", zh: "相对优势" },
             strong_dimensions: [{ es: "Exploración General", zh: "综合探索" }],
             is_absolute: false
           };
@@ -419,14 +406,12 @@
           if (avg_score >= 15) {
             return {
               role_key: "MULTIFACETICO",
-              core_type: { es: "Ventaja Relativa", zh: "相对优势" },
               strong_dimensions: [{ es: "Equilibrio Séxtuple", zh: "六项均衡" }],
               is_absolute: false
             };
           } else {
             return {
               role_key: "EXPLORADOR",
-              core_type: { es: "Ventaja Relativa", zh: "相对优势" },
               strong_dimensions: [{ es: "Habilidades Equilibradas", zh: "能力均衡" }],
               is_absolute: false
             };
@@ -437,7 +422,6 @@
           let singleObj = SINGLE_ROLES[s1_dim];
           return {
             role_key: singleObj.es,
-            core_type: { es: `Ventaja Relativa: ${DIM_NAMES[s1_dim].es}`, zh: `相对优势：${DIM_NAMES[s1_dim].zh}` },
             strong_dimensions: [{ es: `Ventaja Relativa: ${DIM_NAMES[s1_dim].es}`, zh: `相对优势：${DIM_NAMES[s1_dim].zh}` }],
             is_absolute: false
           };
@@ -472,7 +456,6 @@
 
         return {
           role_key: role_key,
-          core_type: { es: "Ventaja Relativa", zh: "相对优势" },
           strong_dimensions: top_dims.map(d => ({ es: `Ventaja Relativa: ${DIM_NAMES[d].es}`, zh: `相对优势：${DIM_NAMES[d].zh}` })),
           is_absolute: false
         };
@@ -739,10 +722,7 @@
         nombreRol = roleResult.role_key;
       }
 
-      let tipoNucleo = roleResult.core_type?.[currentLang] || roleResult.core_type || "";
-
       if (document.getElementById('res-rol')) document.getElementById('res-rol').innerText = nombreRol;
-      if (document.getElementById('res-tipo-nucleo')) document.getElementById('res-tipo-nucleo').innerText = tipoNucleo;
     }
 
     function seleccionarSexo(elem, sexo) {
@@ -872,7 +852,6 @@ const AVATAR_MUJER = `<svg id="avatar-mujer" xmlns="http://www.w3.org/2000/svg" 
         hobbie: userData.hobbie || '-',
         frase: userData.frase || '-',
         rol: rolNombre,
-        tipo_nucleo: roleResult.core_type?.es || roleResult.core_type,
         fisico: `${scores.fis}/24`,
         intelecto: `${scores.int}/24`,
         expresion: `${scores.exp}/24`,
