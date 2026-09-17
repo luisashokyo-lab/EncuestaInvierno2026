@@ -195,23 +195,26 @@
     </form>
 
     <!-- RESULTADO -->
+  <!-- RESULTADO -->
     <div id="resultado-screen">
       <div class="profile-grid">
         <div class="info-col">
           <div class="user-emoji" id="res-sexo-emoji" aria-hidden="true">🙋‍♂️</div>
           <div class="user-name-box" id="res-nombre">Alex</div>
           <div class="info-list">
+            <div class="info-item"><span class="icon">🏆</span><div><span data-zh="角色" data-es="Rol">Rol</span>: <strong id="res-rol">-</strong></div></div>
+            <div class="info-item"><span class="icon">🧩</span><div><span data-zh="类型" data-es="Tipo">Tipo</span>: <strong id="res-tipo-nucleo">-</strong></div></div>
             <div class="info-item"><span class="icon">🎂</span><div><span data-zh="年龄" data-es="Edad">Edad</span>: <strong id="res-edad">22+</strong></div></div>
             <div class="info-item"><span class="icon">📍</span><div><span data-zh="教会" data-es="Iglesia">Iglesia</span>: <strong id="res-iglesia">Norte</strong></div></div>
             <div class="info-item"><span class="icon">⭐</span><div><span data-zh="擅长" data-es="Se le da bien">Se le da bien</span>: <strong id="res-habilidad">-</strong></div></div>
             <div class="info-item">
-  <span class="icon">🎨</span>
-  <div><span data-zh="爱好" data-es="Hobbie">Hobbie</span>: <strong id="res-hobbie">-</strong></div>
-</div>
-<div class="info-item">
-  <span class="icon">💬</span>
-  <div><span data-zh="座右铭" data-es="Frase">Frase</span>: <strong id="res-frase">-</strong></div>
-</div>
+              <span class="icon">🎨</span>
+              <div><span data-zh="爱好" data-es="Hobbie">Hobbie</span>: <strong id="res-hobbie">-</strong></div>
+            </div>
+            <div class="info-item">
+              <span class="icon">💬</span>
+              <div><span data-zh="座右铭" data-es="Frase">Frase</span>: <strong id="res-frase">-</strong></div>
+            </div>
           </div>
         </div>
 
@@ -220,6 +223,10 @@
             <canvas id="radarChart"></canvas>
           </div>
         </div>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 14px; padding: 14px; margin-top: 16px; font-size: 0.85rem; line-height: 1.5; color: var(--text-main);" id="res-desc-rol">
+        
       </div>
 
       <div class="stats-badges-grid" id="stats-badges"></div>
@@ -822,7 +829,7 @@
 
     let currentRoleResult = null;
 
-    function toggleLang() {
+function toggleLang() {
       currentLang = currentLang === 'es' ? 'zh' : 'es';
       document.getElementById('lang-btn').innerText = currentLang === 'es' ? '中文' : 'Español';
 
@@ -835,8 +842,8 @@
       });
 
       actualizarEmojiSexo();
-      if (userInfo.iglesia[currentLang]) document.getElementById('res-iglesia').innerText = userInfo.iglesia[currentLang];
-      if (userInfo.edad[currentLang]) document.getElementById('res-edad').innerText = userInfo.edad[currentLang];
+      if (userInfo.iglesia && userInfo.iglesia[currentLang]) document.getElementById('res-iglesia').innerText = userInfo.iglesia[currentLang];
+      if (userInfo.edad && userInfo.edad[currentLang]) document.getElementById('res-edad').innerText = userInfo.edad[currentLang];
       if (userInfo.habilidad) document.getElementById('res-habilidad').innerText = userInfo.habilidad;
 
       if (currentRoleResult) {
@@ -1105,15 +1112,28 @@
       currentRoleResult = roleResult;
 
       // Rellenar Ficha Datos Básicos
+      // Rellenar Ficha Datos Básicos
       document.getElementById('res-nombre').innerText = userData.nombre || '-';
       const sexoValor = userData.sexo?.es || userData.sexo || '';
       document.getElementById('res-sexo-emoji').textContent = sexoValor === 'Mujer' ? AVATAR_MUJER : AVATAR_HOMBRE;
-      document.getElementById('res-iglesia').innerText = userData.iglesia?.[currentLang] || userData.iglesia?.es || '-';
-      document.getElementById('res-edad').innerText = userData.edad?.[currentLang] || userData.edad?.es || '-';
+      
+      const iglesiaTexto = typeof userData.iglesia === 'object' ? userData.iglesia[currentLang] : userData.iglesia;
+      const edadTexto = typeof userData.edad === 'object' ? userData.edad[currentLang] : userData.edad;
+      
+      document.getElementById('res-iglesia').innerText = iglesiaTexto || '-';
+      document.getElementById('res-edad').innerText = edadTexto || '-';
       document.getElementById('res-habilidad').innerText = userData.habilidad || '-';
 
       if (document.getElementById('res-hobbie')) document.getElementById('res-hobbie').innerText = userData.hobbie || '-';
       if (document.getElementById('res-frase')) document.getElementById('res-frase').innerText = userData.frase || '-';
+
+      // Rellenar Rol y Descripción según idioma
+      mostrarDatosRol(roleResult);
+
+      actualizarEstadisticasIdioma(scores);
+
+      document.querySelectorAll('.step-card').forEach(el => el.classList.remove('active'));
+      document.getElementById('resultado-screen').style.display = 'block';
 
       // Rellenar Rol y Descripción según idioma
       mostrarDatosRol(roleResult);
