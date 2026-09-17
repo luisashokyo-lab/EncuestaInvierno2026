@@ -805,6 +805,15 @@ const AVATAR_MUJER = `<svg id="avatar-mujer" xmlns="http://www.w3.org/2000/svg" 
         selectedAnswers[step] = q.options[optIndex].scores;
       }
     }
+    function actualizarEmojiSexo() {
+      const avatarEl = document.getElementById('res-sexo-emoji');
+      if (!avatarEl) return;
+      const sexoEs = userInfo.sexo?.es || '';
+      const sexoZh = userInfo.sexo?.zh || '';
+      
+      const esMujer = sexoEs === 'Mujer' || sexoZh === '女性';
+      avatarEl.innerHTML = esMujer ? AVATAR_MUJER : AVATAR_HOMBRE;
+    }
 
     function nextStep(step) {
       const q = questions[step - 1];
