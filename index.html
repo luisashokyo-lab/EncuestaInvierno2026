@@ -41,20 +41,19 @@
       position: relative;
     }
 
-    .lang-switcher {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: #f1f5f9;
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      color: var(--accent-blue);
-      transition: all 0.2s;
-    }
+    .lang-switcher { 
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
 
     .lang-switcher:hover {
       background: var(--accent-light);
