@@ -173,10 +173,10 @@
         <label data-zh="性别" data-es="Sexo">Sexo <span aria-hidden="true">*</span></label>
         <div class="sexo-options">
           <div class="sexo-btn" role="button" tabindex="0" onclick="seleccionarSexo(this, 'hombre')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();seleccionarSexo(this,'hombre');}">
-            <span data-zh="男性" data-es="Hombre">Hombre</span>
+            <span data-zh="男生" data-es="Hombre">Hombre</span>
           </div>
           <div class="sexo-btn" role="button" tabindex="0" onclick="seleccionarSexo(this, 'mujer')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();seleccionarSexo(this,'mujer');}">
-            <span data-zh="女性" data-es="Mujer">Mujer</span>
+            <span data-zh="女生" data-es="Mujer">Mujer</span>
           </div>
         </div>
       </div>
@@ -253,15 +253,16 @@
         field: 'iglesia',
         title: { zh: "Q1 教会:", es: "Q1 Iglesia:" },
         options: [
-          { label: { zh: "马德里北区生命堂", es: "Iglesia Vida Norte Madrid" }, scores: null },
-          { label: { zh: "马德里南区生命堂", es: "Iglesia Vida Sur Madrid" }, scores: null },
-          { label: { zh: "瓦伦西亚生命堂", es: "Iglesia Vida Valencia" }, scores: null },
-          { label: { zh: "爱丽甘地生命堂", es: "Iglesia Vida Alicante" }, scores: null },
-          { label: { zh: "加纳利亚生命堂", es: "Iglesia Vida Canarias" }, scores: null },
-          { label: { zh: "巴塞罗那生命堂", es: "Iglesia Vida Barcelona" }, scores: null },
-          { label: { zh: "福恩城生命堂", es: "Iglesia Vida Fuenlabrada" }, scores: null },
-          { label: { zh: "以斯拉生命堂", es: "Iglesia Vida Israel" }, scores: null },
-          { label: { zh: "贝妮东生命堂", es: "Iglesia Vida Benidorm" }, scores: null },
+          { label: { zh: "马德里生命堂", es: "Iglesia Evangélica Madrid" }, scores: null },
+          { label: { zh: "马德里南区生命堂", es: "Iglesia Evangélica Madrid Sur" }, scores: null },
+          { label: { zh: "瓦伦西亚生命堂", es: "Iglesia Evangélica Valencia" }, scores: null },
+          { label: { zh: "爱丽甘地生命堂", es: "Iglesia Evangélica Alicante" }, scores: null },
+          { label: { zh: "加纳利亚生命堂", es: "Iglesia Evangélica Canarias" }, scores: null },
+          { label: { zh: "巴塞罗那生命堂", es: "Iglesia Evangélica Barcelona" }, scores: null },
+          { label: { zh: "福恩城生命堂", es: "Iglesia Evangélica Fuenlabrada" }, scores: null },
+          { label: { zh: "以斯拉生命堂", es: "Iglesia Evangélica Usera" }, scores: null },
+          { label: { zh: "贝妮东生命堂", es: "Iglesia Evangélica Benidorm" }, scores: null },
+          { label: { zh: "凯旋门生命堂", es: "Esglesia Evangelica Xinesa Arc de Triomf Barcelona" }, scores: null },
           { label: { zh: "其他", es: "Otra" }, scores: null }
         ]
       },
@@ -271,149 +272,151 @@
         title: { zh: "Q2 年龄:", es: "Q2 Edad:" },
         options: [
           { label: { zh: "13-15岁", es: "13-15 años" }, scores: null },
-          { label: { zh: "16-18 岁", es: "16-18 años" }, scores: null },
+          { label: { zh: "16-18岁", es: "16-18 años" }, scores: null },
           { label: { zh: "19-21岁", es: "19-21 años" }, scores: null },
-          { label: { zh: "22岁以上", es: "22+ años" }, scores: null }
+          { label: { zh: "22-24岁", es: "22-24 años" }, scores: null }
+          { label: { zh: "25-27岁", es: "25-27 años" }, scores: null }
+          { label: { zh: "28岁以上", es: "28+ años" }, scores: null }
         ]
       },
       {
         id: 3,
-        title: { zh: "Q3. 如果大家一起爬山2小时,你通常是?", es: "Q3. Si van a escalar una montaña por 2 horas, ¿normalmente tú..." },
+        title: { zh: "Q3. 如果大家一起爬山2小时，你通常是？", es: "Q3. Si fuerais todos juntos de excursión por la montaña durante dos horas, ¿Cómo sueles ser?" },
         options: [
-          { label: { zh: "A. 就这?我要冲在最前面!", es: "A. ¿Solo esto? ¡Voy a ir al frente de todos!" }, scores: { fis: 6 } },
-          { label: { zh: "B. 能跟上,但是上坡好累,好想快进到下坡", es: "B. Puedo seguir el ritmo, pero subir cuesta. ¡Quiero bajar ya!" }, scores: { fis: 4 } },
-          { label: { zh: "C. 等等,我需要休息一下再走", es: "C. Esperen, necesito descansar un momento." }, scores: { fis: 2 } },
-          { label: { zh: "D. 我想回家………………", es: "D. Me quiero ir a casa..." }, scores: { fis: 0 } }
+          { label: { zh: "A. 就这？我要冲在最前面！", es: "A. ¿Eso es todo? ¡Yo voy delante de todos!" }, scores: { fis: 6 } },
+          { label: { zh: "B. 能跟上，但是上坡好累，好想快进到下坡", es: "B. Puedo seguir el ritmo, pero las subidas se me hacen durísimas. ¡Ojalá pudiéramos saltar directamente a la bajada!" }, scores: { fis: 4 } },
+          { label: { zh: "C. 等等，我需要休息一下再走", es: "C. Esperad, necesito descansar un poco antes de seguir." }, scores: { fis: 2 } },
+          { label: { zh: "D. 我想回家……", es: "D. Quiero volver a casa..." }, scores: { fis: 0 } }
         ]
       },
       {
         id: 4,
-        title: { zh: "Q4. 搬比较重的行李时,你通常?", es: "Q4. Al cargar equipaje pesado, ¿tú..." },
+        title: { zh: "Q4. 搬比较重的行李时，你通常？", es: "Q4. Cuando tienes que cargar con equipaje pesado, ¿con cuál te identificas más?" },
         options: [
-          { label: { zh: "A. 这片行李都被我承包了!都放着我来!", es: "A. ¡Yo me encargo de todo esto! ¡Déjenmelo a mí!" }, scores: { fis: 6, col: 1 } },
-          { label: { zh: "B. 可以搬,哪怕会龇牙咧嘴,但是我可以!", es: "B. Puedo cargarlo, aunque haga caras, ¡yo puedo!" }, scores: { fis: 4, col: 1 } },
-          { label: { zh: "C. 叫朋友一起搬呗,人多力量大", es: "C. Llamo a amigos; la unión hace la fuerza." }, scores: { fis: 2, col: 3 } },
-          { label: { zh: "D. 我很爱护自己的腰,一般不搬重物", es: "D. Cuido mucho mi espalda, no suelo cargar peso." }, scores: { fis: 0 } }
+          { label: { zh: "A. 这片行李都被我承包了！都放着我来！", es: "A. ¡Dejadlo todo en mis manos! ¡Yo me encargo de todo el equipaje!" }, scores: { fis: 6, col: 1 } },
+          { label: { zh: "B. 可以搬，哪怕会龇牙咧嘴，但是我可以！", es: "B. Puedo cargarlo. Aunque tenga que hacer esfuerzos y poner cara de sufrimiento, ¡puedo con ello!" }, scores: { fis: 4, col: 1 } },
+          { label: { zh: "C. 叫朋友一起搬呗，人多力量大", es: "C. Llamo a un amigo para que me ayude. ¡Cuantos más seamos, menos pesa!" }, scores: { fis: 2, col: 3 } },
+          { label: { zh: "D. 我很爱护自己的腰，一般不搬重物", es: "D. Cuido mucho mi espalda, así que normalmente no cargo con cosas pesadas." }, scores: { fis: 0 } }
         ]
       },
       {
         id: 5,
-        title: { zh: "Q5. 如果突然让你跑一小段路去抢东西?", es: "Q5. Si tienes que correr un tramo rápido para alcanzar algo..." },
+        title: { zh: "Q5. 如果突然让你跑一小段路去抢东西？", es: "Q5. Si de repente os pidieran correr un pequeño tramo para conseguir algo, ¿con cuál te identificas más?" },
         options: [
-          { label: { zh: "A. 交给我吧,保证第一时间冲到!", es: "A. ¡Déjamelo a mí, seré el primero en llegar!" }, scores: { fis: 6, col: 2 } },
-          { label: { zh: "B. 让我参加的话,我就去呗;不一定抢得到,但我不会拖后腿!", es: "B. Si me toca, voy. No sé si llegue primero pero no atrasaré al equipo." }, scores: { fis: 4, col: 2 } },
-          { label: { zh: "C. 跑步不是我的强项,我可以给组员加油", es: "C. Correr no es lo mío, mejor les echo porras." }, scores: { fis: 0, col: 2 } },
-          { label: { zh: "D. 我不喜欢抢来抢去的游戏,peace", es: "D. No me gustan los juegos de prisas. Peace." }, scores: { fis: 0 } }
+          { label: { zh: "A. 交给我吧，保证第一时间冲到！", es: "A. ¡Déjamelo a mí! ¡Seré el primero en llegar, garantizado!" }, scores: { fis: 6, col: 2 } },
+          { label: { zh: "B. 让我参加的话，我就去呗；不一定抢得到，但我不会拖后腿！", es: "B. Si me toca participar, voy. Puede que no consiga pillarlo, pero ¡desde luego no seré un lastre para el equipo!" }, scores: { fis: 4, col: 2 } },
+          { label: { zh: "C. 跑步不是我的强项，我可以给组员加油", es: "C. Correr no es lo mío. ¡Pero puedo animar a mis compañeros!" }, scores: { fis: 0, col: 2 } },
+          { label: { zh: "D. 我不喜欢抢来抢去的游戏，Peace", es: "D. No me gustan esos juegos de competir por conseguir cosas. Peace" }, scores: { fis: 0 } }
         ]
       },
       {
         id: 6,
-        title: { zh: "Q6. 遇到自行车、滑板、轮滑、滑雪这类需要平衡感的运动?", es: "Q6. En deportes de equilibrio (bici, skate, patines, esquí)..." },
+        title: { zh: "Q6. 遇到自行车、滑板、轮滑、滑雪这类需要平衡感的运动，你通常？", es: "Q6. En deportes de equilibrio (bici, skate, patines, esquí)..." },
         options: [
-          { label: { zh: "A. 给我一点时间熟悉,我一般很快就能找到感觉!", es: "A. Dame un momento y le agarro el truco rapidísimo." }, scores: { fis: 6 } },
-          { label: { zh: "B. 刚开始会摇摇晃晃,但练一会儿基本就能上手", es: "B. Tiemblo al inicio, pero practicando lo domino." }, scores: { fis: 4 } },
-          { label: { zh: "C. 我需要多练一阵子,主要任务通常是——别摔!", es: "C. Necesito mucha práctica. Mi meta principal: ¡no caerme!" }, scores: { fis: 2 } },
+          { label: { zh: "A. 给我一点时间熟悉，我一般很快就能找到感觉！", es: "A. Dame un momento y le agarro el truco rapidísimo." }, scores: { fis: 6 } },
+          { label: { zh: "B. 刚开始会摇摇晃晃，但练一会儿基本就能上手", es: "B. Tiemblo al inicio, pero practicando lo domino." }, scores: { fis: 4 } },
+          { label: { zh: "C. 我需要多练一阵子，主要任务通常是——别摔！", es: "C. Necesito mucha práctica. Mi meta principal: ¡no caerme!" }, scores: { fis: 2 } },
           { label: { zh: "D. 我比较喜欢双脚踏踏实实踩在地上的感觉", es: "D. Prefiero tener ambos pies bien puestos en la tierra." }, scores: { fis: 0 } }
         ]
       },
       {
         id: 7,
-        title: { zh: "Q7. 第一次见到一组十几个人并互相介绍后,你能记住多少名字?", es: "Q7. Tras conocer a 10+ personas, ¿cuántos nombres recuerdas?" },
+        title: { zh: "Q7. 第一次见到一组十几个人并互相介绍后，你通常能记住多少人的名字？", es: "Q7. Tras conocer a 10+ personas, ¿cuántos nombres recuerdas?" },
         options: [
-          { label: { zh: "A. 认真记的话,所有人都可以", es: "A. Si me pongo atento, recuerdo a todos." }, scores: { int: 6 } },
-          { label: { zh: "B. 哪怕我认真记,也只能记得一半左右", es: "B. Aunque me esfuerce, recuerdo como a la mitad." }, scores: { int: 3 } },
+          { label: { zh: "A. 认真记的话，所有人都可以", es: "A. Si me pongo atento, recuerdo a todos." }, scores: { int: 6 } },
+          { label: { zh: "B. 哪怕我认真记，也只能记得一半左右", es: "B. Aunque me esfuerce, recuerdo como a la mitad." }, scores: { int: 3 } },
           { label: { zh: "C. 我只记得名字特别的或者和我本来就认识的", es: "C. Solo los nombres especiales o de quienes ya conocía." }, scores: { int: 1 } },
-          { label: { zh: "D. 我不会特别去记,玩着玩着自然熟悉了", es: "D. No memorizo; jugando me voy acordando." }, scores: { int: 1, com: 3 } }
+          { label: { zh: "D. 我不会特别去记，玩着玩着自然熟悉了", es: "D. No memorizo; jugando me voy acordando." }, scores: { int: 1, com: 3 } }
         ]
       },
       {
         id: 8,
-        title: { zh: "Q8. 玩“大家来找茬”(找不同)时,你通常?", es: "Q8. Al jugar a 'Encontrar las diferencias', tú..." },
+        title: { zh: "Q8. 玩“大家来找茬”时，你通常？", es: "Q8. Al jugar a 'Encontrar las diferencias', tú..." },
         options: [
-          { label: { zh: "A. 会先快速扫一遍整张图,通常很快就能发现几个不同", es: "A. Escaneo la imagen y hallo varias diferencias velozmente." }, scores: { int: 6, ada: 3 } },
-          { label: { zh: "B. 一个区域一个区域仔细对比,速度不一定快,但找到比较全", es: "B. Comparo zona por zona minuciosamente." }, scores: { int: 6 } },
-          { label: { zh: "C. 第一眼不一定能发现,但别人提示一下范围就能找到", es: "C. Si me dan una pista del área, lo encuentro rápido." }, scores: { int: 3, col: 1 } },
-          { label: { zh: "D. 经常别人找到了我还没看到", es: "D. A menudo los demás encuentran todo y yo no veo nada." }, scores: { int: 0 } }
+          { label: { zh: "A. 会先快速扫一遍整张图，通常很快就能发现几个不同", es: "A. Escaneo la imagen y hallo varias diferencias velozmente." }, scores: { int: 6, ada: 3 } },
+          { label: { zh: "B. 一个区域一个区域仔细对比，速度不一定快，但通常能找得比较全", es: "B. Comparo zona por zona minuciosamente." }, scores: { int: 6 } },
+          { label: { zh: "C. 第一眼不一定能发现，但别人稍微提示一下范围，通常就能找到", es: "C. Si me dan una pista del área, lo encuentro rápido." }, scores: { int: 3, col: 1 } },
+          { label: { zh: "D. 和瞎了一样，经常别人找到了我还没看到", es: "D. A menudo los demás encuentran todo y yo no veo nada." }, scores: { int: 0 } }
         ]
       },
       {
         id: 9,
-        title: { zh: "Q9. 玩狼人杀、推理游戏这类需要根据线索分析的游戏时?", es: "Q9. En juegos de deducción o misterio (Lobo, etc.)..." },
+        title: { zh: "Q9. 玩狼人杀、海龟汤、推理游戏这类需要根据线索分析的游戏时，你通常？", es: "Q9. En juegos de deducción o misterio (Lobo, etc.)..." },
         options: [
-          { label: { zh: "A. 线索给我!我很喜欢一点点推出来,经常能发现关键点", es: "A. ¡Dame pistas! Me encanta deducir y hallo los puntos clave." }, scores: { int: 6 } },
-          { label: { zh: "B. 我能跟上大家的思路,线索多起来也能推出个大概", es: "B. Sigo la lógica del grupo y con pistas deduzco la mayoría." }, scores: { int: 4 } },
-          { label: { zh: "C. 别人分析时我觉得非常有道理,但让自己推有点困难", es: "C. Entiendo los análisis de otros, pero me cuesta deducir solo." }, scores: { int: 2 } },
-          { label: { zh: "D. 你们推吧,最后告诉我凶手是谁就行", es: "D. Deduzcan ustedes y al final me dicen quién fue." }, scores: { int: 0 } }
+          { label: { zh: "A. 线索给我！我很喜欢自己一点点推出来，而且经常能比较早发现关键点", es: "A. ¡Dame pistas! Me encanta deducir y hallo los puntos clave." }, scores: { int: 6 } },
+          { label: { zh: "B. 我能跟上大家的思路，线索多起来以后通常也能推出个大概", es: "B. Sigo la lógica del grupo y con pistas deduzco la mayoría." }, scores: { int: 4 } },
+          { label: { zh: "C. 别人分析的时候我觉得：“对对对！有道理！”——但让我自己推就有点困难", es: "C. Entiendo los análisis de otros, pero me cuesta deducir solo." }, scores: { int: 2 } },
+          { label: { zh: "D. 你们推吧，最后告诉我凶手是谁就行", es: "D. Deduzcan ustedes y al final me dicen quién fue." }, scores: { int: 0 } }
         ]
       },
       {
         id: 10,
-        title: { zh: "Q10. 当你已经听懂一个比较复杂的游戏规则，需要你传述给你没听懂的组员是， 你通常?", es: "Q10. Al explicar una regla compleja a alguien que no la entendió..." },
+        title: { zh: "Q10. 当你已经听懂一个比较复杂的游戏规则，需要你转述给没听懂的组员时，你通常？", es: "Q10. Al explicar una regla compleja a alguien que no la entendió..." },
         options: [
-          { label: { zh: "A. 用自己的话提炼规则再举例,对方很快就懂", es: "A. Resumo con mis palabras y doy ejemplos; entienden rápido." }, scores: { exp: 5, com: 5, int: 5 } },
-          { label: { zh: "B. 自己知道怎么玩,但让解释可能会越讲越复杂", es: "B. Sé jugarlo, pero al explicarlo me enredo un poco." }, scores: { exp: 3, com: 1, int: 3 } },
-          { label: { zh: "C. 直接说:等一下跟着我们玩就知道了", es: "C. Digo: 'Jugando sobre la marcha lo entenderás'." }, scores: { exp: 1, com: 1, ada: 2 } },
-          { label: { zh: "D. 我通常是那个没听懂的人,会专心听解释", es: "D. Solía ser quien no entendía, así que escucho atento." }, scores: { com: 3, col: 1 } }
+          { label: { zh: "A. 用自己的话提炼规则，再举个例子，对方一般很快就懂", es: "A. Resumo con mis palabras y doy ejemplos; entienden rápido." }, scores: { exp: 5, com: 5, int: 5 } },
+          { label: { zh: "B. 自己知道怎么玩，但让我解释的话可能会越讲越复杂", es: "B. Sé jugarlo, pero al explicarlo me enredo un poco." }, scores: { exp: 3, com: 1, int: 3 } },
+          { label: { zh: "C. 直接说：等一下跟着我们玩就知道了", es: "C. Digo: 'Jugando sobre la marcha lo entenderás'." }, scores: { exp: 1, com: 1, ada: 2 } },
+          { label: { zh: "D. 我通常是那个没听懂的人，会提出来，专心听组员的解释", es: "D. Solía ser quien no entendía, así que escucho atento." }, scores: { com: 3, col: 1 } }
         ]
       },
       {
         id: 11,
-        title: { zh: "Q11. 小组讨论时你有个好想法但其他人没理解,你?", es: "Q11. Si tienes una buena idea en grupo pero no la entienden..." },
+        title: { zh: "Q11. 小组讨论时，你脑子里有一个不错的想法，但其他人没理解，你通常？", es: "Q11. Si tienes una buena idea en grupo pero no la entienden..." },
         options: [
-          { label: { zh: "A. 换一种说法或举例,让大家明白我想表达什么", es: "A. Explicaré de otra forma o daré ejemplos hasta aclararlo." }, scores: { exp: 6, com: 3, ada: 4 } },
-          { label: { zh: "B. 先向“懂我的朋友”解释,和他一起向大家说明白", es: "B. Se lo explico a un amigo para que me ayude a exponerlo." }, scores: { exp: 2, com: 3, col: 3, ada: 2 } },
-          { label: { zh: "C. 经常有一种“我知道想说什么但说不清楚”的感觉", es: "C. Siento 'sé lo que quiero decir pero no me sale'." }, scores: { exp: 1 } },
-          { label: { zh: "D. 解释两次还没懂的话,我可能就放弃这个想法了", es: "D. Si tras 2 intentos no entienden, descarto la idea." }, scores: { exp: 2 } }
+          { label: { zh: "A. 会换一种说法，或者举个例子，让大家明白我想表达什么", es: "A. Explicaré de otra forma o daré ejemplos hasta aclararlo." }, scores: { exp: 6, com: 3, ada: 4 } },
+          { label: { zh: "B. 先向 “懂我的朋友“ 解释，让他先理解，然后一起向大家说明白", es: "B. Se lo explico a un amigo para que me ayude a exponerlo." }, scores: { exp: 2, com: 3, col: 3, ada: 2 } },
+          { label: { zh: "C. 经常有一种 “我知道自己想说什么，但就是说不清楚” 的感觉", es: "C. Siento 'sé lo que quiero decir pero no me sale'." }, scores: { exp: 1 } },
+          { label: { zh: "D. 解释两次还没懂的话，我可能就放弃这个想法了", es: "D. Si tras 2 intentos no entienden, descarto la idea." }, scores: { exp: 2 } }
         ]
       },
       {
         id: 12,
-        title: { zh: "Q12. 当有人发生争论,你通常?", es: "Q12. Cuando hay una discusión entre personas..." },
+        title: { zh: "Q12. 当有人发生争论，你通常？", es: "Q12. Cuando hay una discusión entre personas..." },
         options: [
-          { label: { zh: "A. 先听听双方怎么说,主动帮他们把各自的意思讲清楚", es: "A. Escucho a ambos y les ayudo a clarificar sus puntos." }, scores: { com: 5, col: 2, ada: 1 } },
-          { label: { zh: "B. 帮亲不帮理,为自己的小组争取利益", es: "B. Apoyo a los míos para defender el interés de mi equipo." }, scores: { exp: 2, com: 2, col: 2 } },
-          { label: { zh: "C. 感觉再争下去也没结果,直接喊裁判来主持公道", es: "C. Llamo a un líder o juez para resolver la disputa." }, scores: { com: 2, ada: 3 } },
-          { label: { zh: "D. 吃瓜,已经到了谁都能理解的年纪了", es: "D. Solo observo neutral. Ya entiendo a todos." }, scores: { com: 0 } }
+          { label: { zh: "A. 先听听双方怎么说，主动帮他们把各自的意思讲清楚", es: "A. Escucho a ambos y les ayudo a clarificar sus puntos." }, scores: { com: 5, col: 2, ada: 1 } },
+          { label: { zh: "B. 帮亲不帮理，为自己的小组争取利益", es: "B. Apoyo a los míos para defender el interés de mi equipo." }, scores: { exp: 2, com: 2, col: 2 } },
+          { label: { zh: "C. 感觉再争下去也没结果，直接喊组长或者裁判来主持公道", es: "C. Llamo a un líder o juez para resolver la disputa." }, scores: { com: 2, ada: 3 } },
+          { label: { zh: "D. 吃瓜，已经到了谁都能理解的年纪了", es: "D. Solo observo neutral. Ya entiendo a todos." }, scores: { com: 0 } }
         ]
       },
       {
         id: 13,
-        title: { zh: "Q13. 你觉得你的方案更好,但全组决定用另一个方案?", es: "Q13. Si prefieres tu idea pero el grupo elige otra..." },
+        title: { zh: "Q13. 你觉得自己的方案更好，但全组最后决定用另一个方案，你通常？", es: "Q13. Si prefieres tu idea pero el grupo elige otra..." },
         options: [
-          { label: { zh: "A. 有点可惜,但既然大家决定了就认真配合", es: "A. Una lástima, pero me sumo y colaboro al 100%." }, scores: { col: 3 } },
-          { label: { zh: "B. 争取把自己的好部分融入新方案", es: "B. Intento integrar las mejores partes de mi idea en la elegida." }, scores: { exp: 2, com: 3, col: 3, ada: 3 } },
-          { label: { zh: "C. 如果认为自己明显更好,较难全心投入不认同的方案", es: "C. Me cuesta comprometerme con una idea que no comparto." }, scores: { exp: 2 } },
-          { label: { zh: "D. 一般不太喜欢负责想方案,全组决定好后会积极配合", es: "D. No me gusta idear; prefiero ejecutar lo planificado." }, scores: { col: 3 } }
+          { label: { zh: "A. 有点可惜，但既然大家已经决定了，我就认真配合新方案", es: "A. Una lástima, pero me sumo y colaboro al 100%." }, scores: { col: 3 } },
+          { label: { zh: "B. 还是会争取一下，比如看看能不能把自己方案里比较好的部分融入新方案", es: "B. Intento integrar las mejores partes de mi idea en la elegida." }, scores: { exp: 2, com: 3, col: 3, ada: 3 } },
+          { label: { zh: "C. 如果我还是认为自己的方案明显更好，会比较难全心投入自己不认同的方案", es: "C. Me cuesta comprometerme con una idea que no comparto." }, scores: { exp: 2 } },
+          { label: { zh: "D. 我一般不太喜欢负责想方案，大家决定好以后我会积极配合", es: "D. No me gusta idear; prefiero ejecutar lo planificado." }, scores: { col: 3 } }
         ]
       },
       {
         id: 14,
-        title: { zh: "Q14. 小组已分工,但中途有人需要帮助,你会?", es: "Q14. En medio del trabajo asignado, alguien pide ayuda..." },
+        title: { zh: "Q14. 小组已经确定分工，但中途有人需要帮助，你会？", es: "Q14. En medio del trabajo asignado, alguien pide ayuda..." },
         options: [
-          { label: { zh: "A. 对方只要开口,我都会先过去帮忙再做自己的", es: "A. Voy a ayudar de inmediato y luego termino lo mío." }, scores: { col: 3 } },
-          { label: { zh: "B. 如果比较紧急,会暂时放下自己的任务去帮他", es: "B. Si es urgente, ayudo primero y retomo lo mío después." }, scores: { col: 2, ada: 1 } },
-          { label: { zh: "C. 先完成自己的任务,之后如果他还需要一定帮忙", es: "C. Termino mi parte primero y luego voy si aún requiere ayuda." }, scores: { col: 2 } },
-          { label: { zh: "D. 先保证自己的部分,走不开会帮他找有余力的人", es: "D. Aseguro mi parte y le busco a alguien disponible." }, scores: { com: 3, col: 2, ada: 3 } }
+          { label: { zh: "A. 对方只要开口，我一般都会先过去帮忙，再回来完成自己的任务", es: "A. Voy a ayudar de inmediato y luego termino lo mío." }, scores: { col: 3 } },
+          { label: { zh: "B. 如果比较紧急，我会暂时放下自己的任务去帮他", es: "B. Si es urgente, ayudo primero y retomo lo mío después." }, scores: { col: 2, ada: 1 } },
+          { label: { zh: "C. 先完成自己的任务，之后如果他还需要，我一定会过去帮忙", es: "C. Termino mi parte primero y luego voy si aún requiere ayuda." }, scores: { col: 2 } },
+          { label: { zh: "D. 我会先保证自己负责的部分不出问题，如果暂时走不开，会帮他找一个现在有余力的人", es: "D. Aseguro mi parte y le busco a alguien disponible." }, scores: { com: 3, col: 2, ada: 3 } }
         ]
       },
       {
         id: 15,
-        title: { zh: "Q15. 如果让你在大家面前即兴表演30秒?", es: "Q15. Si te piden improvisar en público por 30 segundos..." },
+        title: { zh: "Q15. 如果让你在大家面前即兴表演 30 秒，你会？", es: "Q15. Si te piden improvisar en público por 30 segundos..." },
         options: [
-          { label: { zh: "A. 完全没有压力甚至享受被注视的感觉", es: "A. Sin presión, ¡hasta disfruto la atención del público!" }, scores: { exp: 6 } },
-          { label: { zh: "B. 有一点紧张,但是如果能加分的话,我可以", es: "B. Algo nervioso, pero si suma puntos para el equipo, ¡voy!" }, scores: { exp: 4, col: 3 } },
-          { label: { zh: "C. 很紧张,实在没人了再让我去吧!", es: "C. Muy nervioso. ¡Déjenme como última opción!" }, scores: { exp: 2, col: 2 } },
-          { label: { zh: "D. 不可能,绝对不可能,我可以在台下鼓掌", es: "D. Imposible. Me quedo abajo aplaudiendo." }, scores: { col: 1 } }
+          { label: { zh: "A. 我是显眼包，完全没有压力甚至享受被注视的感觉", es: "A. Sin presión, ¡hasta disfruto la atención del público!" }, scores: { exp: 6 } },
+          { label: { zh: "B. 有一点紧张，但是如果能加分的话，我可以", es: "B. Algo nervioso, pero si suma puntos para el equipo, ¡voy!" }, scores: { exp: 4, col: 3 } },
+          { label: { zh: "C. 很紧张，实在没人了再让我去吧！", es: "C. Muy nervioso. ¡Déjenme como última opción!" }, scores: { exp: 2, col: 2 } },
+          { label: { zh: "D. 不可能，绝对不可能，我可以在台下鼓掌", es: "D. Imposible. Me quedo abajo aplaudiendo." }, scores: { col: 1 } }
         ]
       },
       {
         id: 16,
-        title: { zh: "Q16. 临时抽到一个完全没准备过的表演题目?", es: "Q16. Si te toca actuar un tema improvisado sin preparación..." },
+        title: { zh: "Q16. 临时抽到一个完全没准备过的表演题目，你通常会？", es: "Q16. Si te toca actuar un tema improvisado sin preparación..." },
         options: [
-          { label: { zh: "A. 先演起来再说,边演边想,说不定灵感就来了", es: "A. Actúo de una vez; sobre la marcha surge la inspiración." }, scores: { ada: 6, exp: 3 } },
-          { label: { zh: "B. 给我一点时间,我一般很快能想到几个点子", es: "B. Dame un momento y se me ocurrirán varias ideas." }, scores: { ada: 6, int: 2 } },
-          { label: { zh: "C. 先和大家讨论下,有了大概方向就知道怎么做了", es: "C. Discuto la idea con el grupo y me pongo a trabajar." }, scores: { ada: 6, com: 2, col: 3 } },
-          { label: { zh: "D. 需要有人先给我具体方向,完全空白比较难开始", es: "D. Necesito una guía clara; de la nada me cuesta empezar." }, scores: { col: 2, ada: 1 } }
+          { label: { zh: "A. 先演起来再说，边演边想，说不定灵感就来了", es: "A. Actúo de una vez; sobre la marcha surge la inspiración." }, scores: { ada: 6, exp: 3 } },
+          { label: { zh: "B. 给我一点时间，我一般很快能想到几个点子", es: "B. Dame un momento y se me ocurrirán varias ideas." }, scores: { ada: 6, int: 2 } },
+          { label: { zh: "C. 先和大家讨论一下，有了大概方向以后我就知道怎么做了", es: "C. Discuto la idea con el grupo y me pongo a trabajar." }, scores: { ada: 6, com: 2, col: 3 } },
+          { label: { zh: "D. 我需要有人先给我一个具体方向，在完全空白的情况下比较难开始", es: "D. Necesito una guía clara; de la nada me cuesta empezar." }, scores: { col: 2, ada: 1 } }
         ]
       },
       {
