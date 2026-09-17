@@ -118,7 +118,12 @@
     #resultado-screen { display: none; }
     .profile-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
     @media (max-width: 500px) { .profile-grid { grid-template-columns: 1fr; } }
-
+.opcion-btn.selected {
+  border-color: var(--accent-blue);
+  background: var(--accent-light);
+  color: var(--accent-blue);
+  font-weight: 600;
+}
     .info-col { display: flex; flex-direction: column; justify-content: center; }
     .user-emoji {
       text-align: center;
@@ -266,19 +271,20 @@
           { label: { zh: "其他", es: "Otra" }, scores: null }
         ]
       },
-      {
-        id: 2,
-        field: 'edad',
-        title: { zh: "Q2 年龄:", es: "Q2 Edad:" },
-        options: [
-          { label: { zh: "13-15岁", es: "13-15 años" }, scores: null },
-          { label: { zh: "16-18岁", es: "16-18 años" }, scores: null },
-          { label: { zh: "19-21岁", es: "19-21 años" }, scores: null },
-          { label: { zh: "22-24岁", es: "22-24 años" }, scores: null }
-          { label: { zh: "25-27岁", es: "25-27 años" }, scores: null }
-          { label: { zh: "28岁以上", es: "28+ años" }, scores: null }
-        ]
-      },
+// ✅ CÓDIGO CORREGIDO:
+{
+  id: 2,
+  field: 'edad',
+  title: { zh: "Q2 年龄:", es: "Q2 Edad:" },
+  options: [
+    { label: { zh: "13-15岁", es: "13-15 años" }, scores: null },
+    { label: { zh: "16-18岁", es: "16-18 años" }, scores: null },
+    { label: { zh: "19-21岁", es: "19-21 años" }, scores: null },
+    { label: { zh: "22-24岁", es: "22-24 años" }, scores: null },
+    { label: { zh: "25-27岁", es: "25-27 años" }, scores: null },
+    { label: { zh: "28岁以上", es: "28+ años" }, scores: null }
+  ]
+},
       {
         id: 3,
         title: { zh: "Q3. 如果大家一起爬山2小时，你通常是？", es: "Q3. Si fuerais todos juntos de excursión por la montaña durante dos horas, ¿Cómo sueles ser?" },
