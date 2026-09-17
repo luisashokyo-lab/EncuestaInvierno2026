@@ -6,6 +6,8 @@
   <title>Ficha de Stats & Perfil - 个人属性卡</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- EmailJS: permite enviar el resultado automáticamente sin servidor propio -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <style>
     :root {
@@ -78,6 +80,15 @@
       width: 100%; padding: 12px 16px; border: 1.5px solid var(--border-color);
       border-radius: 12px; font-family: inherit; font-size: 0.95rem; outline: none; background: #fff;
     }
+    .textarea-field {
+      width: 100%; min-height: 120px; padding: 14px 16px; border: 1.5px solid var(--border-color);
+      border-radius: 12px; font-family: inherit; font-size: 0.95rem; outline: none; background: #fff;
+      resize: vertical; line-height: 1.5;
+    }
+    .textarea-field:focus, .input-field:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px var(--accent-light);
+    }
 
     .sexo-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .sexo-btn {
@@ -109,6 +120,12 @@
     @media (max-width: 500px) { .profile-grid { grid-template-columns: 1fr; } }
 
     .info-col { display: flex; flex-direction: column; justify-content: center; }
+    .user-emoji {
+      font-size: 2.6rem;
+      line-height: 1;
+      text-align: center;
+      margin-bottom: 8px;
+    }
     .user-name-box { background: #f8fafc; padding: 8px 16px; border-radius: 20px; font-size: 1.2rem; font-weight: 800; text-align: center; margin-bottom: 16px; }
     .info-list { display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem; }
     .info-item { display: flex; align-items: flex-start; gap: 8px; color: var(--text-muted); }
@@ -143,9 +160,22 @@
       <p class="subtitle" data-zh="请输入你真实姓名" data-es="Ingresa tu nombre real">Ingresa tu nombre real</p>
 
       <div class="form-group">
-        <label data-zh="姓名" data-es="Nombre">Nombre</label>
-        <input type="text" id="input-nombre" class="input-field" placeholder="Alex">
+        <label data-zh="姓名" data-es="Nombre">Nombre <span aria-hidden="true">*</span></label>
+        <input type="text" id="input-nombre" class="input-field" placeholder="Alex" required autocomplete="name">
       </div>
+
+      <div class="form-group">
+        <label data-zh="性别" data-es="Sexo">Sexo <span aria-hidden="true">*</span></label>
+        <div class="sexo-options">
+          <div class="sexo-btn" role="button" tabindex="0" onclick="seleccionarSexo(this, 'hombre')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();seleccionarSexo(this,'hombre');}">
+            <span data-zh="男性" data-es="Hombre">Hombre</span>
+          </div>
+          <div class="sexo-btn" role="button" tabindex="0" onclick="seleccionarSexo(this, 'mujer')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();seleccionarSexo(this,'mujer');}">
+            <span data-zh="女性" data-es="Mujer">Mujer</span>
+          </div>
+        </div>
+      </div>
+
       <button type="button" class="btn-action" onclick="iniciarPreguntas()" data-zh="开始测试 →" data-es="Comenzar →">Comenzar →</button>
     </div>
     
@@ -158,10 +188,12 @@
     <div id="resultado-screen">
       <div class="profile-grid">
         <div class="info-col">
+          <div class="user-emoji" id="res-sexo-emoji" aria-hidden="true">🙂</div>
           <div class="user-name-box" id="res-nombre">Alex</div>
           <div class="info-list">
-            <div class="info-item"><span class="icon">👤</span><div><span data-zh="年龄" data-es="Edad">Edad</span>: <strong id="res-edad">22+</strong></div></div>
+            <div class="info-item"><span class="icon">🎂</span><div><span data-zh="年龄" data-es="Edad">Edad</span>: <strong id="res-edad">22+</strong></div></div>
             <div class="info-item"><span class="icon">📍</span><div><span data-zh="教会" data-es="Iglesia">Iglesia</span>: <strong id="res-iglesia">Norte</strong></div></div>
+            <div class="info-item"><span class="icon">⭐</span><div><span data-zh="擅长" data-es="Se le da bien">Se le da bien</span>: <strong id="res-habilidad">-</strong></div></div>
           </div>
         </div>
 
@@ -189,6 +221,19 @@
   </div>
 
   <script>
+    // ==========================================================
+    // CONFIGURACIÓN DEL ENVÍO AUTOMÁTICO POR EMAIL
+    // ==========================================================
+    // Crea una cuenta en EmailJS y sustituye estos tres valores.
+    // La dirección del administrador se configura en el Template de EmailJS.
+    const EMAILJS_PUBLIC_KEY = 'TU_PUBLIC_KEY';
+    const EMAILJS_SERVICE_ID = 'TU_SERVICE_ID';
+    const EMAILJS_TEMPLATE_ID = 'TU_TEMPLATE_ID';
+
+    if (window.emailjs) {
+      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+    }
+
     let currentLang = 'es'; // 'es' o 'zh'
     let currentStep = 0;
     let selectedAnswers = {};
@@ -365,7 +410,7 @@
       {
         id: 17,
         field: 'habilidad',
-        inputType: 'text',
+        inputType: 'paragraph',
         title: { zh: "Q17. 你擅长什么？", es: "Q17. ¿Qué se te da bien?" },
         placeholder: {
           zh: "例如：足球、篮球、乐器、摄影、绘画、表演、舞蹈、剪辑、沟通、策划……",
@@ -386,19 +431,19 @@
             <p class="subtitle">${stepNum} / ${questions.length}</p>
         `;
 
-        if (q.inputType === 'text') {
+        if (q.inputType === 'paragraph') {
           html += `
             <div class="form-group">
-              <input
-                type="text"
+              <textarea
                 id="input-${q.field}"
-                class="input-field"
+                class="textarea-field"
                 placeholder="${q.placeholder[currentLang]}"
                 data-placeholder-zh="${q.placeholder.zh}"
                 data-placeholder-es="${q.placeholder.es}"
-                maxlength="200"
+                maxlength="500"
+                rows="5"
                 required
-              >
+              ></textarea>
               <div class="input-helper" data-zh="可以写一个或多个，例如：足球、摄影、沟通、策划……" data-es="Puedes escribir una o varias, por ejemplo: fútbol, fotografía, comunicación, planificación...">${currentLang === 'es' ? 'Puedes escribir una o varias, por ejemplo: fútbol, fotografía, comunicación, planificación...' : '可以写一个或多个，例如：足球、摄影、沟通、策划……'}</div>
             </div>
           `;
@@ -436,10 +481,8 @@
         el.placeholder = el.getAttribute(`data-placeholder-${currentLang}`);
       });
       
-      if (userInfo.sexo[currentLang]) {
-        const sexoValue = userInfo.sexo[currentLang];
-        document.getElementById('res-sexo').innerText = sexoValue;
-      }
+      // El sexo no se muestra en la ficha final; solo determina el emoji.
+      actualizarEmojiSexo();
       if (userInfo.iglesia[currentLang]) {
         document.getElementById('res-iglesia').innerText = userInfo.iglesia[currentLang];
       }
@@ -461,6 +504,15 @@
       };
 
       userInfo.sexo = etiquetas[sexo];
+      actualizarEmojiSexo();
+    }
+
+    function actualizarEmojiSexo() {
+      const emojiEl = document.getElementById('res-sexo-emoji');
+      if (!emojiEl) return;
+
+      const sexoGuardado = userInfo.sexo?.es || userInfo.sexo || '';
+      emojiEl.innerText = sexoGuardado === 'Mujer' ? '👩' : sexoGuardado === 'Hombre' ? '👨' : '🙂';
     }
 
     function iniciarPreguntas() {
@@ -528,6 +580,42 @@
       }
     }
 
+    async function enviarResultadoPorCorreo(scores, userData) {
+      // No intenta enviar nada hasta que se configuren las credenciales de EmailJS.
+      if (!window.emailjs ||
+          EMAILJS_PUBLIC_KEY === 'TU_PUBLIC_KEY' ||
+          EMAILJS_SERVICE_ID === 'TU_SERVICE_ID' ||
+          EMAILJS_TEMPLATE_ID === 'TU_TEMPLATE_ID') {
+        console.warn('EmailJS no está configurado todavía. Completa PUBLIC_KEY, SERVICE_ID y TEMPLATE_ID.');
+        return false;
+      }
+
+      const params = {
+        nombre: userData.nombre || '-',
+        sexo: userData.sexo?.es || userData.sexo || '-',
+        iglesia: userData.iglesia?.es || userData.iglesia || '-',
+        edad: userData.edad?.es || userData.edad || '-',
+        habilidad: userData.habilidad || '-',
+        fisico: `${scores.fis}/24`,
+        intelecto: `${scores.int}/24`,
+        expresion: `${scores.exp}/24`,
+        comunicacion: `${scores.com}/24`,
+        colaboracion: `${scores.col}/24`,
+        adaptabilidad: `${scores.ada}/24`,
+        resultado_url: window.location.href,
+        fecha: new Date().toLocaleString('es-ES')
+      };
+
+      try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+        console.log('Resultado enviado correctamente al administrador.');
+        return true;
+      } catch (error) {
+        console.error('Error al enviar el resultado por correo:', error);
+        return false;
+      }
+    }
+
     function generarResultado(datosGuardados = null) {
       let scores;
       let userData;
@@ -563,23 +651,33 @@
         // Guardar en el navegador para evitar repeticiones
         localStorage.setItem('userQuizStats', JSON.stringify({
           scores: scores,
-          userData: userData
+          userData: userData,
+          emailEnviado: false
         }));
+
+        // Envío automático: el usuario no tiene que pulsar ningún botón.
+        enviarResultadoPorCorreo(scores, userData).then(enviado => {
+          if (enviado) {
+            const datosActualizados = JSON.parse(localStorage.getItem('userQuizStats') || '{}');
+            datosActualizados.emailEnviado = true;
+            localStorage.setItem('userQuizStats', JSON.stringify(datosActualizados));
+          }
+        });
       }
 
       // Rellenar Ficha
       document.getElementById('res-nombre').innerText = userData.nombre || '-';
 
       const sexoGuardado = userData.sexo;
-      const sexoTexto = sexoGuardado && typeof sexoGuardado === 'object'
-        ? (sexoGuardado[currentLang] || sexoGuardado.es || '-')
-        : (sexoGuardado || '-');
+      const sexoValor = sexoGuardado && typeof sexoGuardado === 'object'
+        ? (sexoGuardado.es || sexoGuardado[currentLang] || '')
+        : (sexoGuardado || '');
 
       const iglesiaGuardada = userData.iglesia || {};
       const edadGuardada = userData.edad || {};
       const habilidadGuardada = userData.habilidad || '-';
 
-      document.getElementById('res-sexo').innerText = sexoTexto;
+      document.getElementById('res-sexo-emoji').innerText = sexoValor === 'Mujer' ? '👩' : sexoValor === 'Hombre' ? '👨' : '🙂';
       document.getElementById('res-iglesia').innerText = iglesiaGuardada[currentLang] || iglesiaGuardada.es || '-';
       document.getElementById('res-edad').innerText = edadGuardada[currentLang] || edadGuardada.es || '-';
       document.getElementById('res-habilidad').innerText = habilidadGuardada;
