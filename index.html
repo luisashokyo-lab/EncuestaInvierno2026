@@ -33,31 +33,30 @@
       align-items: center;
     }
 
-.main-card {
-  width: 100%;
-  max-width: 620px;
-  background: var(--card-bg);
-  border-radius: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  padding: 70px 24px 28px; /* ← más espacio arriba */
-  position: relative;
-}
+    .main-card {
+      width: 100%;
+      max-width: 620px;
+      background: var(--card-bg);
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      padding: 70px 24px 28px;
+      position: relative;
+    }
 
-.lang-switcher {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: #f1f5f9;
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  padding: 4px 12px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  color: var(--accent-blue);
-  transition: all 0.2s;
-}
-
+    .lang-switcher {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #f1f5f9;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--accent-blue);
+      transition: all 0.2s;
+    }
 
     .lang-switcher:hover {
       background: var(--accent-light);
@@ -98,7 +97,6 @@
     }
     .sexo-btn:hover { border-color: #cbd5e1; background: #f1f5f9; }
     .sexo-btn.selected { border-color: var(--accent-blue); background: var(--accent-light); color: var(--accent-blue); }
-    .input-helper { font-size: 0.78rem; color: var(--text-muted); margin-top: 6px; line-height: 1.45; }
 
     .opcion-btn {
       background: #f8fafc; border: 1.5px solid var(--border-color); border-radius: 14px;
@@ -107,7 +105,12 @@
     }
 
     .opcion-btn:hover { border-color: #cbd5e1; background: #f1f5f9; }
-    .opcion-btn.selected { border-color: var(--accent-blue); background: var(--accent-light); color: var(--accent-blue); font-weight: 600; }
+    .opcion-btn.selected {
+      border-color: var(--accent-blue);
+      background: var(--accent-light);
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
 
     .btn-action {
       width: 100%; background: var(--accent-blue); color: #fff; border: none; border-radius: 14px;
@@ -118,12 +121,7 @@
     #resultado-screen { display: none; }
     .profile-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
     @media (max-width: 500px) { .profile-grid { grid-template-columns: 1fr; } }
-.opcion-btn.selected {
-  border-color: var(--accent-blue);
-  background: var(--accent-light);
-  color: var(--accent-blue);
-  font-weight: 600;
-}
+
     .info-col { display: flex; flex-direction: column; justify-content: center; }
     .user-emoji {
       text-align: center;
@@ -149,14 +147,6 @@
     .stat-badge-name { font-size: 0.7rem; font-weight: 700; color: var(--text-main); }
     .stat-badge-val { font-size: 0.75rem; font-weight: 800; color: var(--accent-blue); }
     .stat-badge-level { font-size: 0.65rem; background: #e0f2fe; color: #0369a1; border-radius: 10px; padding: 1px 6px; display: inline-block; margin-top: 2px; }
-
-    .keywords-section { padding-top: 16px; }
-    .keywords-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; }
-    .tags-flex { display: flex; flex-wrap: wrap; gap: 6px; }
-    .tag { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
-    .tag-yellow { background: #fef3c7; color: #d97706; }
-    .tag-blue { background: #e0f2fe; color: #0284c7; }
-    .tag-green { background: #dcfce7; color: #15803d; }
   </style>
 </head>
 <body>
@@ -194,7 +184,7 @@
       <div id="preguntas-container"></div>
     </form>
 
-  <!-- RESULTADO -->
+    <!-- RESULTADO -->
     <div id="resultado-screen">
       <div class="profile-grid">
         <div class="info-col">
@@ -215,11 +205,10 @@
         </div>
       </div>
 
-      <!-- SECCIÓN DETALLADA: DESCRIPCIÓN DEL ROL, HABILIDADES Y FRASE -->
+      <!-- SECCIÓN DETALLADA: SE LE DA BIEN, HOBBIE Y FRASE -->
       <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; margin-top: 16px; font-size: 0.85rem; line-height: 1.6; color: var(--text-main);">
-        <div style="margin-bottom: 12px;" id="res-desc-rol">-</div>
-        <hr style="border: 0; border-top: 1px dashed var(--border-color); margin: 10px 0;">
-        <div style="margin-bottom: 6px;"><strong>⭐ <span data-zh="擅长" data-es="Se le da bien">Se le da bien</span>:</strong> <span id="res-habilidad">-</span></div>
+        <div style="margin-bottom: 8px;"><strong>⭐ <span data-zh="擅长" data-es="Se le da bien">Se le da bien</span>:</strong> <span id="res-habilidad">-</span></div>
+        <div style="margin-bottom: 8px;"><strong>🎨 <span data-zh="爱好" data-es="Hobbie">Hobbie</span>:</strong> <span id="res-hobbie">-</span></div>
         <div><strong>💬 <span data-zh="座右铭" data-es="Frase">Frase</span>:</strong> <span id="res-frase">-</span></div>
       </div>
 
@@ -228,6 +217,7 @@
       <!-- Botón protegido para reiniciar el test -->
       <button onclick="intentarReiniciar()" style="background: transparent; border: none; color: #cbd5e1; font-size: 0.75rem; width: 100%; text-align: center; margin-top: 24px; cursor: pointer;" data-zh="管理员 🔒" data-es="Admin 🔒">Admin🔒</button>
     </div>
+  </div>
 
   <script>
     // ==========================================================
@@ -316,89 +306,6 @@
       'COORDINADOR_CAMPO', 'COMODIN_UNIVERSAL', 'COMPANERO_ACCION', 'PORTAVOZ_EQUIPO'
     ];
 
-    const ROLE_DESCRIPTIONS = {
-      "Pionero de Acción": {
-        es: "Tu fuerza física e iniciativa son evidentes. Cuando hay que correr, competir, cargar o realizar retos físicos, eres la opción ideal.",
-        zh: "行动力是你的明显优势，需要跑、抢、搬或运动挑战时，可以考虑你。"
-      },
-      "Estratega de Acertijos": {
-        es: "La observación, la memoria, el razonamiento y la comprensión de reglas complejas son tu punto fuerte.",
-        zh: "观察、记忆、推理和理解规则是你的优势。"
-      },
-      "Estrella de Escenario": {
-        es: "Destacas con facilidad cuando se trata de hablar en público, presentar, dirigir o actuar.",
-        zh: "需要发言、展示、主持或表演时，你比较容易发挥优势。"
-      },
-      "Puente Conector": {
-        es: "Eres experto en entender y transmitir información, así como en coordinar a diferentes miembros del equipo.",
-        zh: "擅长理解和传递信息，也比较适合协调不同成员。"
-      },
-      "Pilar del Equipo": {
-        es: "La cooperación, la ejecución y el apoyo son tus grandes virtudes; eres la fuerza que mantiene al grupo estable.",
-        zh: "配合、执行和补位是你的明显优势，是团队稳定运转的重要力量。"
-      },
-      "Salvavidas de Emergencia": {
-        es: "Ante cambios repentinos o tareas inesperadas, te adaptas muy rápido y entras en acción sin dudar.",
-        zh: "面对突然变化和没有准备过的任务，你比较容易迅速进入状态。"
-      },
-      "AS_DESAFIO": {
-        es: "Una combinación sobresaliente entre acción rápida, análisis y resolución de retos difíciles.",
-        zh: "行动、判断和处理挑战是你的突出组合。"
-      },
-      "LIDER_DINAMICO": {
-        es: "Tienes iniciativa propia y contagias fácilmente esa energía para motivar a los demás a participar.",
-        zh: "自己有行动力，也容易带动身边的人一起参与。"
-      },
-      "COMPANERO_ACCION": {
-        es: "Más que debatir en exceso, prefieres ponerte manos a la obra con el equipo para ejecutar las tareas.",
-        zh: "比起讨论很久，更擅长和大家一起把任务真正做出来。"
-      },
-      "ESTRATEGA_GLOBAL": {
-        es: "Ante problemas totalmente nuevos, analizas rápido la situación para encontrar la mejor solución.",
-        zh: "遇到陌生问题时，比较容易迅速分析情况、寻找解决办法。"
-      },
-      "PORTAVOZ_ANALITICO": {
-        es: "No solo tienes grandes ideas estratégicas, sino que además sabes expresarlas y comunicar tu visión.",
-        zh: "不只是有想法，也比较擅长把自己的思路表达出来。"
-      },
-      "CONSEJERO_EQUIPO": {
-        es: "Analizas los problemas a fondo sin perder de vista cómo hacer que la solución funcione dentro del equipo.",
-        zh: "擅长分析问题，同时会考虑怎么让方案在团队里真正运转起来。"
-      },
-      "JUGADOR_IMPROVISADOR": {
-        es: "Combinas la expresión con la creatividad al instante, ideal para presentaciones en vivo y retos sobre la marcha.",
-        zh: "表达和临场发挥组合突出，尤其适合即兴和现场展示。"
-      },
-      "MOTOR_SOCIAL": {
-        es: "Eres comunicativo, expresivo y carismático; haces que cualquier ambiente o dinámica se llene de vida.",
-        zh: "能说、能聊、能展示，比较容易让现场互动起来。"
-      },
-      "PORTAVOZ_EQUIPO": {
-        es: "No solo te atreves a dar la cara y expresarte, sino que te gusta representar y colaborar con todo tu equipo.",
-        zh: "既愿意站出来表达，也比较愿意代表和配合整个团队。"
-      },
-      "CONECTOR_EQUIPO": {
-        es: "Especialista en unir a los integrantes, conciliar opiniones y lograr que el equipo avance en armonía.",
-        zh: "擅长连接成员、协调意见，让大家比较顺畅地一起行动。"
-      },
-      "COORDINADOR_CAMPO": {
-        es: "Aunque cambien las reglas, las personas o el entorno, te adaptas y sigues coordinando la marcha sin perder el rumbo.",
-        zh: "人变了、规则变了、情况变了，也比较容易继续协调推进。"
-      },
-      "COMODIN_UNIVERSAL": {
-        es: "Siempre que surge una necesidad imprevista, sabes reubicarte al instante en el lugar donde el equipo te necesita.",
-        zh: "哪里突然需要帮助，比较容易根据现场情况找到自己的位置。"
-      },
-      "MULTIFACETICO": {
-        es: "Tus seis cualidades están muy equilibradas, lo que te permite aportar valor en casi cualquier tipo de tarea.",
-        zh: "六个方向比较均衡，在不同类型的任务中都有发挥空间。"
-      },
-      "EXPLORADOR": {
-        es: "Cada persona tiene una combinación única. Disfruta de las actividades e irá descubriendo tu punto fuerte.",
-        zh: "每个人都有不同的能力组合，在接下来的活动里慢慢发现自己的主场吧。"
-      }
-    };
-
     const CORE_TYPE_NAMES = {
       1: { es: "Núcleo Único", zh: "单核型" },
       2: { es: "Núcleo Doble", zh: "双核型" },
@@ -413,7 +320,6 @@
         role_key: "EXPLORADOR",
         core_type: { es: "Ventaja Relativa", zh: "相对优势" },
         strong_dimensions: [{ es: "Capacidad General", zh: "综合能力" }],
-        description: ROLE_DESCRIPTIONS["EXPLORADOR"],
         is_absolute: false
       };
     }
@@ -446,18 +352,14 @@
             es: `${DIM_NAMES[d].es} MAX`,
             zh: `${DIM_NAMES[d].zh} MAX`
           }));
-          let role_key = "", desc = null;
+          let role_key = "";
 
           if (six_tier_count === 6) {
             role_key = "MULTIFACETICO";
-            desc = {
-              es: "Sobresales en los seis aspectos; eres un perfil sumamente completo y equilibrado.",
-              zh: "六个方向都非常突出，是非常均衡的综合型选手。"
-            };
           } else if (six_tier_count === 1) {
             let primary_dim = six_tier_dims[0];
             let singleObj = SINGLE_ROLES[primary_dim];
-            role_key = singleObj.es; // Referencia
+            role_key = singleObj.es;
             let tier5_dims = dims.filter(d => scores[d] >= 17 && scores[d] <= 20);
             if (tier5_dims.length > 0) {
               strong_dims.push(...tier5_dims.map(d => ({
@@ -465,7 +367,6 @@
                 zh: `${DIM_NAMES[d].zh} (次要优势)`
               })));
             }
-            desc = ROLE_DESCRIPTIONS[singleObj.es] || ROLE_DESCRIPTIONS["EXPLORADOR"];
           } else {
             let candidate_scores = {};
             PAIR_ROLE_MAP.forEach(item => {
@@ -481,10 +382,9 @@
             } else {
               role_key = "MULTIFACETICO";
             }
-            desc = ROLE_DESCRIPTIONS[role_key] || ROLE_DESCRIPTIONS["MULTIFACETICO"];
           }
 
-          return { role_key: role_key, core_type: core_type, strong_dimensions: strong_dims, description: desc, is_absolute: true };
+          return { role_key: role_key, core_type: core_type, strong_dimensions: strong_dims, is_absolute: true };
         }
 
         // PART B — NO 6-TIER / RELATIVE-STRENGTH
@@ -496,28 +396,21 @@
         let max_score = Math.max(...vals), min_score = Math.min(...vals);
         let avg_score = vals.reduce((a, b) => a + b, 0) / 6.0;
 
-        // B1 — VERY LOW AND FLAT
         if (max_score <= 8 && (s1 - s2 < 4)) {
           return {
             role_key: "EXPLORADOR",
             core_type: { es: "Ventaja Relativa", zh: "相对优势" },
             strong_dimensions: [{ es: "Exploración General", zh: "综合探索" }],
-            description: {
-              es: "Aún no hay un área marcadamente dominante; ideal para probar diferentes roles y encontrar tu lugar.",
-              zh: "目前还没有特别明显的优势方向，适合在不同任务中多尝试，找到自己的主场。"
-            },
             is_absolute: false
           };
         }
 
-        // B2 — BALANCED PROFILE
         if (max_score - min_score <= 4) {
           if (avg_score >= 15) {
             return {
               role_key: "MULTIFACETICO",
               core_type: { es: "Ventaja Relativa", zh: "相对优势" },
               strong_dimensions: [{ es: "Equilibrio Séxtuple", zh: "六项均衡" }],
-              description: ROLE_DESCRIPTIONS["MULTIFACETICO"],
               is_absolute: false
             };
           } else {
@@ -525,31 +418,21 @@
               role_key: "EXPLORADOR",
               core_type: { es: "Ventaja Relativa", zh: "相对优势" },
               strong_dimensions: [{ es: "Habilidades Equilibradas", zh: "能力均衡" }],
-              description: {
-                es: "Tus capacidades están muy repartidas sin un rol fijo; perfecto para adaptarse según la situación.",
-                zh: "能力分布比较均衡，没有特别固定的角色，适合在不同任务中寻找自己的主场。"
-              },
               is_absolute: false
             };
           }
         }
 
-        // B3 — CLEAR SINGLE RELATIVE STRENGTH
         if (s1 - s2 >= 4) {
           let singleObj = SINGLE_ROLES[s1_dim];
           return {
             role_key: singleObj.es,
             core_type: { es: `Ventaja Relativa: ${DIM_NAMES[s1_dim].es}`, zh: `相对优势：${DIM_NAMES[s1_dim].zh}` },
             strong_dimensions: [{ es: `Ventaja Relativa: ${DIM_NAMES[s1_dim].es}`, zh: `相对优势：${DIM_NAMES[s1_dim].zh}` }],
-            description: {
-              es: `Entre tus seis resultados, ${DIM_NAMES[s1_dim].es} es tu área más destacada.`,
-              zh: `在你的六项结果中，${DIM_NAMES[s1_dim].zh}是比较突出的方向。`
-            },
             is_absolute: false
           };
         }
 
-        // B4 — TWO OR MORE RELATIVE STRENGTHS
         let top_dims = dims.filter(d => scores[s1_dim] - scores[d] <= 2);
         if (top_dims.length === 1) top_dims.push(s2_dim);
 
@@ -581,7 +464,6 @@
           role_key: role_key,
           core_type: { es: "Ventaja Relativa", zh: "相对优势" },
           strong_dimensions: top_dims.map(d => ({ es: `Ventaja Relativa: ${DIM_NAMES[d].es}`, zh: `相对优势：${DIM_NAMES[d].zh}` })),
-          description: ROLE_DESCRIPTIONS[role_key] || ROLE_DESCRIPTIONS["EXPLORADOR"],
           is_absolute: false
         };
 
@@ -724,7 +606,7 @@
           { label: { zh: "A. 对方只要开口，我一般都会先过去帮忙，再回来完成自己的任务", es: "A. Si me pide ayuda, normalmente voy primero a echarle una mano y después vuelvo a terminar mi tarea." }, scores: { col: 3 } },
           { label: { zh: "B. 如果比较紧急，我会暂时放下自己的任务去帮他", es: "B. Si es algo urgente, dejo momentáneamente lo que estoy haciendo para ayudarle." }, scores: { col: 2, ada: 1 } },
           { label: { zh: "C. 先完成自己的任务，之后如果他还需要，我一定会过去帮忙", es: "C. Primero termino mi tarea y, si después sigue necesitando ayuda, voy a echarle una mano." }, scores: { col: 2 } },
-          { label: { zh: "D. 我会先保证自己负责的部分不出问题，如果暂时走不开，会帮他找一个现在有余力的人", es: "D. Primero me aseguro de que mi parte esté bien hecha. Si no puedo dejarla en ese momento, busco a alguien que tenga tiempo para ayudarle." }, scores: { com: 3, col: 2, ada: 3 } }
+          { label: { zh: "D. 我会先保证自己负责的部分不出问题，如果暂时走不开，会帮他找一个现在有余力的人", es: "D. Primero me aseguro de que mi parte esté bien hecha. Si no puedo dejarla en ese moment, busco a alguien que tenga tiempo para ayudarle." }, scores: { com: 3, col: 2, ada: 3 } }
         ]
       },
       {
@@ -813,7 +695,7 @@
 
     let currentRoleResult = null;
 
-function toggleLang() {
+    function toggleLang() {
       currentLang = currentLang === 'es' ? 'zh' : 'es';
       document.getElementById('lang-btn').innerText = currentLang === 'es' ? '中文' : 'Español';
 
@@ -829,6 +711,8 @@ function toggleLang() {
       if (userInfo.iglesia && userInfo.iglesia[currentLang]) document.getElementById('res-iglesia').innerText = userInfo.iglesia[currentLang];
       if (userInfo.edad && userInfo.edad[currentLang]) document.getElementById('res-edad').innerText = userInfo.edad[currentLang];
       if (userInfo.habilidad) document.getElementById('res-habilidad').innerText = userInfo.habilidad;
+      if (userInfo.hobbie) document.getElementById('res-hobbie').innerText = userInfo.hobbie;
+      if (userInfo.frase) document.getElementById('res-frase').innerText = userInfo.frase;
 
       if (currentRoleResult) {
         mostrarDatosRol(currentRoleResult);
@@ -846,11 +730,9 @@ function toggleLang() {
       }
 
       let tipoNucleo = roleResult.core_type?.[currentLang] || roleResult.core_type || "";
-      let descRol = roleResult.description?.[currentLang] || roleResult.description || "";
 
       if (document.getElementById('res-rol')) document.getElementById('res-rol').innerText = nombreRol;
       if (document.getElementById('res-tipo-nucleo')) document.getElementById('res-tipo-nucleo').innerText = tipoNucleo;
-      if (document.getElementById('res-desc-rol')) document.getElementById('res-desc-rol').innerText = descRol;
     }
 
     function seleccionarSexo(elem, sexo) {
@@ -953,7 +835,6 @@ function toggleLang() {
         frase: userData.frase || '-',
         rol: rolNombre,
         tipo_nucleo: roleResult.core_type?.es || roleResult.core_type,
-        descripcion_rol: roleResult.description?.es || roleResult.description,
         fisico: `${scores.fis}/24`,
         intelecto: `${scores.int}/24`,
         expresion: `${scores.exp}/24`,
@@ -1106,25 +987,10 @@ function toggleLang() {
       document.getElementById('res-iglesia').innerText = iglesiaTexto || '-';
       document.getElementById('res-edad').innerText = edadTexto || '-';
       document.getElementById('res-habilidad').innerText = userData.habilidad || '-';
+      document.getElementById('res-hobbie').innerText = userData.hobbie || '-';
       document.getElementById('res-frase').innerText = userData.frase || '-';
 
-      // Rellenar Rol y Descripción según idioma
-      mostrarDatosRol(roleResult);
-
-      actualizarEstadisticasIdioma(scores);
-
-      document.querySelectorAll('.step-card').forEach(el => el.classList.remove('active'));
-      document.getElementById('resultado-screen').style.display = 'block';
-
-      // Rellenar Rol y Descripción según idioma
-      mostrarDatosRol(roleResult);
-
-      actualizarEstadisticasIdioma(scores);
-
-      document.querySelectorAll('.step-card').forEach(el => el.classList.remove('active'));
-      document.getElementById('resultado-screen').style.display = 'block';
-
-      // Rellenar Rol y Descripción según idioma
+      // Rellenar Rol según idioma
       mostrarDatosRol(roleResult);
 
       actualizarEstadisticasIdioma(scores);
