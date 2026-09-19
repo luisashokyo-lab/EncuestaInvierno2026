@@ -806,7 +806,7 @@ function selectOpt(elem, step, optIndex) {
       } else {
         selectedAnswers[step] = q.options[optIndex].scores;
         // NUEVA LÍNEA: Guardamos el texto de la respuesta
-        userInfo['q' + step] = q.options[optIndex].label.es; 
+        userInfo['q' + step] = q.options[optIndex].label.zh; 
       }
     }
     function actualizarEmojiSexo() {
@@ -859,9 +859,9 @@ function selectOpt(elem, step, optIndex) {
 
       const params = {
         nombre: userData.nombre || '-',
-        sexo: userData.sexo?.es || userData.sexo || '-',
-        iglesia: userData.iglesia?.es || userData.iglesia || '-',
-        edad: userData.edad?.es || userData.edad || '-',
+        sexo: userData.sexo?.zh || userData.sexo || '-',
+        iglesia: userData.iglesia?.zh || userData.iglesia || '-',
+        edad: userData.edad?.zh || userData.edad || '-',
         habilidad: userData.habilidad || '-',
         hobbie: userData.hobbie || '-',
         frase: userData.frase || '-',
