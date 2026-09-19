@@ -237,7 +237,7 @@ Completa el cuestionario y ayúdanos a diseñar juegos pensados para ti.
   </div>
 
   <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRsSXu4iPxBWdTUPl_1emD-6JIOolgx4mzg4C0D-RnkrWcAXQw1Yovy7vFgt23RTaH/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxt_pJqx5hFW7wmXmuYp1BEMCFpiFqPGF5mXTs8X9LJShoWKesskAvBAIc4zYROESGz/exec';
 
     let currentLang = 'es';
     let currentStep = 0;
@@ -795,7 +795,7 @@ const AVATAR_MUJER = `<svg id="avatar-mujer" xmlns="http://www.w3.org/2000/svg" 
       document.getElementById('step-1').classList.add('active');
     }
 
-    function selectOpt(elem, step, optIndex) {
+function selectOpt(elem, step, optIndex) {
       const parent = elem.parentElement;
       parent.querySelectorAll('.opcion-btn').forEach(b => b.classList.remove('selected'));
       elem.classList.add('selected');
@@ -805,6 +805,8 @@ const AVATAR_MUJER = `<svg id="avatar-mujer" xmlns="http://www.w3.org/2000/svg" 
         userInfo[q.field] = q.options[optIndex].label;
       } else {
         selectedAnswers[step] = q.options[optIndex].scores;
+        // NUEVA LÍNEA: Guardamos el texto de la respuesta
+        userInfo['q' + step] = q.options[optIndex].label.es; 
       }
     }
     function actualizarEmojiSexo() {
@@ -847,26 +849,37 @@ const AVATAR_MUJER = `<svg id="avatar-mujer" xmlns="http://www.w3.org/2000/svg" 
     }
 
    async function enviarResultadoPorCorreo(scores, userData, roleResult) {
-  const rolNombre = ROLE_NAMES[roleResult.role_key]?.es || roleResult.role_key;
+      const rolNombre = ROLE_NAMES[roleResult.role_key]?.es || roleResult.role_key;
 
-  const params = {
-    nombre: userData.nombre || '-',
-    sexo: userData.sexo?.es || userData.sexo || '-',
-    iglesia: userData.iglesia?.es || userData.iglesia || '-',
-    edad: userData.edad?.es || userData.edad || '-',
-    habilidad: userData.habilidad || '-',
-    hobbie: userData.hobbie || '-',
-    frase: userData.frase || '-',
-    rol: rolNombre,
-    fisico: `${scores.fis}/24`,
-    intelecto: `${scores.int}/24`,
-    expresion: `${scores.exp}/24`,
-    comunicacion: `${scores.com}/24`,
-    colaboracion: `${scores.col}/24`,
-    adaptabilidad: `${scores.ada}/24`,
-    resultado_url: window.location.href,
-    fecha: new Date().toLocaleString('es-ES')
-  };
+      // NUEVO: Preparamos un texto ordenado con todas las respuestas
+      let textoRespuestas = "";
+      for (let i = 3; i <= 16; i++) {
+        textoRespuestas += "Q" + i + ": " + (userData.respuestas?.['q' + i] || '-') + "\n";
+      }
+
+      const params = {
+        nombre: userData.nombre || '-',
+        sexo: userData.sexo?.es || userData.sexo || '-',
+        iglesia: userData.iglesia?.es || userData.iglesia || '-',
+        edad: userData.edad?.es || userData.edad || '-',
+        habilidad: userData.habilidad || '-',
+        hobbie: userData.hobbie || '-',
+        frase: userData.frase || '-',
+        rol: rolNombre,
+        fisico: `${scores.fis}/24`,
+        intelecto: `${scores.int}/24`,
+        expresion: `${scores.exp}/24`,
+        comunicacion: `${scores.com}/24`,
+        colaboracion: `${scores.col}/24`,
+        adaptabilidad: `${scores.ada}/24`,
+        
+        // NUEVO: Añadimos las respuestas al envío
+        respuestas_texto: textoRespuestas,
+        
+        resultado_url: window.location.href,
+        fecha: new Date().toLocaleString('es-ES')
+      };
+      // ... el resto del fetch() se queda igual
 
   try {
     await fetch(APPS_SCRIPT_URL, {
@@ -983,15 +996,22 @@ function actualizarContador(textarea, limite) {
 
         Object.keys(scores).forEach(k => { if (scores[k] > 24) scores[k] = 24; });
 
-        userData = {
+userData = {
           nombre: document.getElementById('input-nombre').value.trim(),
           sexo: userInfo.sexo,
           iglesia: userInfo.iglesia,
           edad: userInfo.edad,
           habilidad: userInfo.habilidad,
           hobbie: userInfo.hobbie,
-          frase: userInfo.frase
+          frase: userInfo.frase,
+          // NUEVO: Recopilamos las respuestas
+          respuestas: {}
         };
+        
+        // Añadimos este bucle justo debajo
+        for (let i = 3; i <= 16; i++) {
+          userData.respuestas['q' + i] = userInfo['q' + i] || '-';
+        }
 
         roleResult = classifyRole(scores);
 
