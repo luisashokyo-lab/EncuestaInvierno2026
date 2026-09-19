@@ -237,7 +237,7 @@ Completa el cuestionario y ayúdanos a diseñar juegos pensados para ti.
   </div>
 
   <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxty-QhvBxQpIgaEYcSzpeM-2ZH75PS0ScMTaCp9jUOTzXzus7v-lj_OrX1BjCPmHl7/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxTiV2xb5QShJj4d0BMiR-HL5F8H2kDS-vInvo--N5LXvOz-8iqVW9ZtwRNby2uOb_0TA/exec';
 
     let currentLang = 'es';
     let currentStep = 0;
@@ -857,28 +857,41 @@ function selectOpt(elem, step, optIndex) {
         textoRespuestas += "Q" + i + ": " + (userData.respuestas?.['q' + i] || '-') + "\n";
       }
 
-      const params = {
-        nombre: userData.nombre || '-',
-        sexo: userData.sexo?.zh || userData.sexo || '-',
-        iglesia: userData.iglesia?.zh || userData.iglesia || '-',
-        edad: userData.edad?.zh || userData.edad || '-',
-        habilidad: userData.habilidad || '-',
-        hobbie: userData.hobbie || '-',
-        frase: userData.frase || '-',
-        rol: rolNombre,
-        fisico: `${scores.fis}/24`,
-        intelecto: `${scores.int}/24`,
-        expresion: `${scores.exp}/24`,
-        comunicacion: `${scores.com}/24`,
-        colaboracion: `${scores.col}/24`,
-        adaptabilidad: `${scores.ada}/24`,
-        
-        // NUEVO: Añadimos las respuestas al envío
-        respuestas_texto: textoRespuestas,
-        
-        resultado_url: window.location.href,
-        fecha: new Date().toLocaleString('es-ES')
-      };
+       const params = {
+  nombre: userData.nombre || '-',
+  sexo: userData.sexo?.zh || userData.sexo || '-',
+  iglesia: userData.iglesia?.zh || userData.iglesia || '-',
+  edad: userData.edad?.zh || userData.edad || '-',
+  habilidad: userData.habilidad || '-',
+  hobbie: userData.hobbie || '-',
+  frase: userData.frase || '-',
+  rol: rolNombre,
+  fisico: `${scores.fis}/24`,
+  intelecto: `${scores.int}/24`,
+  expresion: `${scores.exp}/24`,
+  comunicacion: `${scores.com}/24`,
+  colaboracion: `${scores.col}/24`,
+  adaptabilidad: `${scores.ada}/24`,
+  
+  // Extraemos cada respuesta individualmente en lugar de agruparlas en 'respuestas_texto'
+  q3: userData.respuestas?.['q3'] || '-',
+  q4: userData.respuestas?.['q4'] || '-',
+  q5: userData.respuestas?.['q5'] || '-',
+  q6: userData.respuestas?.['q6'] || '-',
+  q7: userData.respuestas?.['q7'] || '-',
+  q8: userData.respuestas?.['q8'] || '-',
+  q9: userData.respuestas?.['q9'] || '-',
+  q10: userData.respuestas?.['q10'] || '-',
+  q11: userData.respuestas?.['q11'] || '-',
+  q12: userData.respuestas?.['q12'] || '-',
+  q13: userData.respuestas?.['q13'] || '-',
+  q14: userData.respuestas?.['q14'] || '-',
+  q15: userData.respuestas?.['q15'] || '-',
+  q16: userData.respuestas?.['q16'] || '-',
+  
+  resultado_url: window.location.href,
+  fecha: new Date().toLocaleString('es-ES')
+};
       // ... el resto del fetch() se queda igual
 
   try {
