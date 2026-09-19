@@ -478,7 +478,7 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyc-Fitd7CDy47q
           { label: { zh: "福恩城生命堂", es: "Iglesia Evangélica Fuenlabrada" }, scores: null },
           { label: { zh: "以斯拉生命堂", es: "Iglesia Evangélica Usera" }, scores: null },
           { label: { zh: "贝妮东生命堂", es: "Iglesia Evangélica Benidorm" }, scores: null },
-          { label: { zh: "凯旋门生命堂", es: "Esglesia Evangelica Xinesa Arc de Triomf Barcelona" }, scores: null },
+          { label: { zh: "巴塞凯旋门生命堂", es: "Esglesia Evangelica Xinesa Arc de Triomf Barcelona" }, scores: null },
           { label: { zh: "其他", es: "Otra" }, scores: null }
         ]
       },
@@ -489,8 +489,7 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyc-Fitd7CDy47q
           { label: { zh: "16-18岁", es: "16-18 años" }, scores: null },
           { label: { zh: "19-21岁", es: "19-21 años" }, scores: null },
           { label: { zh: "22-24岁", es: "22-24 años" }, scores: null },
-          { label: { zh: "25-27岁", es: "25-27 años" }, scores: null },
-          { label: { zh: "28岁以上", es: "28+ años" }, scores: null }
+          { label: { zh: "25岁以上", es: "25+ años" }, scores: null }
         ]
       },
       {
@@ -959,7 +958,7 @@ function actualizarContador(textarea, limite) {
         contador.innerText = actual;
       }
     }
-    function generarResultado(datosGuardados = null) {
+      function generarResultado(datosGuardados = null) {
       let scores;
       let userData;
       let roleResult;
@@ -967,6 +966,7 @@ function actualizarContador(textarea, limite) {
       if (datosGuardados) {
         scores = datosGuardados.scores;
         userData = datosGuardados.userData;
+        userInfo = datosGuardados.userData; // <-- AÑADE ESTA LÍNEA AQUÍ
         roleResult = datosGuardados.roleResult || classifyRole(scores);
       } else {
         scores = { fis: 0, int: 0, exp: 0, com: 0, col: 0, ada: 0 };
