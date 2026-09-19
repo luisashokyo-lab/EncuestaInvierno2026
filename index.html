@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- EmailJS: permite enviar el resultado automáticamente sin servidor propio -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 
   <style>
     :root {
@@ -237,16 +237,7 @@ Completa el cuestionario y ayúdanos a diseñar juegos pensados para ti.
   </div>
 
   <script>
-    // ==========================================================
-    // CONFIGURACIÓN DEL ENVÍO AUTOMÁTICO POR EMAIL
-    // ==========================================================
-    const EMAILJS_PUBLIC_KEY = 'TU_PUBLIC_KEY';
-    const EMAILJS_SERVICE_ID = 'TU_SERVICE_ID';
-    const EMAILJS_TEMPLATE_ID = 'TU_TEMPLATE_ID';
-
-    if (window.emailjs) {
-      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-    }
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyc-Fitd7CDy47q6qcKLAyjCPCDIkt7RyhcX93XABdYYTswX8d7nENEraf6oUYkWYgE/exec';
 
     let currentLang = 'es';
     let currentStep = 0;
@@ -856,41 +847,44 @@ const AVATAR_MUJER = `<svg id="avatar-mujer" xmlns="http://www.w3.org/2000/svg" 
       }
     }
 
-    async function enviarResultadoPorCorreo(scores, userData, roleResult) {
-      if (!window.emailjs || EMAILJS_PUBLIC_KEY === 'TU_PUBLIC_KEY' || EMAILJS_SERVICE_ID === 'TU_SERVICE_ID' || EMAILJS_TEMPLATE_ID === 'TU_TEMPLATE_ID') {
-        console.warn('EmailJS no está configurado.');
-        return false;
-      }
+   async function enviarResultadoPorCorreo(scores, userData, roleResult) {
+  const rolNombre = ROLE_NAMES[roleResult.role_key]?.es || roleResult.role_key;
 
-      const rolNombre = ROLE_NAMES[roleResult.role_key]?.es || roleResult.role_key;
+  const params = {
+    nombre: userData.nombre || '-',
+    sexo: userData.sexo?.es || userData.sexo || '-',
+    iglesia: userData.iglesia?.es || userData.iglesia || '-',
+    edad: userData.edad?.es || userData.edad || '-',
+    habilidad: userData.habilidad || '-',
+    hobbie: userData.hobbie || '-',
+    frase: userData.frase || '-',
+    rol: rolNombre,
+    fisico: `${scores.fis}/24`,
+    intelecto: `${scores.int}/24`,
+    expresion: `${scores.exp}/24`,
+    comunicacion: `${scores.com}/24`,
+    colaboracion: `${scores.col}/24`,
+    adaptabilidad: `${scores.ada}/24`,
+    resultado_url: window.location.href,
+    fecha: new Date().toLocaleString('es-ES')
+  };
 
-      const params = {
-        nombre: userData.nombre || '-',
-        sexo: userData.sexo?.es || userData.sexo || '-',
-        iglesia: userData.iglesia?.es || userData.iglesia || '-',
-        edad: userData.edad?.es || userData.edad || '-',
-        habilidad: userData.habilidad || '-',
-        hobbie: userData.hobbie || '-',
-        frase: userData.frase || '-',
-        rol: rolNombre,
-        fisico: `${scores.fis}/24`,
-        intelecto: `${scores.int}/24`,
-        expresion: `${scores.exp}/24`,
-        comunicacion: `${scores.com}/24`,
-        colaboracion: `${scores.col}/24`,
-        adaptabilidad: `${scores.ada}/24`,
-        resultado_url: window.location.href,
-        fecha: new Date().toLocaleString('es-ES')
-      };
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(params)
+    });
 
-      try {
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
-        return true;
-      } catch (error) {
-        console.error('Error al enviar email:', error);
-        return false;
-      }
-    }
+    return true;
+  } catch (error) {
+    console.error('Error al enviar encuesta:', error);
+    return false;
+  }
+}
 
     function actualizarEstadisticasIdioma(scores) {
       const getLevel = val => Math.min(6, Math.floor(val / 4) + 1);
